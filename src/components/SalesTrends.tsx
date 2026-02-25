@@ -13,6 +13,7 @@ interface Props {
 	isLoading: boolean;
 	error: string | null;
 	onPeriodChange: (p: TrendPeriod) => void;
+	onRefresh: () => void;
 }
 
 const PERIOD_LABELS: Record<TrendPeriod, string> = {
@@ -21,7 +22,7 @@ const PERIOD_LABELS: Record<TrendPeriod, string> = {
 	month: '이번달',
 };
 
-export default function SalesTrends({ data, period, isLoading, error, onPeriodChange }: Props) {
+export default function SalesTrends({ data, period, isLoading, error, onPeriodChange, onRefresh }: Props) {
 	if (isLoading && !data) {
 		return (
 			<div style={styles.center}>
@@ -34,6 +35,7 @@ export default function SalesTrends({ data, period, isLoading, error, onPeriodCh
 		return (
 			<div style={styles.center}>
 				<p style={{ color: COLORS.danger }}>{error}</p>
+				<button style={styles.retryBtn} onClick={onRefresh}>재시도</button>
 			</div>
 		);
 	}
@@ -151,6 +153,16 @@ const styles: Record<string, React.CSSProperties> = {
 		alignItems: 'center',
 		height: '100%',
 		gap: 12,
+	},
+	retryBtn: {
+		padding: '8px 20px',
+		border: 'none',
+		borderRadius: 6,
+		backgroundColor: COLORS.primary,
+		color: COLORS.white,
+		fontSize: 14,
+		fontWeight: 600,
+		cursor: 'pointer',
 	},
 	header: {
 		display: 'flex',

@@ -1,14 +1,15 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { SalesTrendData } from '../types';
 import { fetchSalesTrends } from '../services/inventoryAiApi';
 
 export type TrendPeriod = 'today' | 'week' | 'month';
 
-export function useSalesTrends() {
+export function useSalesTrends(enabled = false) {
 	const [data, setData] = useState<SalesTrendData | null>(null);
 	const [period, setPeriod] = useState<TrendPeriod>('week');
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const loaded = useRef(false);
 
 	const loadTrends = useCallback(async (p: TrendPeriod) => {
 		try {
@@ -28,9 +29,16 @@ export function useSalesTrends() {
 		loadTrends(p);
 	}, [loadTrends]);
 
-	useEffect(() => {
+	const refresh = useCallback(() => {
 		loadTrends(period);
-	}, []); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [loadTrends, period]);
 
-	return { data, period, isLoading, error, changePeriod };
+	useEffect(() => {
+		if (enabled && !loaded.current) {
+			loaded.current = true;
+			loadTrends(period);
+		}
+	}, [enabled]); // eslint-disable-line react-hooks/exhaustive-deps
+
+	return { data, period, isLoading, error, changePeriod, refresh };
 }

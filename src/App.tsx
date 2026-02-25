@@ -33,8 +33,8 @@ export default function App() {
 	const [activeTab, setActiveTab] = useState<AppTab>('dashboard');
 
 	const chatHook = useChat();
-	const trendsHook = useSalesTrends();
-	const forecastHook = useForecast();
+	const trendsHook = useSalesTrends(auth.isAuthenticated);
+	const forecastHook = useForecast(auth.isAuthenticated);
 	const inventoryHook = useInventory();
 	const mappingsHook = useMappings();
 	const dashboardHook = useDashboard();
@@ -115,6 +115,7 @@ export default function App() {
 						isLoading={trendsHook.isLoading}
 						error={trendsHook.error}
 						onPeriodChange={trendsHook.changePeriod}
+						onRefresh={trendsHook.refresh}
 					/>
 				)}
 				{activeTab === 'forecast' && (
