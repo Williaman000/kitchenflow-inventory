@@ -1,7 +1,9 @@
 import { useState, useEffect, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
-import type { Material } from '../types';
-import type { CreateMaterialPayload, AdjustInventoryPayload } from '../services/inventoryApi';
+import type { Material, BulkImportResult } from '../types';
+import type { CreateMaterialPayload, AdjustInventoryPayload, BulkMaterialItem } from '../services/inventoryApi';
+import BulkImportModal from './BulkImportModal';
 
 interface Props {
 	materials: Material[];
@@ -17,6 +19,7 @@ interface Props {
 	onUpdateMaterial: (id: number, payload: Partial<CreateMaterialPayload>) => Promise<void>;
 	onDeleteMaterial: (id: number) => Promise<void>;
 	onAdjustInventory: (payload: AdjustInventoryPayload) => Promise<void>;
+	onBulkImport: (items: BulkMaterialItem[]) => Promise<BulkImportResult>;
 }
 
 export default function MaterialManager({
@@ -32,7 +35,9 @@ export default function MaterialManager({
 	onUpdateMaterial,
 	onDeleteMaterial,
 	onAdjustInventory,
+	onBulkImport,
 }: Props) {
+	const { t } = useTranslation();
 	const [showForm, setShowForm] = useState(false);
 	const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
 	const [formName, setFormName] = useState('');
@@ -40,6 +45,9 @@ export default function MaterialManager({
 	const [formCategory, setFormCategory] = useState('');
 	const [formCurrentStock, setFormCurrentStock] = useState('');
 	const [formMinimumStock, setFormMinimumStock] = useState('');
+
+	// 일괄 등록 모달
+	const [showBulkImport, setShowBulkImport] = useState(false);
 
 	// 재고 조정 모달
 	const [adjustModal, setAdjustModal] = useState<Material | null>(null);
@@ -109,7 +117,7 @@ export default function MaterialManager({
 	if (isLoading && materials.length === 0) {
 		return (
 			<div style={styles.center}>
-				<p style={{ color: COLORS.textMuted }}>재료 데이터를 불러오는 중...</p>
+				<p style={{ color: COLORS.textMuted }}>{t('materials.loading')}</p>
 			</div>
 		);
 	}
@@ -118,7 +126,7 @@ export default function MaterialManager({
 		return (
 			<div style={styles.center}>
 				<p style={{ color: COLORS.danger }}>{error}</p>
-				<button style={styles.retryBtn} onClick={onLoad}>재시도</button>
+				<button style={styles.retryBtn} onClick={onLoad}>{t('common.retry')}</button>
 			</div>
 		);
 	}
@@ -126,12 +134,12 @@ export default function MaterialManager({
 	return (
 		<div style={styles.container}>
 			<div style={styles.header}>
-				<h2 style={styles.title}>재료 관리</h2>
+				<h2 style={styles.title}>{t('materials.title')}</h2>
 				<div style={styles.headerRight}>
 					{lowStockCount > 0 && (
-						<span style={styles.lowStockBadge}>재고 부족 {lowStockCount}건</span>
+						<span style={styles.lowStockBadge}>{t('materials.lowStockBadge', { count: lowStockCount })}</span>
 					)}
-					<button style={styles.refreshBtn} onClick={onLoad}>새로고침</button>
+					<button style={styles.refreshBtn} onClick={onLoad}>{t('materials.refresh')}</button>
 				</div>
 			</div>
 
@@ -142,7 +150,7 @@ export default function MaterialManager({
 						onClick={() => onCategoryFilterChange(null)}
 						style={materialCategoryFilter === null ? styles.filterActive : styles.filterBtn}
 					>
-						전체
+						{t('materials.all')}
 					</button>
 					{materialCategories.map((cat) => (
 						<button
@@ -154,9 +162,14 @@ export default function MaterialManager({
 						</button>
 					))}
 				</div>
-				<button style={styles.addBtn} onClick={openCreateForm}>
-					+ 재료 추가
-				</button>
+				<div style={{ display: 'flex', gap: 8 }}>
+					<button style={styles.uploadBtn} onClick={() => setShowBulkImport(true)}>
+						{t('materials.uploadBtn')}
+					</button>
+					<button style={styles.addBtn} onClick={openCreateForm}>
+						{t('materials.addBtn')}
+					</button>
+				</div>
 			</div>
 
 			{/* 재료 테이블 */}
@@ -164,19 +177,19 @@ export default function MaterialManager({
 				<table style={styles.table}>
 					<thead>
 						<tr>
-							<th style={styles.th}>재료명</th>
-							<th style={styles.th}>카테고리</th>
-							<th style={{ ...styles.th, textAlign: 'center' }}>현재 재고</th>
-							<th style={{ ...styles.th, textAlign: 'center' }}>최소 재고</th>
-							<th style={{ ...styles.th, textAlign: 'center', width: 100 }}>상태</th>
-							<th style={{ ...styles.th, textAlign: 'center', width: 200 }}>액션</th>
+							<th style={styles.th}>{t('materials.colName')}</th>
+							<th style={styles.th}>{t('materials.colCategory')}</th>
+							<th style={{ ...styles.th, textAlign: 'center' }}>{t('materials.colCurrentStock')}</th>
+							<th style={{ ...styles.th, textAlign: 'center' }}>{t('materials.colMinStock')}</th>
+							<th style={{ ...styles.th, textAlign: 'center', width: 100 }}>{t('materials.colStatus')}</th>
+							<th style={{ ...styles.th, textAlign: 'center', width: 200 }}>{t('materials.colActions')}</th>
 						</tr>
 					</thead>
 					<tbody>
 						{materials.length === 0 ? (
 							<tr>
 								<td colSpan={6} style={{ ...styles.td, textAlign: 'center', padding: 40, color: COLORS.textMuted }}>
-									등록된 재료가 없습니다
+									{t('materials.empty')}
 								</td>
 							</tr>
 						) : (
@@ -186,7 +199,7 @@ export default function MaterialManager({
 									<tr key={mat.id} style={isLow ? { backgroundColor: '#FFF5F5' } : undefined}>
 										<td style={styles.td}>
 											<span style={{ fontWeight: 600 }}>{mat.name}</span>
-											{isLow && <span style={styles.lowStockLabel}> 부족</span>}
+											{isLow && <span style={styles.lowStockLabel}> {t('materials.statusLow')}</span>}
 										</td>
 										<td style={styles.td}>{mat.category}</td>
 										<td style={{ ...styles.td, textAlign: 'center', fontWeight: 700, color: isLow ? COLORS.danger : COLORS.text }}>
@@ -201,26 +214,26 @@ export default function MaterialManager({
 												backgroundColor: isLow ? '#FFEBEE' : '#E8F5E9',
 												color: isLow ? COLORS.danger : COLORS.success,
 											}}>
-												{isLow ? '부족' : '정상'}
+												{isLow ? t('materials.statusLow') : t('materials.statusNormal')}
 											</span>
 										</td>
 										<td style={{ ...styles.td, textAlign: 'center' }}>
 											<div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
 												<button style={styles.actionBtn} onClick={() => setAdjustModal(mat)}>
-													사용/폐기
+													{t('materials.actionAdjust')}
 												</button>
 												<button style={styles.actionBtn} onClick={() => openEditForm(mat)}>
-													수정
+													{t('materials.actionEdit')}
 												</button>
 												<button
 													style={{ ...styles.actionBtn, color: COLORS.danger }}
 													onClick={() => {
-														if (confirm(`"${mat.name}" 재료를 삭제하시겠습니까?`)) {
+														if (confirm(t('materials.deleteConfirm', { name: mat.name }))) {
 															onDeleteMaterial(mat.id);
 														}
 													}}
 												>
-													삭제
+													{t('materials.actionDelete')}
 												</button>
 											</div>
 										</td>
@@ -237,42 +250,42 @@ export default function MaterialManager({
 				<div style={styles.overlay} onClick={() => setShowForm(false)}>
 					<div style={styles.modal} onClick={(e) => e.stopPropagation()}>
 						<h3 style={{ margin: '0 0 20px 0', fontSize: 18, fontWeight: 700, color: COLORS.text }}>
-							{editingMaterial ? '재료 수정' : '재료 추가'}
+							{editingMaterial ? t('materials.modalEdit') : t('materials.modalCreate')}
 						</h3>
 						<form onSubmit={handleFormSubmit}>
 							<div style={styles.formField}>
-								<label style={styles.formLabel}>재료명</label>
+								<label style={styles.formLabel}>{t('materials.fieldName')}</label>
 								<input
 									style={styles.formInput}
 									value={formName}
 									onChange={(e) => setFormName(e.target.value)}
-									placeholder="예: 닭고기"
+									placeholder={t('materials.fieldNamePlaceholder')}
 									required
 									autoFocus
 								/>
 							</div>
 							<div style={styles.formField}>
-								<label style={styles.formLabel}>단위</label>
+								<label style={styles.formLabel}>{t('materials.fieldUnit')}</label>
 								<input
 									style={styles.formInput}
 									value={formUnit}
 									onChange={(e) => setFormUnit(e.target.value)}
-									placeholder="예: kg, 마리, 개"
+									placeholder={t('materials.fieldUnitPlaceholder')}
 									required
 								/>
 							</div>
 							<div style={styles.formField}>
-								<label style={styles.formLabel}>카테고리</label>
+								<label style={styles.formLabel}>{t('materials.fieldCategory')}</label>
 								<input
 									style={styles.formInput}
 									value={formCategory}
 									onChange={(e) => setFormCategory(e.target.value)}
-									placeholder="예: 육류, 양념, 포장재"
+									placeholder={t('materials.fieldCategoryPlaceholder')}
 								/>
 							</div>
 							<div style={{ display: 'flex', gap: 12 }}>
 								<div style={{ ...styles.formField, flex: 1 }}>
-									<label style={styles.formLabel}>현재 재고</label>
+									<label style={styles.formLabel}>{t('materials.fieldCurrentStock')}</label>
 									<input
 										style={styles.formInput}
 										type="number"
@@ -283,7 +296,7 @@ export default function MaterialManager({
 									/>
 								</div>
 								<div style={{ ...styles.formField, flex: 1 }}>
-									<label style={styles.formLabel}>최소 재고</label>
+									<label style={styles.formLabel}>{t('materials.fieldMinStock')}</label>
 									<input
 										style={styles.formInput}
 										type="number"
@@ -295,9 +308,9 @@ export default function MaterialManager({
 								</div>
 							</div>
 							<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8 }}>
-								<button type="button" style={styles.cancelActionBtn} onClick={() => setShowForm(false)}>취소</button>
+								<button type="button" style={styles.cancelActionBtn} onClick={() => setShowForm(false)}>{t('materials.cancel')}</button>
 								<button type="submit" style={styles.submitActionBtn}>
-									{editingMaterial ? '수정' : '등록'}
+									{editingMaterial ? t('materials.edit') : t('materials.register')}
 								</button>
 							</div>
 						</form>
@@ -310,23 +323,23 @@ export default function MaterialManager({
 				<div style={styles.overlay} onClick={() => setAdjustModal(null)}>
 					<div style={styles.modal} onClick={(e) => e.stopPropagation()}>
 						<h3 style={{ margin: '0 0 16px 0', fontSize: 16, fontWeight: 700, color: COLORS.text }}>
-							{adjustModal.name} — 재고 차감
+							{t('materials.adjustTitle', { name: adjustModal.name })}
 						</h3>
 						<p style={{ margin: '0 0 12px 0', fontSize: 13, color: COLORS.textMuted }}>
-							현재 재고: <strong>{adjustModal.currentStock} {adjustModal.unit}</strong>
+							{t('materials.adjustCurrentStock')} <strong>{adjustModal.currentStock} {adjustModal.unit}</strong>
 						</p>
 						<div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
 							<button
 								onClick={() => setAdjustType('USE_OUT')}
 								style={adjustType === 'USE_OUT' ? styles.filterActive : styles.filterBtn}
 							>
-								사용
+								{t('materials.adjustUse')}
 							</button>
 							<button
 								onClick={() => setAdjustType('WASTE')}
 								style={adjustType === 'WASTE' ? styles.filterActive : styles.filterBtn}
 							>
-								폐기
+								{t('materials.adjustWaste')}
 							</button>
 						</div>
 						<input
@@ -336,27 +349,35 @@ export default function MaterialManager({
 							step="0.1"
 							value={adjustQty}
 							onChange={(e) => setAdjustQty(e.target.value)}
-							placeholder={`수량 (${adjustModal.unit})`}
+							placeholder={t('materials.adjustQtyPlaceholder', { unit: adjustModal.unit })}
 							autoFocus
 						/>
 						<input
 							style={{ ...styles.formInput, width: '100%', marginBottom: 16 }}
 							value={adjustNotes}
 							onChange={(e) => setAdjustNotes(e.target.value)}
-							placeholder="사유 (선택)"
+							placeholder={t('materials.adjustNotesPlaceholder')}
 						/>
 						<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-							<button style={styles.cancelActionBtn} onClick={() => setAdjustModal(null)}>취소</button>
+							<button style={styles.cancelActionBtn} onClick={() => setAdjustModal(null)}>{t('materials.cancel')}</button>
 							<button
 								style={{ ...styles.submitActionBtn, opacity: adjustQty ? 1 : 0.5 }}
 								onClick={handleAdjust}
 								disabled={!adjustQty}
 							>
-								확인
+								{t('materials.confirm')}
 							</button>
 						</div>
 					</div>
 				</div>
+			)}
+			{/* 일괄 등록 모달 */}
+			{showBulkImport && (
+				<BulkImportModal
+					onClose={() => setShowBulkImport(false)}
+					onImport={onBulkImport}
+					onComplete={onLoad}
+				/>
 			)}
 		</div>
 	);
@@ -452,6 +473,17 @@ const styles: Record<string, React.CSSProperties> = {
 		fontWeight: 700,
 		color: COLORS.white,
 		cursor: 'pointer',
+	},
+	uploadBtn: {
+		padding: '8px 18px',
+		border: `1px solid ${COLORS.accent}`,
+		borderRadius: 8,
+		backgroundColor: COLORS.white,
+		color: COLORS.accent,
+		fontSize: 13,
+		fontWeight: 700,
+		cursor: 'pointer',
+		whiteSpace: 'nowrap',
 	},
 	addBtn: {
 		padding: '8px 18px',

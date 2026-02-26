@@ -1,4 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
 import type { Material, PurchaseOrder, PurchaseOrderStatus } from '../types';
 import type { CreatePurchaseOrderPayload } from '../services/inventoryApi';
@@ -16,13 +17,6 @@ interface Props {
 	onCreatePO: (payload: CreatePurchaseOrderPayload) => Promise<void>;
 	onUpdatePOStatus: (id: number, status: PurchaseOrderStatus) => Promise<void>;
 }
-
-const PO_STATUS_LABELS: Record<PurchaseOrderStatus, string> = {
-	DRAFT: '작성중',
-	ORDERED: '발주완료',
-	RECEIVED: '입고완료',
-	CANCELLED: '취소',
-};
 
 const PO_STATUS_COLORS: Record<PurchaseOrderStatus, string> = {
 	DRAFT: COLORS.textMuted,
@@ -54,6 +48,15 @@ export default function PurchaseOrderManager({
 	onCreatePO,
 	onUpdatePOStatus,
 }: Props) {
+	const { t } = useTranslation();
+
+	const PO_STATUS_LABELS: Record<PurchaseOrderStatus, string> = {
+		DRAFT: t('orders.statusDraft'),
+		ORDERED: t('orders.statusOrdered'),
+		RECEIVED: t('orders.statusReceived'),
+		CANCELLED: t('orders.statusCancelled'),
+	};
+
 	const [showForm, setShowForm] = useState(false);
 	const [formNotes, setFormNotes] = useState('');
 	const [formItems, setFormItems] = useState<POFormItem[]>([{ materialId: 0, quantity: '', unitPrice: '' }]);
@@ -102,7 +105,7 @@ export default function PurchaseOrderManager({
 	if (isLoading && purchaseOrders.length === 0) {
 		return (
 			<div style={styles.center}>
-				<p style={{ color: COLORS.textMuted }}>발주 데이터를 불러오는 중...</p>
+				<p style={{ color: COLORS.textMuted }}>{t('orders.loading')}</p>
 			</div>
 		);
 	}
@@ -111,7 +114,7 @@ export default function PurchaseOrderManager({
 		return (
 			<div style={styles.center}>
 				<p style={{ color: COLORS.danger }}>{error}</p>
-				<button style={styles.retryBtn} onClick={onLoad}>재시도</button>
+				<button style={styles.retryBtn} onClick={onLoad}>{t('common.retry')}</button>
 			</div>
 		);
 	}
@@ -119,8 +122,8 @@ export default function PurchaseOrderManager({
 	return (
 		<div style={styles.container}>
 			<div style={styles.header}>
-				<h2 style={styles.title}>발주 관리</h2>
-				<button style={styles.refreshBtn} onClick={onLoad}>새로고침</button>
+				<h2 style={styles.title}>{t('orders.title')}</h2>
+				<button style={styles.refreshBtn} onClick={onLoad}>{t('orders.refresh')}</button>
 			</div>
 
 			{/* 상태 필터 + 생성 버튼 */}
@@ -130,7 +133,7 @@ export default function PurchaseOrderManager({
 						onClick={() => onStatusFilterChange(null)}
 						style={poStatusFilter === null ? styles.filterActive : styles.filterBtn}
 					>
-						전체
+						{t('orders.all')}
 					</button>
 					{(['DRAFT', 'ORDERED', 'RECEIVED', 'CANCELLED'] as PurchaseOrderStatus[]).map((s) => (
 						<button
@@ -143,7 +146,7 @@ export default function PurchaseOrderManager({
 					))}
 				</div>
 				<button style={styles.addBtn} onClick={() => setShowForm(true)}>
-					+ 새 발주
+					{t('orders.addBtn')}
 				</button>
 			</div>
 
@@ -152,21 +155,21 @@ export default function PurchaseOrderManager({
 				<table style={styles.table}>
 					<thead>
 						<tr>
-							<th style={styles.th}>번호</th>
-							<th style={styles.th}>상태</th>
-							<th style={{ ...styles.th, textAlign: 'center' }}>항목수</th>
-							<th style={{ ...styles.th, textAlign: 'right' }}>총액</th>
-							<th style={styles.th}>발주일</th>
-							<th style={styles.th}>입고일</th>
-							<th style={styles.th}>메모</th>
-							<th style={{ ...styles.th, textAlign: 'center', width: 160 }}>액션</th>
+							<th style={styles.th}>{t('orders.colNumber')}</th>
+							<th style={styles.th}>{t('orders.colStatus')}</th>
+							<th style={{ ...styles.th, textAlign: 'center' }}>{t('orders.colItemCount')}</th>
+							<th style={{ ...styles.th, textAlign: 'right' }}>{t('orders.colTotal')}</th>
+							<th style={styles.th}>{t('orders.colOrderDate')}</th>
+							<th style={styles.th}>{t('orders.colReceivedDate')}</th>
+							<th style={styles.th}>{t('orders.colNotes')}</th>
+							<th style={{ ...styles.th, textAlign: 'center', width: 160 }}>{t('orders.colActions')}</th>
 						</tr>
 					</thead>
 					<tbody>
 						{purchaseOrders.length === 0 ? (
 							<tr>
 								<td colSpan={8} style={{ ...styles.td, textAlign: 'center', padding: 40, color: COLORS.textMuted }}>
-									발주 내역이 없습니다
+									{t('orders.empty')}
 								</td>
 							</tr>
 						) : (
@@ -195,7 +198,7 @@ export default function PurchaseOrderManager({
 												style={{ ...styles.statusBtn, backgroundColor: COLORS.primary, color: COLORS.white }}
 												onClick={() => onUpdatePOStatus(po.id, 'ORDERED')}
 											>
-												발주하기
+												{t('orders.actionOrder')}
 											</button>
 										)}
 										{po.status === 'ORDERED' && (
@@ -203,19 +206,19 @@ export default function PurchaseOrderManager({
 												style={{ ...styles.statusBtn, backgroundColor: COLORS.success, color: COLORS.white }}
 												onClick={() => onUpdatePOStatus(po.id, 'RECEIVED')}
 											>
-												입고완료
+												{t('orders.actionReceive')}
 											</button>
 										)}
 										{(po.status === 'DRAFT' || po.status === 'ORDERED') && (
 											<button
 												style={{ ...styles.statusBtn, backgroundColor: '#FFEBEE', color: COLORS.danger, marginLeft: 4 }}
 												onClick={() => {
-													if (confirm('이 발주를 취소하시겠습니까?')) {
+													if (confirm(t('orders.cancelConfirm'))) {
 														onUpdatePOStatus(po.id, 'CANCELLED');
 													}
 												}}
 											>
-												취소
+												{t('orders.actionCancel')}
 											</button>
 										)}
 										{(po.status === 'RECEIVED' || po.status === 'CANCELLED') && (
@@ -234,23 +237,23 @@ export default function PurchaseOrderManager({
 				<div style={styles.overlay} onClick={() => setShowForm(false)}>
 					<div style={styles.modal} onClick={(e) => e.stopPropagation()}>
 						<h3 style={{ margin: '0 0 20px 0', fontSize: 18, fontWeight: 700, color: COLORS.text }}>
-							새 발주 생성
+							{t('orders.modalCreate')}
 						</h3>
 						<form onSubmit={handleSubmit}>
 							<div style={styles.formField}>
-								<label style={styles.formLabel}>메모</label>
+								<label style={styles.formLabel}>{t('orders.fieldNotes')}</label>
 								<input
 									style={styles.formInput}
 									value={formNotes}
 									onChange={(e) => setFormNotes(e.target.value)}
-									placeholder="발주 메모 (선택)"
+									placeholder={t('orders.fieldNotesPlaceholder')}
 								/>
 							</div>
 
 							<div style={{ marginBottom: 16 }}>
 								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-									<label style={styles.formLabel}>발주 항목</label>
-									<button type="button" style={styles.addItemBtn} onClick={addItem}>+ 항목 추가</button>
+									<label style={styles.formLabel}>{t('orders.fieldItems')}</label>
+									<button type="button" style={styles.addItemBtn} onClick={addItem}>{t('orders.addItem')}</button>
 								</div>
 								{formItems.map((item, idx) => (
 									<div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
@@ -259,7 +262,7 @@ export default function PurchaseOrderManager({
 											value={item.materialId}
 											onChange={(e) => updateItem(idx, 'materialId', parseInt(e.target.value))}
 										>
-											<option value={0}>재료 선택</option>
+											<option value={0}>{t('orders.selectMaterial')}</option>
 											{materials.map((m) => (
 												<option key={m.id} value={m.id}>{m.name} ({m.unit})</option>
 											))}
@@ -271,7 +274,7 @@ export default function PurchaseOrderManager({
 											step="0.1"
 											value={item.quantity}
 											onChange={(e) => updateItem(idx, 'quantity', e.target.value)}
-											placeholder="수량"
+											placeholder={t('orders.fieldQty')}
 										/>
 										<input
 											style={{ ...styles.formInput, flex: 1 }}
@@ -279,7 +282,7 @@ export default function PurchaseOrderManager({
 											min="0"
 											value={item.unitPrice}
 											onChange={(e) => updateItem(idx, 'unitPrice', e.target.value)}
-											placeholder="단가"
+											placeholder={t('orders.fieldUnitPrice')}
 										/>
 										{formItems.length > 1 && (
 											<button
@@ -295,8 +298,8 @@ export default function PurchaseOrderManager({
 							</div>
 
 							<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-								<button type="button" style={styles.cancelActionBtn} onClick={() => setShowForm(false)}>취소</button>
-								<button type="submit" style={styles.submitActionBtn}>발주 생성</button>
+								<button type="button" style={styles.cancelActionBtn} onClick={() => setShowForm(false)}>{t('orders.cancel')}</button>
+								<button type="submit" style={styles.submitActionBtn}>{t('orders.create')}</button>
 							</div>
 						</form>
 					</div>

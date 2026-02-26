@@ -2,6 +2,7 @@ import {
 	LineChart, Line, BarChart, Bar, XAxis, YAxis,
 	Tooltip, CartesianGrid, ResponsiveContainer,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
 import { formatCurrency } from '../utils/format';
 import type { SalesTrendData } from '../types';
@@ -16,17 +17,18 @@ interface Props {
 	onRefresh: () => void;
 }
 
-const PERIOD_LABELS: Record<TrendPeriod, string> = {
-	today: '오늘',
-	week: '이번주',
-	month: '이번달',
-};
-
 export default function SalesTrends({ data, period, isLoading, error, onPeriodChange, onRefresh }: Props) {
+	const { t } = useTranslation();
+
+	const PERIOD_LABELS: Record<TrendPeriod, string> = {
+		today: t('trends.periodToday'),
+		week: t('trends.periodWeek'),
+		month: t('trends.periodMonth'),
+	};
 	if (isLoading && !data) {
 		return (
 			<div style={styles.center}>
-				<p style={{ color: COLORS.textMuted }}>매출 데이터를 불러오는 중...</p>
+				<p style={{ color: COLORS.textMuted }}>{t('trends.loading')}</p>
 			</div>
 		);
 	}
@@ -35,7 +37,7 @@ export default function SalesTrends({ data, period, isLoading, error, onPeriodCh
 		return (
 			<div style={styles.center}>
 				<p style={{ color: COLORS.danger }}>{error}</p>
-				<button style={styles.retryBtn} onClick={onRefresh}>재시도</button>
+				<button style={styles.retryBtn} onClick={onRefresh}>{t('common.retry')}</button>
 			</div>
 		);
 	}
@@ -43,7 +45,7 @@ export default function SalesTrends({ data, period, isLoading, error, onPeriodCh
 	return (
 		<div style={styles.container}>
 			<div style={styles.header}>
-				<h2 style={styles.title}>매출 분석</h2>
+				<h2 style={styles.title}>{t('trends.title')}</h2>
 				<div style={styles.periodRow}>
 					{(['today', 'week', 'month'] as TrendPeriod[]).map((p) => (
 						<button
@@ -62,23 +64,23 @@ export default function SalesTrends({ data, period, isLoading, error, onPeriodCh
 					{/* 요약 카드 */}
 					<div style={styles.summaryRow}>
 						<div style={styles.summaryCard}>
-							<div style={styles.summaryLabel}>총 매출</div>
+							<div style={styles.summaryLabel}>{t('trends.totalRevenue')}</div>
 							<div style={styles.summaryValue}>{formatCurrency(data.totalRevenue)}</div>
 						</div>
 						<div style={styles.summaryCard}>
-							<div style={styles.summaryLabel}>총 판매량</div>
-							<div style={styles.summaryValue}>{data.totalQuantity.toLocaleString()}개</div>
+							<div style={styles.summaryLabel}>{t('trends.totalQuantity')}</div>
+							<div style={styles.summaryValue}>{data.totalQuantity.toLocaleString()}{t('trends.unitPcs')}</div>
 						</div>
 						<div style={styles.summaryCard}>
-							<div style={styles.summaryLabel}>총 주문수</div>
-							<div style={styles.summaryValue}>{data.totalOrders.toLocaleString()}건</div>
+							<div style={styles.summaryLabel}>{t('trends.totalOrders')}</div>
+							<div style={styles.summaryValue}>{data.totalOrders.toLocaleString()}{t('trends.unitOrders')}</div>
 						</div>
 					</div>
 
 					{/* 일별 매출 추이 */}
 					{data.dailyBreakdown.length > 0 && (
 						<div style={styles.chartSection}>
-							<h3 style={styles.chartTitle}>일별 매출 추이</h3>
+							<h3 style={styles.chartTitle}>{t('trends.chartDaily')}</h3>
 							<div style={{ width: '100%', height: 300 }}>
 								<ResponsiveContainer width="100%" height="100%">
 									<LineChart data={data.dailyBreakdown}>
@@ -102,7 +104,7 @@ export default function SalesTrends({ data, period, isLoading, error, onPeriodCh
 					{/* 상품별 매출 순위 */}
 					{data.productRanking.length > 0 && (
 						<div style={styles.chartSection}>
-							<h3 style={styles.chartTitle}>상품별 매출 순위 (Top 10)</h3>
+							<h3 style={styles.chartTitle}>{t('trends.chartProduct')}</h3>
 							<div style={{ width: '100%', height: 300 }}>
 								<ResponsiveContainer width="100%" height="100%">
 									<BarChart data={data.productRanking} layout="vertical">
@@ -120,7 +122,7 @@ export default function SalesTrends({ data, period, isLoading, error, onPeriodCh
 					{/* 요일별 평균 */}
 					{data.dayOfWeekPattern.length > 0 && (
 						<div style={styles.chartSection}>
-							<h3 style={styles.chartTitle}>요일별 평균 매출</h3>
+							<h3 style={styles.chartTitle}>{t('trends.chartDayOfWeek')}</h3>
 							<div style={{ width: '100%', height: 280 }}>
 								<ResponsiveContainer width="100%" height="100%">
 									<BarChart data={data.dayOfWeekPattern}>

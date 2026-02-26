@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
 import type { ForecastData, RecommendedOrder } from '../types';
 import { explainForecast } from '../services/inventoryAiApi';
@@ -14,13 +15,14 @@ interface Props {
 }
 
 function ConfidenceBadge({ confidence }: { confidence: string }) {
+	const { t } = useTranslation();
 	const colorMap: Record<string, { bg: string; fg: string }> = {
 		high: { bg: '#E8F5E9', fg: COLORS.success },
 		medium: { bg: '#FFF8E1', fg: COLORS.warning },
 		low: { bg: '#F5F5F5', fg: COLORS.grey },
 	};
 	const c = colorMap[confidence] ?? colorMap.low;
-	const labelMap: Record<string, string> = { high: '높음', medium: '보통', low: '낮음' };
+	const labelMap: Record<string, string> = { high: t('forecast.confidenceHigh'), medium: t('forecast.confidenceMedium'), low: t('forecast.confidenceLow') };
 	return (
 		<span style={{
 			padding: '3px 10px',
@@ -36,6 +38,7 @@ function ConfidenceBadge({ confidence }: { confidence: string }) {
 }
 
 function ExplanationRow({ rec }: { rec: RecommendedOrder }) {
+	const { t } = useTranslation();
 	const [explanation, setExplanation] = useState<string | null>(null);
 	const [isOpen, setIsOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -55,7 +58,7 @@ function ExplanationRow({ rec }: { rec: RecommendedOrder }) {
 			setExplanation(result.explanation);
 			setIsOpen(true);
 		} catch {
-			setExplanation('설명을 가져오는데 실패했습니다.');
+			setExplanation(t('forecast.explainError'));
 			setIsOpen(true);
 		} finally {
 			setLoading(false);
@@ -65,7 +68,7 @@ function ExplanationRow({ rec }: { rec: RecommendedOrder }) {
 	return (
 		<>
 			<button style={rowStyles.whyBtn} onClick={handleClick} disabled={loading}>
-				{loading ? '...' : isOpen ? '접기' : '왜?'}
+				{loading ? '...' : isOpen ? t('forecast.btnCollapse') : t('forecast.btnWhy')}
 			</button>
 			{isOpen && explanation && (
 				<tr>
@@ -107,6 +110,7 @@ const rowStyles: Record<string, React.CSSProperties> = {
 };
 
 export default function ForecastPage({ forecast, forecastDays, isLoading, error, onLoadForecast, onCreatePO }: Props) {
+	const { t } = useTranslation();
 	const [creating, setCreating] = useState(false);
 
 	const handleCreateAllPO = async () => {
@@ -126,7 +130,7 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 		setCreating(true);
 		try {
 			await onCreatePO(payload);
-			alert('발주가 생성되었습니다!');
+			alert(t('forecast.poCreated'));
 		} catch (err) {
 			alert(err instanceof Error ? err.message : '발주 생성 실패');
 		} finally {
@@ -137,7 +141,7 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 	if (isLoading && !forecast) {
 		return (
 			<div style={styles.center}>
-				<p style={{ color: COLORS.textMuted }}>AI 발주 추천을 분석 중...</p>
+				<p style={{ color: COLORS.textMuted }}>{t('forecast.loading')}</p>
 			</div>
 		);
 	}
@@ -146,7 +150,7 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 		return (
 			<div style={styles.center}>
 				<p style={{ color: COLORS.danger }}>{error}</p>
-				<button style={styles.retryBtn} onClick={() => onLoadForecast()}>재시도</button>
+				<button style={styles.retryBtn} onClick={() => onLoadForecast()}>{t('common.retry')}</button>
 			</div>
 		);
 	}
@@ -157,11 +161,11 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 		<div style={styles.container}>
 			<div style={styles.header}>
 				<div>
-					<h2 style={styles.title}>AI 발주 추천</h2>
+					<h2 style={styles.title}>{t('forecast.title')}</h2>
 					{forecast && (
 						<p style={styles.subtitle}>
-							발주 필요: <strong style={{ color: needsOrder > 0 ? COLORS.danger : COLORS.success }}>{needsOrder}건</strong>
-							{' / '}전체 {forecast.totalMaterials}건
+							{t('forecast.needsOrdering')} <strong style={{ color: needsOrder > 0 ? COLORS.danger : COLORS.success }}>{needsOrder}{t('forecast.unitItems')}</strong>
+							{' / '}{t('forecast.total')} {forecast.totalMaterials}{t('forecast.unitItems')}
 						</p>
 					)}
 				</div>
@@ -173,7 +177,7 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 								style={forecastDays === d ? styles.dayActive : styles.dayBtn}
 								onClick={() => onLoadForecast(d)}
 							>
-								{d}일
+								{d}{t('forecast.unitDays')}
 							</button>
 						))}
 					</div>
@@ -183,7 +187,7 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 							onClick={handleCreateAllPO}
 							disabled={creating}
 						>
-							{creating ? '생성 중...' : '추천대로 발주 생성'}
+							{creating ? t('forecast.creatingPO') : t('forecast.createPO')}
 						</button>
 					)}
 				</div>
@@ -194,13 +198,13 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 					<table style={styles.table}>
 						<thead>
 							<tr>
-								<th style={styles.th}>재료명</th>
-								<th style={{ ...styles.th, textAlign: 'center' }}>현재재고</th>
-								<th style={{ ...styles.th, textAlign: 'center' }}>예상소비</th>
-								<th style={{ ...styles.th, textAlign: 'center' }}>안전재고</th>
-								<th style={{ ...styles.th, textAlign: 'center' }}>추천발주량</th>
-								<th style={{ ...styles.th, textAlign: 'center' }}>신뢰도</th>
-								<th style={{ ...styles.th, textAlign: 'center', width: 60 }}>상세</th>
+								<th style={styles.th}>{t('forecast.colName')}</th>
+								<th style={{ ...styles.th, textAlign: 'center' }}>{t('forecast.colCurrentStock')}</th>
+								<th style={{ ...styles.th, textAlign: 'center' }}>{t('forecast.colExpected')}</th>
+								<th style={{ ...styles.th, textAlign: 'center' }}>{t('forecast.colSafety')}</th>
+								<th style={{ ...styles.th, textAlign: 'center' }}>{t('forecast.colRecommended')}</th>
+								<th style={{ ...styles.th, textAlign: 'center' }}>{t('forecast.colConfidence')}</th>
+								<th style={{ ...styles.th, textAlign: 'center', width: 60 }}>{t('forecast.colDetail')}</th>
 							</tr>
 						</thead>
 						<tbody>

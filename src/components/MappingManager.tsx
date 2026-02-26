@@ -1,4 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
 import type { Material, ProductMaterialMapping } from '../types';
 import type { SimpleProduct } from '../services/inventoryApi';
@@ -30,6 +31,8 @@ export default function MappingManager({
 	onUpdate,
 	onDelete,
 }: Props) {
+	const { t } = useTranslation();
+
 	const [showForm, setShowForm] = useState(false);
 	const [formProductId, setFormProductId] = useState(0);
 	const [formMaterialId, setFormMaterialId] = useState(0);
@@ -82,7 +85,7 @@ export default function MappingManager({
 	if (isLoading && mappings.length === 0) {
 		return (
 			<div style={styles.center}>
-				<p style={{ color: COLORS.textMuted }}>매핑 데이터를 불러오는 중...</p>
+				<p style={{ color: COLORS.textMuted }}>{t('mappings.loading')}</p>
 			</div>
 		);
 	}
@@ -91,7 +94,7 @@ export default function MappingManager({
 		return (
 			<div style={styles.center}>
 				<p style={{ color: COLORS.danger }}>{error}</p>
-				<button style={styles.retryBtn} onClick={onLoadMappings}>재시도</button>
+				<button style={styles.retryBtn} onClick={onLoadMappings}>{t('common.retry')}</button>
 			</div>
 		);
 	}
@@ -100,12 +103,12 @@ export default function MappingManager({
 		<div style={styles.container}>
 			<div style={styles.header}>
 				<div>
-					<h2 style={styles.title}>상품-재료 매핑</h2>
-					<p style={styles.subtitle}>상품 1개당 필요한 재료 소비량을 설정합니다. AI 발주 추천에 활용됩니다.</p>
+					<h2 style={styles.title}>{t('mappings.title')}</h2>
+					<p style={styles.subtitle}>{t('mappings.subtitle')}</p>
 				</div>
 				<div style={styles.headerRight}>
-					<button style={styles.refreshBtn} onClick={onLoadMappings}>새로고침</button>
-					<button style={styles.addBtn} onClick={() => setShowForm(true)}>+ 매핑 추가</button>
+					<button style={styles.refreshBtn} onClick={onLoadMappings}>{t('mappings.refresh')}</button>
+					<button style={styles.addBtn} onClick={() => setShowForm(true)}>{t('mappings.addBtn')}</button>
 				</div>
 			</div>
 
@@ -114,17 +117,17 @@ export default function MappingManager({
 				<table style={styles.table}>
 					<thead>
 						<tr>
-							<th style={styles.th}>상품명</th>
-							<th style={styles.th}>재료명</th>
-							<th style={{ ...styles.th, textAlign: 'center' }}>단위소비량</th>
-							<th style={{ ...styles.th, textAlign: 'center', width: 140 }}>액션</th>
+							<th style={styles.th}>{t('mappings.colProduct')}</th>
+							<th style={styles.th}>{t('mappings.colMaterial')}</th>
+							<th style={{ ...styles.th, textAlign: 'center' }}>{t('mappings.colQtyPerUnit')}</th>
+							<th style={{ ...styles.th, textAlign: 'center', width: 140 }}>{t('mappings.colActions')}</th>
 						</tr>
 					</thead>
 					<tbody>
 						{mappings.length === 0 ? (
 							<tr>
 								<td colSpan={4} style={{ ...styles.td, textAlign: 'center', padding: 40, color: COLORS.textMuted }}>
-									등록된 매핑이 없습니다
+									{t('mappings.empty')}
 								</td>
 							</tr>
 						) : (
@@ -163,17 +166,17 @@ export default function MappingManager({
 									<td style={{ ...styles.td, textAlign: 'center' }}>
 										<div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
 											<button style={styles.actionBtn} onClick={() => startEdit(m)}>
-												수정
+												{t('mappings.actionEdit')}
 											</button>
 											<button
 												style={{ ...styles.actionBtn, color: COLORS.danger }}
 												onClick={() => {
-													if (confirm('이 매핑을 삭제하시겠습니까?')) {
+													if (confirm(t('mappings.deleteConfirm'))) {
 														onDelete(m.id);
 													}
 												}}
 											>
-												삭제
+												{t('mappings.actionDelete')}
 											</button>
 										</div>
 									</td>
@@ -189,39 +192,39 @@ export default function MappingManager({
 				<div style={styles.overlay} onClick={() => setShowForm(false)}>
 					<div style={styles.modal} onClick={(e) => e.stopPropagation()}>
 						<h3 style={{ margin: '0 0 20px 0', fontSize: 18, fontWeight: 700, color: COLORS.text }}>
-							매핑 추가
+							{t('mappings.modalCreate')}
 						</h3>
 						<form onSubmit={handleCreateSubmit}>
 							<div style={styles.formField}>
-								<label style={styles.formLabel}>상품</label>
+								<label style={styles.formLabel}>{t('mappings.fieldProduct')}</label>
 								<select
 									style={styles.formInput}
 									value={formProductId}
 									onChange={(e) => setFormProductId(parseInt(e.target.value))}
 									required
 								>
-									<option value={0}>상품 선택</option>
+									<option value={0}>{t('mappings.selectProduct')}</option>
 									{products.map((p) => (
 										<option key={p.id} value={p.id}>{p.name} ({p.categoryName})</option>
 									))}
 								</select>
 							</div>
 							<div style={styles.formField}>
-								<label style={styles.formLabel}>재료</label>
+								<label style={styles.formLabel}>{t('mappings.fieldMaterial')}</label>
 								<select
 									style={styles.formInput}
 									value={formMaterialId}
 									onChange={(e) => setFormMaterialId(parseInt(e.target.value))}
 									required
 								>
-									<option value={0}>재료 선택</option>
+									<option value={0}>{t('mappings.selectMaterial')}</option>
 									{materials.map((m) => (
 										<option key={m.id} value={m.id}>{m.name} ({m.unit})</option>
 									))}
 								</select>
 							</div>
 							<div style={styles.formField}>
-								<label style={styles.formLabel}>단위소비량</label>
+								<label style={styles.formLabel}>{t('mappings.fieldQtyPerUnit')}</label>
 								<input
 									style={styles.formInput}
 									type="number"
@@ -229,13 +232,13 @@ export default function MappingManager({
 									step="0.001"
 									value={formQuantity}
 									onChange={(e) => setFormQuantity(e.target.value)}
-									placeholder="상품 1개당 사용량"
+									placeholder={t('mappings.fieldQtyPlaceholder')}
 									required
 								/>
 							</div>
 							<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8 }}>
-								<button type="button" style={styles.cancelActionBtn} onClick={() => setShowForm(false)}>취소</button>
-								<button type="submit" style={styles.submitActionBtn}>등록</button>
+								<button type="button" style={styles.cancelActionBtn} onClick={() => setShowForm(false)}>{t('mappings.cancel')}</button>
+								<button type="submit" style={styles.submitActionBtn}>{t('mappings.register')}</button>
 							</div>
 						</form>
 					</div>
