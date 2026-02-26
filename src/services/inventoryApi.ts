@@ -1,4 +1,4 @@
-import type { Material, PurchaseOrder, PurchaseOrderItem, InventoryLog, PurchaseOrderStatus, InventoryChangeType } from '../types';
+import type { Material, PurchaseOrder, PurchaseOrderItem, InventoryLog, PurchaseOrderStatus, InventoryChangeType, BulkImportResult } from '../types';
 import { request } from './api';
 
 // ── Backend DTOs (snake_case) ──
@@ -157,6 +157,34 @@ export async function updateMaterial(
 
 export async function deleteMaterial(id: number): Promise<void> {
 	await request<void>(`/api/v1/admin/inventory/materials/${id}`, { method: 'DELETE' });
+}
+
+// ── Bulk Import API ──
+
+export interface BulkMaterialItem {
+	name: string;
+	unit: string;
+	category: string;
+	current_stock: number;
+	minimum_stock: number;
+}
+
+interface BulkResultDto {
+	imported: number;
+	skipped: number;
+	errors: { row: number; message: string }[];
+}
+
+export async function bulkCreateMaterials(items: BulkMaterialItem[]): Promise<BulkImportResult> {
+	const dto = await request<BulkResultDto>('/api/v1/admin/inventory/materials/bulk', {
+		method: 'POST',
+		body: JSON.stringify({ items }),
+	});
+	return {
+		imported: dto.imported,
+		skipped: dto.skipped,
+		errors: dto.errors,
+	};
 }
 
 // ── Purchase Orders API ──

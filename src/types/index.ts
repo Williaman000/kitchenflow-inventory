@@ -133,6 +133,18 @@ export interface ProductMaterialMapping {
 	materialUnit?: string;
 }
 
+// 벌크 임포트
+export interface BulkImportError {
+	row: number;
+	message: string;
+}
+
+export interface BulkImportResult {
+	imported: number;
+	skipped: number;
+	errors: BulkImportError[];
+}
+
 // 인증
 export interface AuthUser {
 	id: number;

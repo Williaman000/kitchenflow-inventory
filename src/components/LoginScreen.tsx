@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
 
 interface Props {
@@ -6,6 +7,7 @@ interface Props {
 }
 
 export default function LoginScreen({ onLogin }: Props) {
+	const { t } = useTranslation();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
@@ -14,7 +16,7 @@ export default function LoginScreen({ onLogin }: Props) {
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		if (!email.trim() || !password.trim()) {
-			setError('이메일과 비밀번호를 입력해주세요.');
+			setError(t('login.errorEmpty'));
 			return;
 		}
 		setError('');
@@ -22,7 +24,7 @@ export default function LoginScreen({ onLogin }: Props) {
 		try {
 			await onLogin(email.trim(), password);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : '로그인에 실패했습니다.');
+			setError(err instanceof Error ? err.message : t('login.errorFailed'));
 		} finally {
 			setIsLoading(false);
 		}
@@ -33,14 +35,14 @@ export default function LoginScreen({ onLogin }: Props) {
 			<form style={styles.card} onSubmit={handleSubmit}>
 				<div style={styles.logoArea}>
 					<div style={styles.logoIcon}>AI</div>
-					<h1 style={styles.title}>KitchenFlow AI</h1>
-					<p style={styles.subtitle}>재고관리 시스템</p>
+					<h1 style={styles.title}>{t('app.title')}</h1>
+					<p style={styles.subtitle}>{t('login.subtitle')}</p>
 				</div>
 
 				{error && <div style={styles.error}>{error}</div>}
 
 				<div style={styles.field}>
-					<label style={styles.label}>이메일</label>
+					<label style={styles.label}>{t('login.email')}</label>
 					<input
 						style={styles.input}
 						type="email"
@@ -53,13 +55,13 @@ export default function LoginScreen({ onLogin }: Props) {
 				</div>
 
 				<div style={styles.field}>
-					<label style={styles.label}>비밀번호</label>
+					<label style={styles.label}>{t('login.password')}</label>
 					<input
 						style={styles.input}
 						type="password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
-						placeholder="비밀번호 입력"
+						placeholder={t('login.passwordPlaceholder')}
 						disabled={isLoading}
 					/>
 				</div>
@@ -72,7 +74,7 @@ export default function LoginScreen({ onLogin }: Props) {
 					}}
 					disabled={isLoading}
 				>
-					{isLoading ? '로그인 중...' : '로그인'}
+					{isLoading ? t('login.submitting') : t('login.submit')}
 				</button>
 			</form>
 		</div>

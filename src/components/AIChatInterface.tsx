@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, type FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { COLORS } from '../constants/theme';
 import type { ChatMessage } from '../types';
@@ -9,14 +10,6 @@ interface Props {
 	onSendMessage: (text: string) => void;
 	onClear: () => void;
 }
-
-const SUGGESTIONS = [
-	'지난 주 양념치킨 얼마나 팔렸어?',
-	'재고 부족한 재료 뭐야?',
-	'내일 닭 몇 마리 필요해?',
-	'이번 주 매출 추이 보여줘',
-	'가장 많이 팔린 메뉴 Top 5',
-];
 
 function DataRenderer({ data, dataType }: { data: Record<string, unknown>; dataType: string | null }) {
 	if (dataType === 'table' && data.headers && data.rows) {
@@ -74,6 +67,15 @@ function DataRenderer({ data, dataType }: { data: Record<string, unknown>; dataT
 }
 
 export default function AIChatInterface({ messages, isLoading, onSendMessage, onClear }: Props) {
+	const { t } = useTranslation();
+	const SUGGESTIONS = [
+		t('chat.suggestion1'),
+		t('chat.suggestion2'),
+		t('chat.suggestion3'),
+		t('chat.suggestion4'),
+		t('chat.suggestion5'),
+	];
+
 	const [input, setInput] = useState('');
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -98,9 +100,9 @@ export default function AIChatInterface({ messages, isLoading, onSendMessage, on
 		<div style={styles.container}>
 			{/* 헤더 */}
 			<div style={styles.header}>
-				<h2 style={styles.title}>AI 챗봇</h2>
+				<h2 style={styles.title}>{t('chat.title')}</h2>
 				{messages.length > 0 && (
-					<button style={styles.clearBtn} onClick={onClear}>대화 초기화</button>
+					<button style={styles.clearBtn} onClick={onClear}>{t('chat.clear')}</button>
 				)}
 			</div>
 
@@ -109,8 +111,8 @@ export default function AIChatInterface({ messages, isLoading, onSendMessage, on
 				{messages.length === 0 ? (
 					<div style={styles.emptyState}>
 						<div style={styles.emptyIcon}>AI</div>
-						<p style={styles.emptyTitle}>무엇이든 물어보세요</p>
-						<p style={styles.emptySubtitle}>매출, 재고, 발주에 대해 자연어로 질문할 수 있습니다.</p>
+						<p style={styles.emptyTitle}>{t('chat.emptyTitle')}</p>
+						<p style={styles.emptySubtitle}>{t('chat.emptySubtitle')}</p>
 						<div style={styles.suggestions}>
 							{SUGGESTIONS.map((s, i) => (
 								<button
@@ -160,7 +162,7 @@ export default function AIChatInterface({ messages, isLoading, onSendMessage, on
 					style={styles.input}
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
-					placeholder="질문을 입력하세요..."
+					placeholder={t('chat.inputPlaceholder')}
 					disabled={isLoading}
 				/>
 				<button
@@ -171,7 +173,7 @@ export default function AIChatInterface({ messages, isLoading, onSendMessage, on
 					}}
 					disabled={!input.trim() || isLoading}
 				>
-					전송
+					{t('chat.send')}
 				</button>
 			</form>
 

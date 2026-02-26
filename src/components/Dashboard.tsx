@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
 import type { DashboardStats } from '../hooks/useDashboard';
 
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export default function Dashboard({ stats, isLoading, error, onLoad, onNavigate }: Props) {
+	const { t } = useTranslation();
+
 	useEffect(() => {
 		onLoad();
 	}, [onLoad]);
@@ -18,7 +21,7 @@ export default function Dashboard({ stats, isLoading, error, onLoad, onNavigate 
 	if (isLoading && stats.insights.length === 0) {
 		return (
 			<div style={styles.center}>
-				<p style={{ color: COLORS.textMuted }}>대시보드를 불러오는 중...</p>
+				<p style={{ color: COLORS.textMuted }}>{t('dashboard.loading')}</p>
 			</div>
 		);
 	}
@@ -27,65 +30,65 @@ export default function Dashboard({ stats, isLoading, error, onLoad, onNavigate 
 		return (
 			<div style={styles.center}>
 				<p style={{ color: COLORS.danger }}>{error}</p>
-				<button style={styles.retryBtn} onClick={onLoad}>재시도</button>
+				<button style={styles.retryBtn} onClick={onLoad}>{t('common.retry')}</button>
 			</div>
 		);
 	}
 
 	return (
 		<div style={styles.container}>
-			<h2 style={styles.title}>대시보드</h2>
+			<h2 style={styles.title}>{t('dashboard.title')}</h2>
 
 			{/* 요약 카드 */}
 			<div style={styles.cardGrid}>
 				<div style={styles.card}>
-					<div style={styles.cardLabel}>등록 재료</div>
+					<div style={styles.cardLabel}>{t('dashboard.totalMaterials')}</div>
 					<div style={styles.cardValue}>{stats.totalMaterials}</div>
-					<div style={styles.cardUnit}>종</div>
+					<div style={styles.cardUnit}>{t('dashboard.unitKinds')}</div>
 				</div>
 				<div style={{ ...styles.card, borderLeft: `4px solid ${stats.lowStockCount > 0 ? COLORS.danger : COLORS.success}` }}>
-					<div style={styles.cardLabel}>재고 부족</div>
+					<div style={styles.cardLabel}>{t('dashboard.lowStock')}</div>
 					<div style={{ ...styles.cardValue, color: stats.lowStockCount > 0 ? COLORS.danger : COLORS.success }}>
 						{stats.lowStockCount}
 					</div>
-					<div style={styles.cardUnit}>건</div>
+					<div style={styles.cardUnit}>{t('dashboard.unitItems')}</div>
 				</div>
 				<div style={styles.card}>
-					<div style={styles.cardLabel}>부족 재료 (AI)</div>
+					<div style={styles.cardLabel}>{t('dashboard.aiShortage')}</div>
 					<div style={styles.cardValue}>{stats.pendingOrders}</div>
-					<div style={styles.cardUnit}>건</div>
+					<div style={styles.cardUnit}>{t('dashboard.unitItems')}</div>
 				</div>
 				<div style={{ ...styles.card, borderLeft: `4px solid ${COLORS.accent}` }}>
-					<div style={styles.cardLabel}>AI 인사이트</div>
+					<div style={styles.cardLabel}>{t('dashboard.aiInsights')}</div>
 					<div style={{ ...styles.cardValue, color: COLORS.accent }}>{stats.insights.length}</div>
-					<div style={styles.cardUnit}>건</div>
+					<div style={styles.cardUnit}>{t('dashboard.unitItems')}</div>
 				</div>
 			</div>
 
 			{/* 빠른 액션 */}
 			<div style={styles.section}>
-				<h3 style={styles.sectionTitle}>빠른 실행</h3>
+				<h3 style={styles.sectionTitle}>{t('dashboard.quickActions')}</h3>
 				<div style={styles.actionRow}>
 					<button style={styles.actionBtn} onClick={() => onNavigate('chat')}>
-						AI 챗봇으로 질문하기
+						{t('dashboard.actionChat')}
 					</button>
 					<button style={styles.actionBtn} onClick={() => onNavigate('forecast')}>
-						AI 발주 추천 확인
+						{t('dashboard.actionForecast')}
 					</button>
 					<button style={styles.actionBtn} onClick={() => onNavigate('materials')}>
-						재료 재고 관리
+						{t('dashboard.actionMaterials')}
 					</button>
 					<button style={styles.actionBtn} onClick={() => onNavigate('trends')}>
-						매출 분석 보기
+						{t('dashboard.actionTrends')}
 					</button>
 				</div>
 			</div>
 
 			{/* AI 인사이트 */}
 			<div style={styles.section}>
-				<h3 style={styles.sectionTitle}>AI 인사이트</h3>
+				<h3 style={styles.sectionTitle}>{t('dashboard.aiInsights')}</h3>
 				{stats.insights.length === 0 ? (
-					<p style={{ color: COLORS.textMuted, fontSize: 14 }}>아직 인사이트가 없습니다.</p>
+					<p style={{ color: COLORS.textMuted, fontSize: 14 }}>{t('dashboard.noInsights')}</p>
 				) : (
 					<div style={styles.insightList}>
 						{stats.insights.map((insight, idx) => (

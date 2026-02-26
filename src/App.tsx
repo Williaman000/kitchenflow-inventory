@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './hooks/useAuth';
 import { useChat } from './hooks/useChat';
 import { useSalesTrends } from './hooks/useSalesTrends';
@@ -18,19 +19,19 @@ import { COLORS } from './constants/theme';
 
 type AppTab = 'dashboard' | 'chat' | 'trends' | 'forecast' | 'materials' | 'orders' | 'mappings';
 
-const TAB_LABELS: Record<AppTab, string> = {
-	dashboard: '대시보드',
-	chat: 'AI 챗봇',
-	trends: '매출분석',
-	forecast: 'AI 발주추천',
-	materials: '재료관리',
-	orders: '발주관리',
-	mappings: '재료매핑',
-};
+const TAB_KEYS: AppTab[] = ['dashboard', 'chat', 'trends', 'forecast', 'materials', 'orders', 'mappings'];
+
+const LANG_LABELS: Record<string, string> = { ko: '한국어', ja: '日本語' };
 
 export default function App() {
+	const { t, i18n } = useTranslation();
 	const auth = useAuth();
 	const [activeTab, setActiveTab] = useState<AppTab>('dashboard');
+
+	const toggleLang = () => {
+		const next = i18n.language === 'ja' ? 'ko' : 'ja';
+		i18n.changeLanguage(next);
+	};
 
 	const chatHook = useChat();
 	const trendsHook = useSalesTrends(auth.isAuthenticated);
@@ -44,7 +45,7 @@ export default function App() {
 		return (
 			<div style={styles.loadingScreen}>
 				<div style={styles.loadingIcon}>AI</div>
-				<p style={{ color: COLORS.textMuted, marginTop: 12 }}>로딩 중...</p>
+				<p style={{ color: COLORS.textMuted, marginTop: 12 }}>{t('app.loading')}</p>
 			</div>
 		);
 	}
@@ -64,27 +65,30 @@ export default function App() {
 			<header style={styles.header}>
 				<div style={styles.headerLeft}>
 					<div style={styles.logoIcon}>AI</div>
-					<h1 style={styles.headerTitle}>KitchenFlow AI 재고관리</h1>
+					<h1 style={styles.headerTitle}>{t('app.title')}</h1>
 				</div>
 				<div style={styles.headerRight}>
+					<button style={styles.langBtn} onClick={toggleLang}>
+						{LANG_LABELS[i18n.language] ?? '한국어'}
+					</button>
 					{auth.user && (
 						<span style={styles.userName}>{auth.user.name}</span>
 					)}
 					<button style={styles.logoutBtn} onClick={auth.logout}>
-						로그아웃
+						{t('app.logout')}
 					</button>
 				</div>
 			</header>
 
 			{/* 탭 네비게이션 */}
 			<nav style={styles.tabNav}>
-				{(Object.keys(TAB_LABELS) as AppTab[]).map((tab) => (
+				{TAB_KEYS.map((tab) => (
 					<button
 						key={tab}
 						style={activeTab === tab ? styles.tabActive : styles.tab}
 						onClick={() => setActiveTab(tab)}
 					>
-						{TAB_LABELS[tab]}
+						{t(`tabs.${tab}`)}
 					</button>
 				))}
 			</nav>
@@ -143,6 +147,7 @@ export default function App() {
 						onUpdateMaterial={inventoryHook.handleUpdateMaterial}
 						onDeleteMaterial={inventoryHook.handleDeleteMaterial}
 						onAdjustInventory={inventoryHook.handleAdjustInventory}
+						onBulkImport={inventoryHook.handleBulkImport}
 					/>
 				)}
 				{activeTab === 'orders' && (
@@ -248,6 +253,16 @@ const styles: Record<string, React.CSSProperties> = {
 		padding: '4px 12px',
 		borderRadius: 20,
 		fontWeight: 500,
+	},
+	langBtn: {
+		backgroundColor: 'rgba(255,255,255,0.15)',
+		color: COLORS.white,
+		border: '1px solid rgba(255,255,255,0.3)',
+		padding: '4px 12px',
+		borderRadius: 20,
+		fontSize: 11,
+		fontWeight: 700,
+		cursor: 'pointer',
 	},
 	logoutBtn: {
 		backgroundColor: 'rgba(255,255,255,0.15)',

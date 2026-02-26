@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { Material, PurchaseOrder, PurchaseOrderStatus } from '../types';
+import type { BulkImportResult } from '../types';
 import {
 	fetchMaterials,
 	createMaterial,
@@ -9,9 +10,11 @@ import {
 	createPurchaseOrder,
 	updatePurchaseOrderStatus,
 	adjustInventory,
+	bulkCreateMaterials,
 	type CreateMaterialPayload,
 	type CreatePurchaseOrderPayload,
 	type AdjustInventoryPayload,
+	type BulkMaterialItem,
 } from '../services/inventoryApi';
 
 export function useInventory() {
@@ -83,6 +86,20 @@ export function useInventory() {
 		}
 	}, []);
 
+	const handleBulkImport = useCallback(async (items: BulkMaterialItem[]): Promise<BulkImportResult> => {
+		try {
+			const result = await bulkCreateMaterials(items);
+			if (result.imported > 0) {
+				const data = await fetchMaterials();
+				setMaterials(data);
+			}
+			return result;
+		} catch (err) {
+			setError(err instanceof Error ? err.message : '일괄 등록 실패');
+			throw err;
+		}
+	}, []);
+
 	// ── 발주 관리 ──
 
 	const loadPurchaseOrders = useCallback(async () => {
@@ -149,6 +166,7 @@ export function useInventory() {
 		handleUpdateMaterial,
 		handleDeleteMaterial,
 		handleAdjustInventory,
+		handleBulkImport,
 		handleCreatePO,
 		handleUpdatePOStatus,
 	};
