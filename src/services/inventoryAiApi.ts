@@ -1,4 +1,4 @@
-import type { SalesTrendData, ForecastData, InsightData, ProductMaterialMapping } from '../types';
+import type { SalesTrendData, ForecastData, InsightData, ProductMaterialMapping, SalesUploadRecord, SalesUploadResult } from '../types';
 import { request } from './api';
 
 // ── Backend DTOs (snake_case) ──
@@ -208,4 +208,61 @@ export async function updateMapping(mappingId: number, quantityPerUnit: number):
 
 export async function deleteMapping(mappingId: number): Promise<void> {
 	await request<void>(`/api/v1/inventory-ai/mappings/${mappingId}`, { method: 'DELETE' });
+}
+
+// ── Sales Upload ──
+
+interface SalesUploadResultDto {
+	upload_id: number;
+	imported: number;
+	skipped: number;
+	matched_products: number;
+	errors: { row: number; message: string }[];
+}
+
+interface SalesUploadReadDto {
+	id: number;
+	file_name: string;
+	total_rows: number;
+	imported_rows: number;
+	created_at: string;
+}
+
+export interface SalesUploadItemPayload {
+	sale_date: string;
+	product_name: string;
+	quantity: number;
+	revenue: number;
+	unit_price: number;
+	category: string | null;
+	order_number: string | null;
+}
+
+export async function uploadSalesData(fileName: string, items: SalesUploadItemPayload[]): Promise<SalesUploadResult> {
+	const dto = await request<SalesUploadResultDto>('/api/v1/inventory-ai/sales-upload', {
+		method: 'POST',
+		body: JSON.stringify({ file_name: fileName, items }),
+	});
+	return {
+		uploadId: dto.upload_id,
+		imported: dto.imported,
+		skipped: dto.skipped,
+		matchedProducts: dto.matched_products,
+		errors: dto.errors,
+	};
+}
+
+export async function fetchSalesUploads(): Promise<SalesUploadRecord[]> {
+	const dtos = await request<SalesUploadReadDto[]>('/api/v1/inventory-ai/sales-uploads');
+	return dtos.map((u) => ({
+		id: u.id,
+		fileName: u.file_name,
+		totalRows: u.total_rows,
+		importedRows: u.imported_rows,
+		createdAt: u.created_at,
+	}));
+}
+
+export async function deleteSalesUpload(uploadId: number): Promise<void> {
+	await request<void>(`/api/v1/inventory-ai/sales-uploads/${uploadId}`, { method: 'DELETE' });
 }
