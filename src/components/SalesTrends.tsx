@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
 	LineChart, Line, BarChart, Bar, XAxis, YAxis,
 	Tooltip, CartesianGrid, ResponsiveContainer,
@@ -7,6 +8,7 @@ import { COLORS } from '../constants/theme';
 import { formatCurrency } from '../utils/format';
 import type { SalesTrendData } from '../types';
 import type { TrendPeriod } from '../hooks/useSalesTrends';
+import SalesUploadModal from './SalesUploadModal';
 
 interface Props {
 	data: SalesTrendData | null;
@@ -19,6 +21,7 @@ interface Props {
 
 export default function SalesTrends({ data, period, isLoading, error, onPeriodChange, onRefresh }: Props) {
 	const { t } = useTranslation();
+	const [showUpload, setShowUpload] = useState(false);
 
 	const PERIOD_LABELS: Record<TrendPeriod, string> = {
 		today: t('trends.periodToday'),
@@ -46,18 +49,30 @@ export default function SalesTrends({ data, period, isLoading, error, onPeriodCh
 		<div style={styles.container}>
 			<div style={styles.header}>
 				<h2 style={styles.title}>{t('trends.title')}</h2>
-				<div style={styles.periodRow}>
-					{(['today', 'week', 'month'] as TrendPeriod[]).map((p) => (
-						<button
-							key={p}
-							style={period === p ? styles.periodActive : styles.periodBtn}
-							onClick={() => onPeriodChange(p)}
-						>
-							{PERIOD_LABELS[p]}
-						</button>
-					))}
+				<div style={styles.headerRight}>
+					<button style={styles.uploadTriggerBtn} onClick={() => setShowUpload(true)}>
+						CSV/Excel
+					</button>
+					<div style={styles.periodRow}>
+						{(['today', 'week', 'month'] as TrendPeriod[]).map((p) => (
+							<button
+								key={p}
+								style={period === p ? styles.periodActive : styles.periodBtn}
+								onClick={() => onPeriodChange(p)}
+							>
+								{PERIOD_LABELS[p]}
+							</button>
+						))}
+					</div>
 				</div>
 			</div>
+
+			{showUpload && (
+				<SalesUploadModal
+					onClose={() => setShowUpload(false)}
+					onComplete={onRefresh}
+				/>
+			)}
 
 			{data && (
 				<>
@@ -171,6 +186,21 @@ const styles: Record<string, React.CSSProperties> = {
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		marginBottom: 24,
+	},
+	headerRight: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: 12,
+	},
+	uploadTriggerBtn: {
+		padding: '8px 16px',
+		border: `1px solid ${COLORS.accent}`,
+		borderRadius: 20,
+		backgroundColor: COLORS.white,
+		fontSize: 13,
+		fontWeight: 700,
+		color: COLORS.accent,
+		cursor: 'pointer',
 	},
 	title: {
 		margin: 0,

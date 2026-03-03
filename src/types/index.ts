@@ -145,6 +145,23 @@ export interface BulkImportResult {
 	errors: BulkImportError[];
 }
 
+// 매출 업로드
+export interface SalesUploadRecord {
+	id: number;
+	fileName: string;
+	totalRows: number;
+	importedRows: number;
+	createdAt: string;
+}
+
+export interface SalesUploadResult {
+	uploadId: number;
+	imported: number;
+	skipped: number;
+	matchedProducts: number;
+	errors: { row: number; message: string }[];
+}
+
 // 인증
 export interface AuthUser {
 	id: number;
