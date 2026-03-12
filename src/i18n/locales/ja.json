@@ -113,7 +113,10 @@
 		"fieldQty": "数量",
 		"fieldUnitPrice": "単価",
 		"cancel": "キャンセル",
-		"create": "発注作成"
+		"create": "発注作成",
+		"exportCsv": "CSV ダウンロード",
+		"dateRange": "期間",
+		"clearDate": "リセット"
 	},
 	"mappings": {
 		"title": "商品-材料マッピング",
@@ -146,6 +149,7 @@
 		"emptySubtitle": "売上、在庫、発注について自然言語で質問できます。",
 		"inputPlaceholder": "質問を入力してください...",
 		"send": "送信",
+		"error": "AI応答の取得に失敗しました。",
 		"suggestion1": "先週ヤンニョムチキンはどのくらい売れた？",
 		"suggestion2": "在庫不足の材料は？",
 		"suggestion3": "明日鶏は何羽必要？",
@@ -165,7 +169,14 @@
 		"unitOrders": "件",
 		"chartDaily": "日別売上推移",
 		"chartProduct": "商品別売上ランキング (Top 10)",
-		"chartDayOfWeek": "曜日別平均売上"
+		"chartDayOfWeek": "曜日別平均売上",
+		"revenue": "売上",
+		"avgRevenue": "平均売上",
+		"download": "ダウンロード",
+		"upload": "アップロード",
+		"fileName": "ファイル名",
+		"totalRows": "全行数",
+		"importedRows": "インポート行"
 	},
 	"forecast": {
 		"title": "AI発注推薦",
@@ -189,7 +200,8 @@
 		"colDetail": "詳細",
 		"btnWhy": "なぜ？",
 		"btnCollapse": "閉じる",
-		"explainError": "説明の取得に失敗しました。"
+		"explainError": "説明の取得に失敗しました。",
+		"poNotes": "AI発注推薦 ({{days}}日予測)"
 	},
 	"bulkImport": {
 		"titleUpload": "CSV / エクセル 一括登録",
@@ -270,7 +282,9 @@
 	},
 	"common": {
 		"retry": "再試行",
-		"won": "ウォン"
+		"won": "ウォン",
+		"delete": "削除",
+		"items": "件"
 	},
 	"errors": {
 		"materialsLoad": "材料一覧の読み込みに失敗",

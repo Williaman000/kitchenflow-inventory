@@ -12,6 +12,7 @@ i18n
 			ko: { translation: ko },
 			ja: { translation: ja },
 		},
+		supportedLngs: ['ko', 'ja'],
 		fallbackLng: 'ko',
 		interpolation: { escapeValue: false },
 		detection: {

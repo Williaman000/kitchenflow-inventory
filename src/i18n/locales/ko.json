@@ -113,7 +113,10 @@
 		"fieldQty": "수량",
 		"fieldUnitPrice": "단가",
 		"cancel": "취소",
-		"create": "발주 생성"
+		"create": "발주 생성",
+		"exportCsv": "CSV 다운로드",
+		"dateRange": "기간",
+		"clearDate": "초기화"
 	},
 	"mappings": {
 		"title": "상품-재료 매핑",
@@ -146,6 +149,7 @@
 		"emptySubtitle": "매출, 재고, 발주에 대해 자연어로 질문할 수 있습니다.",
 		"inputPlaceholder": "질문을 입력하세요...",
 		"send": "전송",
+		"error": "AI 응답을 가져오는데 실패했습니다.",
 		"suggestion1": "지난 주 양념치킨 얼마나 팔렸어?",
 		"suggestion2": "재고 부족한 재료 뭐야?",
 		"suggestion3": "내일 닭 몇 마리 필요해?",
@@ -165,7 +169,14 @@
 		"unitOrders": "건",
 		"chartDaily": "일별 매출 추이",
 		"chartProduct": "상품별 매출 순위 (Top 10)",
-		"chartDayOfWeek": "요일별 평균 매출"
+		"chartDayOfWeek": "요일별 평균 매출",
+		"revenue": "매출",
+		"avgRevenue": "평균 매출",
+		"download": "다운로드",
+		"upload": "업로드",
+		"fileName": "파일명",
+		"totalRows": "전체 행",
+		"importedRows": "임포트 행"
 	},
 	"forecast": {
 		"title": "AI 발주 추천",
@@ -189,7 +200,8 @@
 		"colDetail": "상세",
 		"btnWhy": "왜?",
 		"btnCollapse": "접기",
-		"explainError": "설명을 가져오는데 실패했습니다."
+		"explainError": "설명을 가져오는데 실패했습니다.",
+		"poNotes": "AI 발주 추천 ({{days}}일 예측)"
 	},
 	"bulkImport": {
 		"titleUpload": "CSV / 엑셀 일괄 등록",
@@ -270,7 +282,9 @@
 	},
 	"common": {
 		"retry": "재시도",
-		"won": "원"
+		"won": "원",
+		"delete": "삭제",
+		"items": "건"
 	},
 	"errors": {
 		"materialsLoad": "재료 목록 로딩 실패",

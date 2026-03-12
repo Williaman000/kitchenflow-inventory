@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { fetchInsights } from '../services/inventoryAiApi';
 import { fetchMaterials } from '../services/inventoryApi';
 
@@ -11,6 +12,7 @@ export interface DashboardStats {
 }
 
 export function useDashboard() {
+	const { i18n } = useTranslation();
 	const [stats, setStats] = useState<DashboardStats>({
 		totalMaterials: 0,
 		lowStockCount: 0,
@@ -27,7 +29,7 @@ export function useDashboard() {
 			setError(null);
 
 			const [insightData, materials] = await Promise.all([
-				fetchInsights(),
+				fetchInsights(i18n.language),
 				fetchMaterials(),
 			]);
 
@@ -45,7 +47,7 @@ export function useDashboard() {
 		} finally {
 			setIsLoading(false);
 		}
-	}, []);
+	}, [i18n.language]);
 
 	return { stats, isLoading, error, loadDashboard };
 }
