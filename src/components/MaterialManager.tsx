@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { trMaterial, trMaterialCategory, trUnit } from '../utils/dbTranslate';
 import { COLORS } from '../constants/theme';
 import type { Material, BulkImportResult } from '../types';
 import type { CreateMaterialPayload, AdjustInventoryPayload, BulkMaterialItem } from '../services/inventoryApi';
@@ -158,7 +159,7 @@ export default function MaterialManager({
 							onClick={() => onCategoryFilterChange(cat)}
 							style={materialCategoryFilter === cat ? styles.filterActive : styles.filterBtn}
 						>
-							{cat}
+							{trMaterialCategory(cat)}
 						</button>
 					))}
 				</div>
@@ -198,15 +199,15 @@ export default function MaterialManager({
 								return (
 									<tr key={mat.id} style={isLow ? { backgroundColor: '#FFF5F5' } : undefined}>
 										<td style={styles.td}>
-											<span style={{ fontWeight: 600 }}>{mat.name}</span>
+											<span style={{ fontWeight: 600 }}>{trMaterial(mat.name)}</span>
 											{isLow && <span style={styles.lowStockLabel}> {t('materials.statusLow')}</span>}
 										</td>
-										<td style={styles.td}>{mat.category}</td>
+										<td style={styles.td}>{trMaterialCategory(mat.category)}</td>
 										<td style={{ ...styles.td, textAlign: 'center', fontWeight: 700, color: isLow ? COLORS.danger : COLORS.text }}>
-											{mat.currentStock} {mat.unit}
+											{mat.currentStock} {trUnit(mat.unit)}
 										</td>
 										<td style={{ ...styles.td, textAlign: 'center', color: COLORS.textMuted }}>
-											{mat.minimumStock} {mat.unit}
+											{mat.minimumStock} {trUnit(mat.unit)}
 										</td>
 										<td style={{ ...styles.td, textAlign: 'center' }}>
 											<span style={{

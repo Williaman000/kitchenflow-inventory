@@ -1,7 +1,7 @@
 import type { AuthUser } from '../types';
 export type { AuthUser };
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5210';
 
 let _apiToken = '';
 

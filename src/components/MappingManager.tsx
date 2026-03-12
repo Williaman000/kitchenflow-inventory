@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { trProduct, trMaterial } from '../utils/dbTranslate';
 import { COLORS } from '../constants/theme';
 import type { Material, ProductMaterialMapping } from '../types';
 import type { SimpleProduct } from '../services/inventoryApi';
@@ -134,10 +135,10 @@ export default function MappingManager({
 							mappings.map((m) => (
 								<tr key={m.id}>
 									<td style={styles.td}>
-										<span style={{ fontWeight: 600 }}>{m.productName ?? `상품 #${m.productId}`}</span>
+										<span style={{ fontWeight: 600 }}>{trProduct(m.productName ?? `상품 #${m.productId}`)}</span>
 									</td>
 									<td style={styles.td}>
-										{m.materialName ?? `재료 #${m.materialId}`}
+										{trMaterial(m.materialName ?? `재료 #${m.materialId}`)}
 										{m.materialUnit && <span style={{ color: COLORS.textMuted, fontSize: 12 }}> ({m.materialUnit})</span>}
 									</td>
 									<td style={{ ...styles.td, textAlign: 'center' }}>

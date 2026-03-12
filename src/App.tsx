@@ -120,6 +120,9 @@ export default function App() {
 						error={trendsHook.error}
 						onPeriodChange={trendsHook.changePeriod}
 						onRefresh={trendsHook.refresh}
+						uploads={trendsHook.uploads}
+						uploadsLoading={trendsHook.uploadsLoading}
+						onDeleteUpload={trendsHook.handleDeleteUpload}
 					/>
 				)}
 				{activeTab === 'forecast' && (

@@ -33,7 +33,19 @@ interface POFormItem {
 
 function formatDate(iso: string | null): string {
 	if (!iso) return '-';
-	return new Date(iso).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+	return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function downloadCsv(filename: string, headers: string[], rows: string[][]) {
+	const bom = '\uFEFF';
+	const csv = bom + [headers.join(','), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))].join('\n');
+	const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = filename;
+	a.click();
+	URL.revokeObjectURL(url);
 }
 
 export default function PurchaseOrderManager({
@@ -60,6 +72,8 @@ export default function PurchaseOrderManager({
 	const [showForm, setShowForm] = useState(false);
 	const [formNotes, setFormNotes] = useState('');
 	const [formItems, setFormItems] = useState<POFormItem[]>([{ materialId: 0, quantity: '', unitPrice: '' }]);
+	const [dateFrom, setDateFrom] = useState('');
+	const [dateTo, setDateTo] = useState('');
 
 	useEffect(() => {
 		onLoad();
@@ -100,6 +114,34 @@ export default function PurchaseOrderManager({
 		} catch {
 			// error handled by hook
 		}
+	};
+
+	// 날짜 필터 적용
+	const filteredPOs = purchaseOrders.filter((po) => {
+		const poDate = po.orderedAt || po.createdAt;
+		if (!poDate) return true;
+		const d = poDate.slice(0, 10);
+		if (dateFrom && d < dateFrom) return false;
+		if (dateTo && d > dateTo) return false;
+		return true;
+	});
+
+	const handleExportCsv = () => {
+		const headers = [
+			t('orders.colNumber'), t('orders.colStatus'), t('orders.colItemCount'),
+			t('orders.colTotal'), t('orders.colOrderDate'), t('orders.colReceivedDate'), t('orders.colNotes'),
+		];
+		const rows = filteredPOs.map((po) => [
+			`#${po.id}`,
+			PO_STATUS_LABELS[po.status],
+			String(po.itemCount ?? '-'),
+			String(po.totalAmount),
+			formatDate(po.orderedAt),
+			formatDate(po.receivedAt),
+			po.notes || '',
+		]);
+		const dateStr = new Date().toISOString().slice(0, 10);
+		downloadCsv(`purchase_orders_${dateStr}.csv`, headers, rows);
 	};
 
 	if (isLoading && purchaseOrders.length === 0) {
@@ -145,9 +187,30 @@ export default function PurchaseOrderManager({
 						</button>
 					))}
 				</div>
-				<button style={styles.addBtn} onClick={() => setShowForm(true)}>
-					{t('orders.addBtn')}
-				</button>
+				<div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+					<button style={styles.exportBtn} onClick={handleExportCsv} disabled={filteredPOs.length === 0}>
+						{t('orders.exportCsv')}
+					</button>
+					<button style={styles.addBtn} onClick={() => setShowForm(true)}>
+						{t('orders.addBtn')}
+					</button>
+				</div>
+			</div>
+
+			{/* 날짜 필터 */}
+			<div style={styles.dateFilterRow}>
+				<label style={styles.dateLabel}>{t('orders.dateRange')}</label>
+				<input type="date" style={styles.dateInput} value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+				<span style={{ color: COLORS.textMuted }}>~</span>
+				<input type="date" style={styles.dateInput} value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+				{(dateFrom || dateTo) && (
+					<button style={styles.dateClearBtn} onClick={() => { setDateFrom(''); setDateTo(''); }}>
+						{t('orders.clearDate')}
+					</button>
+				)}
+				<span style={{ color: COLORS.textMuted, fontSize: 12, marginLeft: 8 }}>
+					{filteredPOs.length} / {purchaseOrders.length} {t('common.items')}
+				</span>
 			</div>
 
 			{/* 발주 테이블 */}
@@ -166,14 +229,14 @@ export default function PurchaseOrderManager({
 						</tr>
 					</thead>
 					<tbody>
-						{purchaseOrders.length === 0 ? (
+						{filteredPOs.length === 0 ? (
 							<tr>
 								<td colSpan={8} style={{ ...styles.td, textAlign: 'center', padding: 40, color: COLORS.textMuted }}>
 									{t('orders.empty')}
 								</td>
 							</tr>
 						) : (
-							purchaseOrders.map((po) => (
+							filteredPOs.map((po) => (
 								<tr key={po.id}>
 									<td style={styles.td}>#{po.id}</td>
 									<td style={styles.td}>
@@ -392,6 +455,45 @@ const styles: Record<string, React.CSSProperties> = {
 		fontWeight: 700,
 		cursor: 'pointer',
 		whiteSpace: 'nowrap',
+	},
+	exportBtn: {
+		padding: '8px 16px',
+		border: `1px solid ${COLORS.success}`,
+		borderRadius: 8,
+		backgroundColor: COLORS.white,
+		color: COLORS.success,
+		fontSize: 13,
+		fontWeight: 600,
+		cursor: 'pointer',
+		whiteSpace: 'nowrap',
+	},
+	dateFilterRow: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: 8,
+		marginBottom: 16,
+	},
+	dateLabel: {
+		fontSize: 13,
+		fontWeight: 600,
+		color: COLORS.textLight,
+		marginRight: 4,
+	},
+	dateInput: {
+		padding: '6px 10px',
+		border: `1px solid ${COLORS.borderInput}`,
+		borderRadius: 6,
+		fontSize: 13,
+		outline: 'none',
+	},
+	dateClearBtn: {
+		padding: '4px 10px',
+		border: `1px solid ${COLORS.borderInput}`,
+		borderRadius: 6,
+		backgroundColor: COLORS.white,
+		fontSize: 12,
+		cursor: 'pointer',
+		color: COLORS.textMuted,
 	},
 	tableWrap: {
 		backgroundColor: COLORS.white,

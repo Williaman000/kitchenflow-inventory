@@ -81,10 +81,10 @@ interface MappingDto {
 
 // ── AI Chat ──
 
-export async function sendChat(message: string): Promise<{ answer: string; data: Record<string, unknown> | null; dataType: string | null }> {
+export async function sendChat(message: string, language: string = 'ko'): Promise<{ answer: string; data: Record<string, unknown> | null; dataType: string | null }> {
 	const dto = await request<ChatResponseDto>('/api/v1/inventory-ai/chat', {
 		method: 'POST',
-		body: JSON.stringify({ message }),
+		body: JSON.stringify({ message, language }),
 	});
 	return {
 		answer: dto.answer,
@@ -151,14 +151,14 @@ export async function fetchForecast(forecastDays?: number): Promise<ForecastData
 
 // ── Explain Forecast ──
 
-export async function explainForecast(materialId: number): Promise<{ explanation: string }> {
-	return await request<{ explanation: string }>(`/api/v1/inventory-ai/forecast/${materialId}/explain`);
+export async function explainForecast(materialId: number, language: string = 'ko'): Promise<{ explanation: string }> {
+	return await request<{ explanation: string }>(`/api/v1/inventory-ai/forecast/${materialId}/explain?language=${language}`);
 }
 
 // ── AI Insights ──
 
-export async function fetchInsights(): Promise<InsightData> {
-	const dto = await request<InsightDto>('/api/v1/inventory-ai/insights');
+export async function fetchInsights(language: string = 'ko'): Promise<InsightData> {
+	const dto = await request<InsightDto>(`/api/v1/inventory-ai/insights?language=${language}`);
 	return {
 		generatedAt: dto.generated_at,
 		insights: dto.insights,

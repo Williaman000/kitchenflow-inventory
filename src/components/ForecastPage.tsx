@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, getI18n } from 'react-i18next';
+import { trMaterial, trUnit } from '../utils/dbTranslate';
 import { COLORS } from '../constants/theme';
 import type { ForecastData, RecommendedOrder } from '../types';
 import { explainForecast } from '../services/inventoryAiApi';
@@ -37,54 +38,154 @@ function ConfidenceBadge({ confidence }: { confidence: string }) {
 	);
 }
 
-function ExplanationRow({ rec }: { rec: RecommendedOrder }) {
+function ExplanationModal({ rec, onClose }: { rec: RecommendedOrder; onClose: () => void }) {
 	const { t } = useTranslation();
 	const [explanation, setExplanation] = useState<string | null>(null);
-	const [isOpen, setIsOpen] = useState(false);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 
-	const handleClick = async () => {
-		if (isOpen) {
-			setIsOpen(false);
-			return;
-		}
-		if (explanation) {
-			setIsOpen(true);
-			return;
-		}
-		setLoading(true);
-		try {
-			const result = await explainForecast(rec.materialId);
-			setExplanation(result.explanation);
-			setIsOpen(true);
-		} catch {
-			setExplanation(t('forecast.explainError'));
-			setIsOpen(true);
-		} finally {
-			setLoading(false);
-		}
-	};
+	useState(() => {
+		explainForecast(rec.materialId, getI18n().language)
+			.then((result) => setExplanation(result.explanation))
+			.catch(() => setExplanation(t('forecast.explainError')))
+			.finally(() => setLoading(false));
+	});
 
 	return (
-		<>
-			<button style={rowStyles.whyBtn} onClick={handleClick} disabled={loading}>
-				{loading ? '...' : isOpen ? t('forecast.btnCollapse') : t('forecast.btnWhy')}
-			</button>
-			{isOpen && explanation && (
-				<tr>
-					<td colSpan={7} style={rowStyles.explanationCell}>
-						<div style={rowStyles.explanationBox}>
-							{explanation}
-						</div>
-					</td>
-				</tr>
-			)}
-		</>
+		<div style={modalStyles.overlay} onClick={onClose}>
+			<div style={modalStyles.content} onClick={(e) => e.stopPropagation()}>
+				<div style={modalStyles.header}>
+					<h3 style={modalStyles.title}>
+						{trMaterial(rec.materialName)} — {t('forecast.colDetail')}
+					</h3>
+					<button style={modalStyles.closeBtn} onClick={onClose}>✕</button>
+				</div>
+				<div style={modalStyles.summary}>
+					<div style={modalStyles.summaryItem}>
+						<span style={modalStyles.summaryLabel}>{t('forecast.colCurrentStock')}</span>
+						<span style={modalStyles.summaryValue}>{rec.currentStock} {trUnit(rec.unit)}</span>
+					</div>
+					<div style={modalStyles.summaryItem}>
+						<span style={modalStyles.summaryLabel}>{t('forecast.colExpected')}</span>
+						<span style={{ ...modalStyles.summaryValue, color: COLORS.warning }}>{rec.expectedConsumption.toFixed(1)} {trUnit(rec.unit)}</span>
+					</div>
+					<div style={modalStyles.summaryItem}>
+						<span style={modalStyles.summaryLabel}>{t('forecast.colSafety')}</span>
+						<span style={modalStyles.summaryValue}>{rec.safetyStock.toFixed(1)} {trUnit(rec.unit)}</span>
+					</div>
+					<div style={modalStyles.summaryItem}>
+						<span style={modalStyles.summaryLabel}>{t('forecast.colRecommended')}</span>
+						<span style={{
+							...modalStyles.summaryValue,
+							color: rec.recommendedOrder > 0 ? COLORS.danger : COLORS.success,
+							fontWeight: 800,
+						}}>
+							{rec.recommendedOrder > 0 ? `+${Math.ceil(rec.recommendedOrder)}` : '-'} {rec.recommendedOrder > 0 ? trUnit(rec.unit) : ''}
+						</span>
+					</div>
+					<div style={modalStyles.summaryItem}>
+						<span style={modalStyles.summaryLabel}>{t('forecast.colConfidence')}</span>
+						<ConfidenceBadge confidence={rec.confidence} />
+					</div>
+				</div>
+				<div style={modalStyles.explanationSection}>
+					<h4 style={modalStyles.sectionTitle}>AI {t('forecast.colDetail')}</h4>
+					{loading ? (
+						<p style={{ color: COLORS.textMuted, textAlign: 'center', padding: 20 }}>...</p>
+					) : (
+						<div style={modalStyles.explanationBox}>{explanation}</div>
+					)}
+				</div>
+			</div>
+		</div>
 	);
 }
 
-const rowStyles: Record<string, React.CSSProperties> = {
-	whyBtn: {
+const modalStyles: Record<string, React.CSSProperties> = {
+	overlay: {
+		position: 'fixed',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		backgroundColor: 'rgba(0,0,0,0.4)',
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		zIndex: 1000,
+	},
+	content: {
+		backgroundColor: COLORS.white,
+		borderRadius: 16,
+		width: '90%',
+		maxWidth: 520,
+		maxHeight: '80vh',
+		overflow: 'auto',
+		boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+	},
+	header: {
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		padding: '20px 24px 16px',
+		borderBottom: `1px solid ${COLORS.border}`,
+	},
+	title: {
+		margin: 0,
+		fontSize: 18,
+		fontWeight: 700,
+		color: COLORS.text,
+	},
+	closeBtn: {
+		border: 'none',
+		background: 'none',
+		fontSize: 18,
+		color: COLORS.textMuted,
+		cursor: 'pointer',
+		padding: '4px 8px',
+		borderRadius: 6,
+	},
+	summary: {
+		display: 'grid',
+		gridTemplateColumns: '1fr 1fr',
+		gap: 12,
+		padding: '20px 24px',
+		backgroundColor: COLORS.backgroundLight,
+	},
+	summaryItem: {
+		display: 'flex',
+		flexDirection: 'column' as const,
+		gap: 4,
+	},
+	summaryLabel: {
+		fontSize: 12,
+		fontWeight: 600,
+		color: COLORS.textMuted,
+	},
+	summaryValue: {
+		fontSize: 16,
+		fontWeight: 600,
+		color: COLORS.text,
+	},
+	explanationSection: {
+		padding: '20px 24px 24px',
+	},
+	sectionTitle: {
+		margin: '0 0 12px',
+		fontSize: 14,
+		fontWeight: 700,
+		color: COLORS.text,
+	},
+	explanationBox: {
+		padding: '16px',
+		backgroundColor: '#E8F5E9',
+		borderRadius: 10,
+		fontSize: 14,
+		lineHeight: 1.7,
+		color: COLORS.textDark,
+		whiteSpace: 'pre-wrap' as const,
+	},
+	detailBtn: {
+		display: 'inline-block',
 		padding: '4px 10px',
 		border: `1px solid ${COLORS.borderInput}`,
 		borderRadius: 6,
@@ -93,25 +194,14 @@ const rowStyles: Record<string, React.CSSProperties> = {
 		fontWeight: 600,
 		cursor: 'pointer',
 		color: COLORS.accent,
-	},
-	explanationCell: {
-		padding: '0 16px 12px 16px',
-		border: 'none',
-	},
-	explanationBox: {
-		padding: '12px 16px',
-		backgroundColor: '#E8F5E9',
-		borderRadius: 8,
-		fontSize: 13,
-		lineHeight: 1.6,
-		color: COLORS.textDark,
-		whiteSpace: 'pre-wrap' as const,
+		whiteSpace: 'nowrap' as const,
 	},
 };
 
 export default function ForecastPage({ forecast, forecastDays, isLoading, error, onLoadForecast, onCreatePO }: Props) {
 	const { t } = useTranslation();
 	const [creating, setCreating] = useState(false);
+	const [detailRec, setDetailRec] = useState<RecommendedOrder | null>(null);
 
 	const handleCreateAllPO = async () => {
 		if (!forecast) return;
@@ -119,7 +209,7 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 		if (itemsToOrder.length === 0) return;
 
 		const payload: CreatePurchaseOrderPayload = {
-			notes: `AI 발주 추천 (${forecastDays}일 예측)`,
+			notes: t('forecast.poNotes', { days: forecastDays }),
 			items: itemsToOrder.map((r) => ({
 				materialId: r.materialId,
 				quantity: Math.ceil(r.recommendedOrder),
@@ -214,8 +304,8 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 									<>
 										<tr key={rec.materialId} style={needsOrderFlag ? { backgroundColor: '#FFF5F5' } : undefined}>
 											<td style={styles.td}>
-												<span style={{ fontWeight: 600 }}>{rec.materialName}</span>
-												<span style={{ fontSize: 12, color: COLORS.textMuted, marginLeft: 4 }}>({rec.unit})</span>
+												<span style={{ fontWeight: 600 }}>{trMaterial(rec.materialName)}</span>
+												<span style={{ fontSize: 12, color: COLORS.textMuted, marginLeft: 4 }}>({trUnit(rec.unit)})</span>
 											</td>
 											<td style={{ ...styles.td, textAlign: 'center', fontWeight: 600 }}>
 												{rec.currentStock}
@@ -239,7 +329,9 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 												<ConfidenceBadge confidence={rec.confidence} />
 											</td>
 											<td style={{ ...styles.td, textAlign: 'center' }}>
-												<ExplanationRow rec={rec} />
+												<button style={modalStyles.detailBtn} onClick={() => setDetailRec(rec)}>
+													{t('forecast.btnWhy')}
+												</button>
 											</td>
 										</tr>
 									</>
@@ -248,6 +340,9 @@ export default function ForecastPage({ forecast, forecastDays, isLoading, error,
 						</tbody>
 					</table>
 				</div>
+			)}
+			{detailRec && (
+				<ExplanationModal rec={detailRec} onClose={() => setDetailRec(null)} />
 			)}
 		</div>
 	);
