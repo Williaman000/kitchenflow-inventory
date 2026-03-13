@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type FC } from 'react';
 import {
 	LineChart, Line, BarChart, Bar, XAxis, YAxis,
 	Tooltip, CartesianGrid, ResponsiveContainer,
@@ -35,7 +35,7 @@ interface Props {
 	onDeleteUpload: (id: number) => void;
 }
 
-export default function SalesTrends({ data, period, isLoading, error, onPeriodChange, onRefresh, uploads, uploadsLoading, onDeleteUpload }: Props) {
+const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange, onRefresh, uploads, uploadsLoading, onDeleteUpload }) => {
 	const { t } = useTranslation();
 	const [showUpload, setShowUpload] = useState(false);
 
@@ -257,7 +257,7 @@ export default function SalesTrends({ data, period, isLoading, error, onPeriodCh
 			</div>
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	container: {
@@ -412,3 +412,5 @@ const styles: Record<string, React.CSSProperties> = {
 		cursor: 'pointer',
 	},
 };
+
+export default SalesTrends;

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type FormEvent } from 'react';
+import { useState, useRef, useEffect, type FC, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { COLORS } from '../constants/theme';
@@ -66,7 +66,7 @@ function DataRenderer({ data, dataType }: { data: Record<string, unknown>; dataT
 	);
 }
 
-export default function AIChatInterface({ messages, isLoading, onSendMessage, onClear }: Props) {
+const AIChatInterface: FC<Props> = ({ messages, isLoading, onSendMessage, onClear }) => {
 	const { t } = useTranslation();
 	const SUGGESTIONS = [
 		t('chat.suggestion1'),
@@ -186,7 +186,7 @@ export default function AIChatInterface({ messages, isLoading, onSendMessage, on
 			`}</style>
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	container: {
@@ -385,3 +385,5 @@ const dataStyles: Record<string, React.CSSProperties> = {
 		maxHeight: 300,
 	},
 };
+
+export default AIChatInterface;

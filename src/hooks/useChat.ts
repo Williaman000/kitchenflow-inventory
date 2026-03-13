@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { ChatMessage } from '../types';
 import { sendChat } from '../services/inventoryAiApi';
 
-export function useChat() {
+export const useChat = () => {
 	const { i18n, t } = useTranslation();
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -47,4 +47,4 @@ export function useChat() {
 	}, []);
 
 	return { messages, isLoading, sendMessage, clearMessages };
-}
+};

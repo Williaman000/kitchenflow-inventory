@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FC, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trMaterial, trMaterialCategory, trUnit } from '../utils/dbTranslate';
 import { COLORS } from '../constants/theme';
@@ -23,7 +23,7 @@ interface Props {
 	onBulkImport: (items: BulkMaterialItem[]) => Promise<BulkImportResult>;
 }
 
-export default function MaterialManager({
+const MaterialManager: FC<Props> = ({
 	materials,
 	materialCategories,
 	materialCategoryFilter,
@@ -37,7 +37,7 @@ export default function MaterialManager({
 	onDeleteMaterial,
 	onAdjustInventory,
 	onBulkImport,
-}: Props) {
+}) => {
 	const { t } = useTranslation();
 	const [showForm, setShowForm] = useState(false);
 	const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
@@ -382,7 +382,7 @@ export default function MaterialManager({
 			)}
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	container: {
@@ -598,3 +598,5 @@ const styles: Record<string, React.CSSProperties> = {
 		cursor: 'pointer',
 	},
 };
+
+export default MaterialManager;

@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FC, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
 import type { Material, PurchaseOrder, PurchaseOrderStatus } from '../types';
@@ -48,7 +48,7 @@ function downloadCsv(filename: string, headers: string[], rows: string[][]) {
 	URL.revokeObjectURL(url);
 }
 
-export default function PurchaseOrderManager({
+const PurchaseOrderManager: FC<Props> = ({
 	purchaseOrders,
 	materials,
 	poStatusFilter,
@@ -59,7 +59,7 @@ export default function PurchaseOrderManager({
 	onLoadMaterials,
 	onCreatePO,
 	onUpdatePOStatus,
-}: Props) {
+}) => {
 	const { t } = useTranslation();
 
 	const PO_STATUS_LABELS: Record<PurchaseOrderStatus, string> = {
@@ -370,7 +370,7 @@ export default function PurchaseOrderManager({
 			)}
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	container: {
@@ -617,3 +617,5 @@ const styles: Record<string, React.CSSProperties> = {
 		cursor: 'pointer',
 	},
 };
+
+export default PurchaseOrderManager;

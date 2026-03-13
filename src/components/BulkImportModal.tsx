@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
@@ -72,7 +72,7 @@ function parseRawRows(rawRows: Record<string, string>[]): ParsedRow[] {
 
 const CSV_TEMPLATE = '재료명,단위,카테고리,현재재고,최소재고\n닭고기,kg,육류,50,20\n식용유,L,유지류,30,10\n양념소스,L,소스류,15,5';
 
-export default function BulkImportModal({ onClose, onImport, onComplete }: Props) {
+const BulkImportModal: FC<Props> = ({ onClose, onImport, onComplete }) => {
 	const { t } = useTranslation();
 	const [step, setStep] = useState<'upload' | 'preview' | 'result'>('upload');
 	const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
@@ -356,7 +356,7 @@ export default function BulkImportModal({ onClose, onImport, onComplete }: Props
 			</div>
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	overlay: {
@@ -538,3 +538,5 @@ const styles: Record<string, React.CSSProperties> = {
 		borderBottom: `1px solid ${COLORS.border}`,
 	},
 };
+
+export default BulkImportModal;

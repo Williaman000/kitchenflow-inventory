@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import type { ForecastData } from '../types';
 import { fetchForecast } from '../services/inventoryAiApi';
 
-export function useForecast(enabled = false) {
+export const useForecast = (enabled = false) => {
 	const [forecast, setForecast] = useState<ForecastData | null>(null);
 	const [forecastDays, setForecastDays] = useState(3);
 	const [isLoading, setIsLoading] = useState(false);
@@ -32,4 +32,4 @@ export function useForecast(enabled = false) {
 	}, [enabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return { forecast, forecastDays, isLoading, error, loadForecast };
-}
+};
