@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FC, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trProduct, trMaterial } from '../utils/dbTranslate';
 import { COLORS } from '../constants/theme';
@@ -19,7 +19,7 @@ interface Props {
 	onDelete: (mappingId: number) => Promise<void>;
 }
 
-export default function MappingManager({
+const MappingManager: FC<Props> = ({
 	mappings,
 	products,
 	materials,
@@ -31,7 +31,7 @@ export default function MappingManager({
 	onCreate,
 	onUpdate,
 	onDelete,
-}: Props) {
+}) => {
 	const { t } = useTranslation();
 
 	const [showForm, setShowForm] = useState(false);
@@ -247,7 +247,7 @@ export default function MappingManager({
 			)}
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	container: {
@@ -441,3 +441,5 @@ const styles: Record<string, React.CSSProperties> = {
 		cursor: 'pointer',
 	},
 };
+
+export default MappingManager;

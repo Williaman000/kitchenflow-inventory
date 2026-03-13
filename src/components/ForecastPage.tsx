@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FC } from 'react';
 import { useTranslation, getI18n } from 'react-i18next';
 import { trMaterial, trUnit } from '../utils/dbTranslate';
 import { COLORS } from '../constants/theme';
@@ -198,7 +198,7 @@ const modalStyles: Record<string, React.CSSProperties> = {
 	},
 };
 
-export default function ForecastPage({ forecast, forecastDays, isLoading, error, onLoadForecast, onCreatePO }: Props) {
+const ForecastPage: FC<Props> = ({ forecast, forecastDays, isLoading, error, onLoadForecast, onCreatePO }) => {
 	const { t } = useTranslation();
 	const [creating, setCreating] = useState(false);
 	const [detailRec, setDetailRec] = useState<RecommendedOrder | null>(null);
@@ -457,3 +457,5 @@ const styles: Record<string, React.CSSProperties> = {
 		borderBottom: `1px solid ${COLORS.border}`,
 	},
 };
+
+export default ForecastPage;

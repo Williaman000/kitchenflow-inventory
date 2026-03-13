@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
 import type { DashboardStats } from '../hooks/useDashboard';
@@ -11,7 +11,7 @@ interface Props {
 	onNavigate: (tab: string) => void;
 }
 
-export default function Dashboard({ stats, isLoading, error, onLoad, onNavigate }: Props) {
+const Dashboard: FC<Props> = ({ stats, isLoading, error, onLoad, onNavigate }) => {
 	const { t } = useTranslation();
 
 	useEffect(() => {
@@ -102,7 +102,7 @@ export default function Dashboard({ stats, isLoading, error, onLoad, onNavigate 
 			</div>
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	container: {
@@ -221,3 +221,5 @@ const styles: Record<string, React.CSSProperties> = {
 		lineHeight: 1.5,
 	},
 };
+
+export default Dashboard;

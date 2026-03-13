@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './hooks/useAuth';
 import { useChat } from './hooks/useChat';
@@ -23,7 +23,7 @@ const TAB_KEYS: AppTab[] = ['dashboard', 'chat', 'trends', 'forecast', 'material
 
 const LANG_LABELS: Record<string, string> = { ko: '한국어', ja: '日本語' };
 
-export default function App() {
+const App: FC = () => {
 	const { t, i18n } = useTranslation();
 	const auth = useAuth();
 	const [activeTab, setActiveTab] = useState<AppTab>('dashboard');
@@ -185,7 +185,7 @@ export default function App() {
 			</div>
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	loadingScreen: {
@@ -319,3 +319,5 @@ const styles: Record<string, React.CSSProperties> = {
 		flexDirection: 'column',
 	},
 };
+
+export default App;

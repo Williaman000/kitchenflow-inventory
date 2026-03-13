@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
@@ -120,7 +120,7 @@ function parseRawRows(rawRows: Record<string, string>[]): ParsedRow[] {
 
 const CSV_TEMPLATE = '날짜,상품명,수량,매출액,단가,카테고리,주문번호\n2026-03-01,양념치킨,5,90000,18000,치킨,ORD-001\n2026-03-01,후라이드,3,48000,16000,치킨,ORD-002';
 
-export default function SalesUploadModal({ onClose, onComplete }: Props) {
+const SalesUploadModal: FC<Props> = ({ onClose, onComplete }) => {
 	const { t } = useTranslation();
 	const [step, setStep] = useState<'upload' | 'preview' | 'result'>('upload');
 	const [parsedRows, setParsedRows] = useState<ParsedRow[]>([]);
@@ -412,7 +412,7 @@ export default function SalesUploadModal({ onClose, onComplete }: Props) {
 			</div>
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	overlay: {
@@ -595,3 +595,5 @@ const styles: Record<string, React.CSSProperties> = {
 		borderBottom: `1px solid ${COLORS.border}`,
 	},
 };
+
+export default SalesUploadModal;

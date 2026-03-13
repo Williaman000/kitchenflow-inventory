@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FC, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { COLORS } from '../constants/theme';
 
@@ -6,7 +6,7 @@ interface Props {
 	onLogin: (email: string, password: string) => Promise<void>;
 }
 
-export default function LoginScreen({ onLogin }: Props) {
+const LoginScreen: FC<Props> = ({ onLogin }) => {
 	const { t } = useTranslation();
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -79,7 +79,7 @@ export default function LoginScreen({ onLogin }: Props) {
 			</form>
 		</div>
 	);
-}
+};
 
 const styles: Record<string, React.CSSProperties> = {
 	container: {
@@ -169,3 +169,5 @@ const styles: Record<string, React.CSSProperties> = {
 		cursor: 'not-allowed',
 	},
 };
+
+export default LoginScreen;

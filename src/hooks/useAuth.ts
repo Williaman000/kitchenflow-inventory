@@ -9,7 +9,7 @@ interface AuthState {
 	isLoading: boolean;
 }
 
-export function useAuth() {
+export const useAuth = () => {
 	const [state, setState] = useState<AuthState>({
 		user: null,
 		isAuthenticated: false,
@@ -50,4 +50,4 @@ export function useAuth() {
 	}, []);
 
 	return { ...state, login, logout };
-}
+};
