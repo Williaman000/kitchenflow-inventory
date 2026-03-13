@@ -1,0 +1,319 @@
+.container {
+	padding: 24px;
+	max-width: 1100px;
+	margin: 0 auto;
+}
+
+.center {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	gap: 12px;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.headerRight {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.title {
+	margin: 0;
+	font-size: 22px;
+	font-weight: 700;
+	color: #222;
+}
+
+.retryBtn {
+	padding: 8px 20px;
+	border: none;
+	border-radius: 6px;
+	background-color: #1565C0;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.refreshBtn {
+	padding: 8px 16px;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	background-color: #fff;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	color: #555;
+}
+
+.lowStockBadge {
+	background-color: #FFEBEE;
+	color: #F44336;
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.lowStockLabel {
+	font-size: 11px;
+	color: #F44336;
+	font-weight: 700;
+}
+
+.filterRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.filterGroup {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	flex: 1;
+}
+
+.filterBtn {
+	padding: 8px 16px;
+	border: 1px solid #ddd;
+	border-radius: 20px;
+	background-color: #fff;
+	font-size: 13px;
+	font-weight: 500;
+	color: #999;
+	cursor: pointer;
+}
+
+.filterActive {
+	padding: 8px 16px;
+	border: 1px solid #1565C0;
+	border-radius: 20px;
+	background-color: #1565C0;
+	font-size: 13px;
+	font-weight: 700;
+	color: #fff;
+	cursor: pointer;
+}
+
+.buttonGroup {
+	display: flex;
+	gap: 8px;
+}
+
+.uploadBtn {
+	padding: 8px 18px;
+	border: 1px solid #00897B;
+	border-radius: 8px;
+	background-color: #fff;
+	color: #00897B;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.addBtn {
+	padding: 8px 18px;
+	border: none;
+	border-radius: 8px;
+	background-color: #1565C0;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.tableWrap {
+	background-color: #fff;
+	border-radius: 12px;
+	border: 1px solid #eee;
+	overflow: auto;
+}
+
+.table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.th {
+	padding: 12px 16px;
+	font-size: 13px;
+	font-weight: 700;
+	color: #999;
+	border-bottom: 2px solid #e0e0e0;
+	text-align: left;
+	background-color: #FAFAFA;
+	white-space: nowrap;
+}
+
+.td {
+	padding: 12px 16px;
+	font-size: 14px;
+	color: #222;
+	border-bottom: 1px solid #eee;
+}
+
+.statusBadge {
+	padding: 4px 10px;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.actionBtn {
+	padding: 4px 10px;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	background-color: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	color: #555;
+}
+
+.actionBtnDanger {
+	composes: actionBtn;
+	color: #F44336;
+}
+
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.modal {
+	background-color: #fff;
+	border-radius: 12px;
+	padding: 24px;
+	width: 90%;
+	max-width: 460px;
+}
+
+.modalTitle {
+	margin: 0 0 20px 0;
+	font-size: 18px;
+	font-weight: 700;
+	color: #222;
+}
+
+.adjustTitle {
+	margin: 0 0 16px 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: #222;
+}
+
+.adjustInfo {
+	margin: 0 0 12px 0;
+	font-size: 13px;
+	color: #999;
+}
+
+.adjustTypeRow {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.formField {
+	margin-bottom: 14px;
+}
+
+.formLabel {
+	display: block;
+	font-size: 13px;
+	font-weight: 600;
+	color: #555;
+	margin-bottom: 6px;
+}
+
+.formInput {
+	padding: 10px 12px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	font-size: 14px;
+	outline: none;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.formRow {
+	display: flex;
+	gap: 12px;
+}
+
+.cancelActionBtn {
+	padding: 8px 16px;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	background-color: #fff;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	color: #555;
+}
+
+.submitActionBtn {
+	padding: 8px 20px;
+	border: none;
+	border-radius: 6px;
+	background-color: #1565C0;
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.loadingText {
+	color: #999;
+}
+
+.errorText {
+	color: #F44336;
+}
+
+.emptyCell {
+	text-align: center;
+	padding: 40px;
+	color: #999;
+}
+
+.actionsRow {
+	display: flex;
+	gap: 6px;
+	justify-content: center;
+}
+
+.formActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 8px;
+}
+
+.adjustActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}

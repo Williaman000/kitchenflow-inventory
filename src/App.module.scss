@@ -1,0 +1,150 @@
+.loadingScreen {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background-color: #F5F5F5;
+}
+
+.loadingIcon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 56px;
+	height: 56px;
+	border-radius: 14px;
+	background-color: #1565C0;
+	color: #fff;
+	font-size: 20px;
+	font-weight: 900;
+}
+
+.loadingText {
+	color: #999;
+	margin-top: 12px;
+}
+
+.layout {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	background-color: #F5F5F5;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #1565C0;
+	color: #fff;
+	height: 56px;
+	padding: 0 24px;
+	flex-shrink: 0;
+}
+
+.headerLeft {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.logoIcon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 8px;
+	background-color: rgba(255, 255, 255, 0.2);
+	font-size: 12px;
+	font-weight: 900;
+}
+
+.headerTitle {
+	font-size: 18px;
+	font-weight: 800;
+	margin: 0;
+}
+
+.headerRight {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.userName {
+	font-size: 13px;
+	background-color: rgba(255, 255, 255, 0.15);
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-weight: 500;
+}
+
+.langBtn {
+	background-color: rgba(255, 255, 255, 0.15);
+	color: #fff;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-size: 11px;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.logoutBtn {
+	background-color: rgba(255, 255, 255, 0.15);
+	color: #fff;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	padding: 6px 14px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.tabNav {
+	display: flex;
+	background-color: #fff;
+	border-bottom: 1px solid #e0e0e0;
+	flex-shrink: 0;
+	overflow-x: auto;
+}
+
+.tab {
+	flex: 1;
+	padding: 12px 4px;
+	border: none;
+	border-bottom: 3px solid transparent;
+	background-color: transparent;
+	font-size: 13px;
+	font-weight: 500;
+	color: #999;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.tabActive {
+	flex: 1;
+	padding: 12px 4px;
+	border: none;
+	border-bottom: 3px solid #1565C0;
+	background-color: transparent;
+	font-size: 13px;
+	font-weight: 700;
+	color: #1565C0;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.mainContent {
+	flex: 1;
+	overflow: auto;
+}
+
+.chatContent {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}

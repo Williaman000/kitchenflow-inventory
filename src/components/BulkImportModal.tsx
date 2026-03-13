@@ -5,6 +5,7 @@ import * as XLSX from 'xlsx';
 import { COLORS } from '../constants/theme';
 import type { BulkImportResult } from '../types';
 import type { BulkMaterialItem } from '../services/inventoryApi';
+import styles from './BulkImportModal.module.scss';
 
 interface Props {
 	onClose: () => void;
@@ -179,24 +180,24 @@ const BulkImportModal: FC<Props> = ({ onClose, onImport, onComplete }) => {
 	const invalidCount = parsedRows.filter((r) => !r.valid).length;
 
 	return (
-		<div style={styles.overlay} onClick={onClose}>
-			<div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+		<div className={styles.overlay} onClick={onClose}>
+			<div className={styles.modal} onClick={(e) => e.stopPropagation()}>
 				{/* Header */}
-				<div style={styles.modalHeader}>
-					<h3 style={styles.modalTitle}>
+				<div className={styles.modalHeader}>
+					<h3 className={styles.modalTitle}>
 						{step === 'upload' && t('bulkImport.titleUpload')}
 						{step === 'preview' && t('bulkImport.titlePreview')}
 						{step === 'result' && t('bulkImport.titleResult')}
 					</h3>
-					<button style={styles.closeBtn} onClick={onClose}>&times;</button>
+					<button className={styles.closeBtn} onClick={onClose}>&times;</button>
 				</div>
 
 				{/* Upload Step */}
 				{step === 'upload' && (
 					<div>
 						<div
+							className={styles.dropZone}
 							style={{
-								...styles.dropZone,
 								borderColor: isDragOver ? COLORS.primary : COLORS.borderInput,
 								backgroundColor: isDragOver ? '#E3F2FD' : COLORS.backgroundLight,
 							}}
@@ -205,11 +206,11 @@ const BulkImportModal: FC<Props> = ({ onClose, onImport, onComplete }) => {
 							onDrop={handleDrop}
 							onClick={() => fileInputRef.current?.click()}
 						>
-							<div style={{ fontSize: 40, marginBottom: 8 }}>&#128196;</div>
-							<p style={{ margin: 0, fontWeight: 600, color: COLORS.text }}>
+							<div className={styles.dropZoneIcon}>&#128196;</div>
+							<p className={styles.dropZoneText}>
 								{t('bulkImport.dropText')}
 							</p>
-							<p style={{ margin: '8px 0 0', fontSize: 13, color: COLORS.textMuted }}>
+							<p className={styles.dropZoneHint}>
 								{t('bulkImport.dropHint')}
 							</p>
 							<input
@@ -222,23 +223,23 @@ const BulkImportModal: FC<Props> = ({ onClose, onImport, onComplete }) => {
 						</div>
 
 						{parseError && (
-							<div style={styles.errorBanner}>{parseError}</div>
+							<div className={styles.errorBanner}>{parseError}</div>
 						)}
 
-						<div style={styles.templateSection}>
-							<p style={{ margin: '0 0 8px', fontSize: 13, color: COLORS.textLight }}>
+						<div className={styles.templateSection}>
+							<p className={styles.templateHint}>
 								{t('bulkImport.templateHint')}
 							</p>
-							<button style={styles.templateBtn} onClick={handleDownloadTemplate}>
+							<button className={styles.templateBtn} onClick={handleDownloadTemplate}>
 								{t('bulkImport.templateBtn')}
 							</button>
 						</div>
 
-						<div style={styles.helpSection}>
-							<p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: COLORS.textLight }}>
+						<div className={styles.helpSection}>
+							<p className={styles.helpTitle}>
 								{t('bulkImport.requiredCols')}
 							</p>
-							<p style={{ margin: '4px 0 0', fontSize: 12, color: COLORS.textMuted }}>
+							<p className={styles.helpInfo}>
 								{t('bulkImport.requiredInfo')}
 							</p>
 						</div>
@@ -248,51 +249,51 @@ const BulkImportModal: FC<Props> = ({ onClose, onImport, onComplete }) => {
 				{/* Preview Step */}
 				{step === 'preview' && (
 					<div>
-						<div style={styles.previewInfo}>
-							<span style={{ fontSize: 13, color: COLORS.textLight }}>
+						<div className={styles.previewInfo}>
+							<span className={styles.previewInfoText}>
 								{fileName} &mdash; 총 <strong>{parsedRows.length}</strong>행
 							</span>
-							<div style={{ display: 'flex', gap: 8 }}>
+							<div className={styles.badgeGroup}>
 								{validCount > 0 && (
-									<span style={{ ...styles.badge, backgroundColor: '#E8F5E9', color: COLORS.success }}>
+									<span className={`${styles.badge} ${styles.badgeValid}`}>
 										{t('bulkImport.validBadge', { count: validCount })}
 									</span>
 								)}
 								{invalidCount > 0 && (
-									<span style={{ ...styles.badge, backgroundColor: '#FFEBEE', color: COLORS.danger }}>
+									<span className={`${styles.badge} ${styles.badgeInvalid}`}>
 										{t('bulkImport.invalidBadge', { count: invalidCount })}
 									</span>
 								)}
 							</div>
 						</div>
 
-						<div style={styles.previewTableWrap}>
-							<table style={styles.table}>
+						<div className={styles.previewTableWrap}>
+							<table className={styles.table}>
 								<thead>
 									<tr>
-										<th style={styles.th}>{t('bulkImport.colRow')}</th>
-										<th style={styles.th}>{t('bulkImport.colName')}</th>
-										<th style={styles.th}>{t('bulkImport.colUnit')}</th>
-										<th style={styles.th}>{t('bulkImport.colCategory')}</th>
-										<th style={{ ...styles.th, textAlign: 'right' }}>{t('bulkImport.colCurrentStock')}</th>
-										<th style={{ ...styles.th, textAlign: 'right' }}>{t('bulkImport.colMinStock')}</th>
-										<th style={{ ...styles.th, textAlign: 'center' }}>{t('bulkImport.colStatus')}</th>
+										<th className={styles.th}>{t('bulkImport.colRow')}</th>
+										<th className={styles.th}>{t('bulkImport.colName')}</th>
+										<th className={styles.th}>{t('bulkImport.colUnit')}</th>
+										<th className={styles.th}>{t('bulkImport.colCategory')}</th>
+										<th className={styles.th} style={{ textAlign: 'right' }}>{t('bulkImport.colCurrentStock')}</th>
+										<th className={styles.th} style={{ textAlign: 'right' }}>{t('bulkImport.colMinStock')}</th>
+										<th className={styles.th} style={{ textAlign: 'center' }}>{t('bulkImport.colStatus')}</th>
 									</tr>
 								</thead>
 								<tbody>
 									{parsedRows.map((row, i) => (
-										<tr key={i} style={row.valid ? undefined : { backgroundColor: '#FFF5F5' }}>
-											<td style={{ ...styles.td, color: COLORS.textMuted }}>{i + 1}</td>
-											<td style={styles.td}>{row.name || <span style={{ color: COLORS.danger }}>-</span>}</td>
-											<td style={styles.td}>{row.unit || <span style={{ color: COLORS.danger }}>-</span>}</td>
-											<td style={styles.td}>{row.category}</td>
-											<td style={{ ...styles.td, textAlign: 'right' }}>{row.currentStock}</td>
-											<td style={{ ...styles.td, textAlign: 'right' }}>{row.minimumStock}</td>
-											<td style={{ ...styles.td, textAlign: 'center' }}>
+										<tr key={i} className={row.valid ? undefined : styles.invalidRow}>
+											<td className={styles.tdMuted}>{i + 1}</td>
+											<td className={styles.td}>{row.name || <span className={styles.dangerText}>-</span>}</td>
+											<td className={styles.td}>{row.unit || <span className={styles.dangerText}>-</span>}</td>
+											<td className={styles.td}>{row.category}</td>
+											<td className={styles.td} style={{ textAlign: 'right' }}>{row.currentStock}</td>
+											<td className={styles.td} style={{ textAlign: 'right' }}>{row.minimumStock}</td>
+											<td className={styles.tdCenter}>
 												{row.valid ? (
-													<span style={{ color: COLORS.success, fontWeight: 700, fontSize: 12 }}>{t('bulkImport.statusOk')}</span>
+													<span className={styles.statusOk}>{t('bulkImport.statusOk')}</span>
 												) : (
-													<span style={{ color: COLORS.danger, fontSize: 12 }}>{row.error}</span>
+													<span className={styles.statusError}>{row.error}</span>
 												)}
 											</td>
 										</tr>
@@ -301,12 +302,13 @@ const BulkImportModal: FC<Props> = ({ onClose, onImport, onComplete }) => {
 							</table>
 						</div>
 
-						<div style={styles.previewActions}>
-							<button style={styles.cancelBtn} onClick={() => { setStep('upload'); setParsedRows([]); }}>
+						<div className={styles.previewActions}>
+							<button className={styles.cancelBtn} onClick={() => { setStep('upload'); setParsedRows([]); }}>
 								{t('bulkImport.reselect')}
 							</button>
 							<button
-								style={{ ...styles.importBtn, opacity: validCount === 0 || isImporting ? 0.5 : 1 }}
+								className={styles.importBtn}
+								style={{ opacity: validCount === 0 || isImporting ? 0.5 : 1 }}
 								onClick={handleImport}
 								disabled={validCount === 0 || isImporting}
 							>
@@ -319,35 +321,35 @@ const BulkImportModal: FC<Props> = ({ onClose, onImport, onComplete }) => {
 				{/* Result Step */}
 				{step === 'result' && result && (
 					<div>
-						<div style={styles.resultSummary}>
-							<div style={styles.resultCard}>
-								<div style={{ fontSize: 28, fontWeight: 800, color: COLORS.success }}>{result.imported}</div>
-								<div style={{ fontSize: 13, color: COLORS.textMuted }}>{t('bulkImport.resultImported')}</div>
+						<div className={styles.resultSummary}>
+							<div className={styles.resultCard}>
+								<div className={styles.resultValueSuccess}>{result.imported}</div>
+								<div className={styles.resultLabel}>{t('bulkImport.resultImported')}</div>
 							</div>
 							{result.skipped > 0 && (
-								<div style={styles.resultCard}>
-									<div style={{ fontSize: 28, fontWeight: 800, color: COLORS.warning }}>{result.skipped}</div>
-									<div style={{ fontSize: 13, color: COLORS.textMuted }}>{t('bulkImport.resultSkipped')}</div>
+								<div className={styles.resultCard}>
+									<div className={styles.resultValueWarning}>{result.skipped}</div>
+									<div className={styles.resultLabel}>{t('bulkImport.resultSkipped')}</div>
 								</div>
 							)}
 						</div>
 
 						{result.errors.length > 0 && (
-							<div style={styles.errorList}>
-								<p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 700, color: COLORS.danger }}>
+							<div className={styles.errorList}>
+								<p className={styles.errorListTitle}>
 									{t('bulkImport.resultErrors', { count: result.errors.length })}
 								</p>
 								{result.errors.map((err, i) => (
-									<div key={i} style={styles.errorItem}>
-										<span style={{ fontWeight: 700, color: COLORS.textMuted }}>{t('bulkImport.resultRow', { row: err.row })}</span>
-										<span style={{ color: COLORS.danger }}>{err.message}</span>
+									<div key={i} className={styles.errorItem}>
+										<span className={styles.errorItemRow}>{t('bulkImport.resultRow', { row: err.row })}</span>
+										<span className={styles.errorItemMessage}>{err.message}</span>
 									</div>
 								))}
 							</div>
 						)}
 
-						<div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
-							<button style={styles.importBtn} onClick={() => { onComplete(); onClose(); }}>
+						<div className={styles.resultActions}>
+							<button className={styles.importBtn} onClick={() => { onComplete(); onClose(); }}>
 								{t('bulkImport.confirm')}
 							</button>
 						</div>
@@ -356,187 +358,6 @@ const BulkImportModal: FC<Props> = ({ onClose, onImport, onComplete }) => {
 			</div>
 		</div>
 	);
-};
-
-const styles: Record<string, React.CSSProperties> = {
-	overlay: {
-		position: 'fixed',
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-		backgroundColor: 'rgba(0,0,0,0.5)',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		zIndex: 1000,
-	},
-	modal: {
-		backgroundColor: COLORS.white,
-		borderRadius: 12,
-		padding: 0,
-		width: '90%',
-		maxWidth: 700,
-		maxHeight: '85vh',
-		display: 'flex',
-		flexDirection: 'column',
-	},
-	modalHeader: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		padding: '20px 24px 16px',
-		borderBottom: `1px solid ${COLORS.border}`,
-	},
-	modalTitle: {
-		margin: 0,
-		fontSize: 18,
-		fontWeight: 700,
-		color: COLORS.text,
-	},
-	closeBtn: {
-		background: 'none',
-		border: 'none',
-		fontSize: 24,
-		color: COLORS.textMuted,
-		cursor: 'pointer',
-		padding: '0 4px',
-		lineHeight: 1,
-	},
-	dropZone: {
-		margin: '20px 24px 0',
-		padding: '40px 20px',
-		border: '2px dashed',
-		borderRadius: 12,
-		textAlign: 'center' as const,
-		cursor: 'pointer',
-		transition: 'all 0.2s',
-	},
-	errorBanner: {
-		margin: '12px 24px 0',
-		padding: '10px 14px',
-		backgroundColor: '#FFEBEE',
-		color: COLORS.danger,
-		borderRadius: 8,
-		fontSize: 13,
-		fontWeight: 600,
-	},
-	templateSection: {
-		margin: '20px 24px 0',
-		padding: '16px',
-		backgroundColor: COLORS.backgroundLight,
-		borderRadius: 8,
-	},
-	templateBtn: {
-		padding: '8px 16px',
-		border: `1px solid ${COLORS.primary}`,
-		borderRadius: 6,
-		backgroundColor: COLORS.white,
-		color: COLORS.primary,
-		fontSize: 13,
-		fontWeight: 700,
-		cursor: 'pointer',
-	},
-	helpSection: {
-		margin: '16px 24px 24px',
-		padding: '12px 16px',
-		backgroundColor: '#E3F2FD',
-		borderRadius: 8,
-	},
-	previewInfo: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		padding: '16px 24px',
-	},
-	badge: {
-		padding: '4px 10px',
-		borderRadius: 12,
-		fontSize: 12,
-		fontWeight: 700,
-	},
-	previewTableWrap: {
-		margin: '0 24px',
-		maxHeight: '40vh',
-		overflow: 'auto',
-		border: `1px solid ${COLORS.border}`,
-		borderRadius: 8,
-	},
-	table: {
-		width: '100%',
-		borderCollapse: 'collapse' as const,
-	},
-	th: {
-		padding: '10px 12px',
-		fontSize: 12,
-		fontWeight: 700,
-		color: COLORS.textMuted,
-		borderBottom: `2px solid ${COLORS.borderDark}`,
-		textAlign: 'left' as const,
-		backgroundColor: COLORS.backgroundLight,
-		whiteSpace: 'nowrap' as const,
-		position: 'sticky' as const,
-		top: 0,
-	},
-	td: {
-		padding: '8px 12px',
-		fontSize: 13,
-		color: COLORS.text,
-		borderBottom: `1px solid ${COLORS.border}`,
-	},
-	previewActions: {
-		display: 'flex',
-		justifyContent: 'flex-end',
-		gap: 10,
-		padding: '16px 24px 24px',
-	},
-	cancelBtn: {
-		padding: '10px 20px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 8,
-		backgroundColor: COLORS.white,
-		fontSize: 14,
-		fontWeight: 600,
-		cursor: 'pointer',
-		color: COLORS.textLight,
-	},
-	importBtn: {
-		padding: '10px 24px',
-		border: 'none',
-		borderRadius: 8,
-		backgroundColor: COLORS.primary,
-		color: COLORS.white,
-		fontSize: 14,
-		fontWeight: 700,
-		cursor: 'pointer',
-	},
-	resultSummary: {
-		display: 'flex',
-		gap: 20,
-		justifyContent: 'center',
-		padding: '24px',
-	},
-	resultCard: {
-		textAlign: 'center' as const,
-		padding: '20px 32px',
-		backgroundColor: COLORS.backgroundLight,
-		borderRadius: 12,
-	},
-	errorList: {
-		margin: '0 24px',
-		padding: '12px 16px',
-		backgroundColor: '#FFF5F5',
-		borderRadius: 8,
-		maxHeight: 200,
-		overflow: 'auto',
-	},
-	errorItem: {
-		display: 'flex',
-		gap: 12,
-		padding: '6px 0',
-		fontSize: 13,
-		borderBottom: `1px solid ${COLORS.border}`,
-	},
 };
 
 export default BulkImportModal;

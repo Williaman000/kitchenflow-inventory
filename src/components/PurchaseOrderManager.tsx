@@ -4,6 +4,7 @@ import { COLORS } from '../constants/theme';
 import type { Material, PurchaseOrder, PurchaseOrderStatus } from '../types';
 import type { CreatePurchaseOrderPayload } from '../services/inventoryApi';
 import { formatCurrency } from '../utils/format';
+import styles from './PurchaseOrderManager.module.scss';
 
 interface Props {
 	purchaseOrders: PurchaseOrder[];
@@ -146,34 +147,34 @@ const PurchaseOrderManager: FC<Props> = ({
 
 	if (isLoading && purchaseOrders.length === 0) {
 		return (
-			<div style={styles.center}>
-				<p style={{ color: COLORS.textMuted }}>{t('orders.loading')}</p>
+			<div className={styles.center}>
+				<p className={styles.loadingText}>{t('orders.loading')}</p>
 			</div>
 		);
 	}
 
 	if (error && purchaseOrders.length === 0) {
 		return (
-			<div style={styles.center}>
-				<p style={{ color: COLORS.danger }}>{error}</p>
-				<button style={styles.retryBtn} onClick={onLoad}>{t('common.retry')}</button>
+			<div className={styles.center}>
+				<p className={styles.errorText}>{error}</p>
+				<button className={styles.retryBtn} onClick={onLoad}>{t('common.retry')}</button>
 			</div>
 		);
 	}
 
 	return (
-		<div style={styles.container}>
-			<div style={styles.header}>
-				<h2 style={styles.title}>{t('orders.title')}</h2>
-				<button style={styles.refreshBtn} onClick={onLoad}>{t('orders.refresh')}</button>
+		<div className={styles.container}>
+			<div className={styles.header}>
+				<h2 className={styles.title}>{t('orders.title')}</h2>
+				<button className={styles.refreshBtn} onClick={onLoad}>{t('orders.refresh')}</button>
 			</div>
 
 			{/* 상태 필터 + 생성 버튼 */}
-			<div style={styles.filterRow}>
-				<div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', flex: 1 }}>
+			<div className={styles.filterRow}>
+				<div className={styles.filterGroup}>
 					<button
 						onClick={() => onStatusFilterChange(null)}
-						style={poStatusFilter === null ? styles.filterActive : styles.filterBtn}
+						className={poStatusFilter === null ? styles.filterActive : styles.filterBtn}
 					>
 						{t('orders.all')}
 					</button>
@@ -181,84 +182,87 @@ const PurchaseOrderManager: FC<Props> = ({
 						<button
 							key={s}
 							onClick={() => onStatusFilterChange(s)}
-							style={poStatusFilter === s ? styles.filterActive : styles.filterBtn}
+							className={poStatusFilter === s ? styles.filterActive : styles.filterBtn}
 						>
 							{PO_STATUS_LABELS[s]}
 						</button>
 					))}
 				</div>
-				<div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-					<button style={styles.exportBtn} onClick={handleExportCsv} disabled={filteredPOs.length === 0}>
+				<div className={styles.buttonGroup}>
+					<button className={styles.exportBtn} onClick={handleExportCsv} disabled={filteredPOs.length === 0}>
 						{t('orders.exportCsv')}
 					</button>
-					<button style={styles.addBtn} onClick={() => setShowForm(true)}>
+					<button className={styles.addBtn} onClick={() => setShowForm(true)}>
 						{t('orders.addBtn')}
 					</button>
 				</div>
 			</div>
 
 			{/* 날짜 필터 */}
-			<div style={styles.dateFilterRow}>
-				<label style={styles.dateLabel}>{t('orders.dateRange')}</label>
-				<input type="date" style={styles.dateInput} value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-				<span style={{ color: COLORS.textMuted }}>~</span>
-				<input type="date" style={styles.dateInput} value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
+			<div className={styles.dateFilterRow}>
+				<label className={styles.dateLabel}>{t('orders.dateRange')}</label>
+				<input type="date" className={styles.dateInput} value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
+				<span className={styles.dateSeparator}>~</span>
+				<input type="date" className={styles.dateInput} value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
 				{(dateFrom || dateTo) && (
-					<button style={styles.dateClearBtn} onClick={() => { setDateFrom(''); setDateTo(''); }}>
+					<button className={styles.dateClearBtn} onClick={() => { setDateFrom(''); setDateTo(''); }}>
 						{t('orders.clearDate')}
 					</button>
 				)}
-				<span style={{ color: COLORS.textMuted, fontSize: 12, marginLeft: 8 }}>
+				<span className={styles.dateCount}>
 					{filteredPOs.length} / {purchaseOrders.length} {t('common.items')}
 				</span>
 			</div>
 
 			{/* 발주 테이블 */}
-			<div style={styles.tableWrap}>
-				<table style={styles.table}>
+			<div className={styles.tableWrap}>
+				<table className={styles.table}>
 					<thead>
 						<tr>
-							<th style={styles.th}>{t('orders.colNumber')}</th>
-							<th style={styles.th}>{t('orders.colStatus')}</th>
-							<th style={{ ...styles.th, textAlign: 'center' }}>{t('orders.colItemCount')}</th>
-							<th style={{ ...styles.th, textAlign: 'right' }}>{t('orders.colTotal')}</th>
-							<th style={styles.th}>{t('orders.colOrderDate')}</th>
-							<th style={styles.th}>{t('orders.colReceivedDate')}</th>
-							<th style={styles.th}>{t('orders.colNotes')}</th>
-							<th style={{ ...styles.th, textAlign: 'center', width: 160 }}>{t('orders.colActions')}</th>
+							<th className={styles.th}>{t('orders.colNumber')}</th>
+							<th className={styles.th}>{t('orders.colStatus')}</th>
+							<th className={styles.th} style={{ textAlign: 'center' }}>{t('orders.colItemCount')}</th>
+							<th className={styles.th} style={{ textAlign: 'right' }}>{t('orders.colTotal')}</th>
+							<th className={styles.th}>{t('orders.colOrderDate')}</th>
+							<th className={styles.th}>{t('orders.colReceivedDate')}</th>
+							<th className={styles.th}>{t('orders.colNotes')}</th>
+							<th className={styles.th} style={{ textAlign: 'center', width: 160 }}>{t('orders.colActions')}</th>
 						</tr>
 					</thead>
 					<tbody>
 						{filteredPOs.length === 0 ? (
 							<tr>
-								<td colSpan={8} style={{ ...styles.td, textAlign: 'center', padding: 40, color: COLORS.textMuted }}>
+								<td colSpan={8} className={styles.emptyCell}>
 									{t('orders.empty')}
 								</td>
 							</tr>
 						) : (
 							filteredPOs.map((po) => (
 								<tr key={po.id}>
-									<td style={styles.td}>#{po.id}</td>
-									<td style={styles.td}>
-										<span style={{
-											...styles.statusBadge,
-											backgroundColor: `${PO_STATUS_COLORS[po.status]}15`,
-											color: PO_STATUS_COLORS[po.status],
-										}}>
+									<td className={styles.td}>#{po.id}</td>
+									<td className={styles.td}>
+										<span
+											className={styles.statusBadge}
+											style={{
+												backgroundColor: `${PO_STATUS_COLORS[po.status]}15`,
+												color: PO_STATUS_COLORS[po.status],
+											}}
+										>
 											{PO_STATUS_LABELS[po.status]}
 										</span>
 									</td>
-									<td style={{ ...styles.td, textAlign: 'center' }}>{po.itemCount ?? '-'}</td>
-									<td style={{ ...styles.td, textAlign: 'right', fontWeight: 700 }}>{formatCurrency(po.totalAmount)}</td>
-									<td style={styles.td}>{formatDate(po.orderedAt)}</td>
-									<td style={styles.td}>{formatDate(po.receivedAt)}</td>
-									<td style={{ ...styles.td, maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+									<td className={styles.td} style={{ textAlign: 'center' }}>{po.itemCount ?? '-'}</td>
+									<td className={styles.td} style={{ textAlign: 'right', fontWeight: 700 }}>{formatCurrency(po.totalAmount)}</td>
+									<td className={styles.td}>{formatDate(po.orderedAt)}</td>
+									<td className={styles.td}>{formatDate(po.receivedAt)}</td>
+									<td className={`${styles.td} ${styles.notesCell}`}>
 										{po.notes || '-'}
 									</td>
-									<td style={{ ...styles.td, textAlign: 'center' }}>
+									<td className={styles.td} style={{ textAlign: 'center' }}>
 										{po.status === 'DRAFT' && (
 											<button
-												style={{ ...styles.statusBtn, backgroundColor: COLORS.primary, color: COLORS.white }}
+												className={styles.statusBtn}
+												style={{ backgroundColor: COLORS.primary, color: COLORS.white }}
 												onClick={() => onUpdatePOStatus(po.id, 'ORDERED')}
 											>
 												{t('orders.actionOrder')}
@@ -266,7 +270,8 @@ const PurchaseOrderManager: FC<Props> = ({
 										)}
 										{po.status === 'ORDERED' && (
 											<button
-												style={{ ...styles.statusBtn, backgroundColor: COLORS.success, color: COLORS.white }}
+												className={styles.statusBtn}
+												style={{ backgroundColor: COLORS.success, color: COLORS.white }}
 												onClick={() => onUpdatePOStatus(po.id, 'RECEIVED')}
 											>
 												{t('orders.actionReceive')}
@@ -274,7 +279,8 @@ const PurchaseOrderManager: FC<Props> = ({
 										)}
 										{(po.status === 'DRAFT' || po.status === 'ORDERED') && (
 											<button
-												style={{ ...styles.statusBtn, backgroundColor: '#FFEBEE', color: COLORS.danger, marginLeft: 4 }}
+												className={styles.statusBtn}
+												style={{ backgroundColor: '#FFEBEE', color: COLORS.danger, marginLeft: 4 }}
 												onClick={() => {
 													if (confirm(t('orders.cancelConfirm'))) {
 														onUpdatePOStatus(po.id, 'CANCELLED');
@@ -285,7 +291,7 @@ const PurchaseOrderManager: FC<Props> = ({
 											</button>
 										)}
 										{(po.status === 'RECEIVED' || po.status === 'CANCELLED') && (
-											<span style={{ color: COLORS.textMuted, fontSize: 12 }}>-</span>
+											<span className={styles.mutedText}>-</span>
 										)}
 									</td>
 								</tr>
@@ -297,31 +303,32 @@ const PurchaseOrderManager: FC<Props> = ({
 
 			{/* 발주 생성 모달 */}
 			{showForm && (
-				<div style={styles.overlay} onClick={() => setShowForm(false)}>
-					<div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-						<h3 style={{ margin: '0 0 20px 0', fontSize: 18, fontWeight: 700, color: COLORS.text }}>
+				<div className={styles.overlay} onClick={() => setShowForm(false)}>
+					<div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+						<h3 className={styles.modalTitle}>
 							{t('orders.modalCreate')}
 						</h3>
 						<form onSubmit={handleSubmit}>
-							<div style={styles.formField}>
-								<label style={styles.formLabel}>{t('orders.fieldNotes')}</label>
+							<div className={styles.formField}>
+								<label className={styles.formLabel}>{t('orders.fieldNotes')}</label>
 								<input
-									style={styles.formInput}
+									className={styles.formInput}
 									value={formNotes}
 									onChange={(e) => setFormNotes(e.target.value)}
 									placeholder={t('orders.fieldNotesPlaceholder')}
 								/>
 							</div>
 
-							<div style={{ marginBottom: 16 }}>
-								<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-									<label style={styles.formLabel}>{t('orders.fieldItems')}</label>
-									<button type="button" style={styles.addItemBtn} onClick={addItem}>{t('orders.addItem')}</button>
+							<div className={styles.itemsSection}>
+								<div className={styles.itemsHeader}>
+									<label className={styles.formLabel}>{t('orders.fieldItems')}</label>
+									<button type="button" className={styles.addItemBtn} onClick={addItem}>{t('orders.addItem')}</button>
 								</div>
 								{formItems.map((item, idx) => (
-									<div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
+									<div key={idx} className={styles.itemRow}>
 										<select
-											style={{ ...styles.formInput, flex: 2 }}
+											className={styles.formInput}
+											style={{ flex: 2 }}
 											value={item.materialId}
 											onChange={(e) => updateItem(idx, 'materialId', parseInt(e.target.value))}
 										>
@@ -331,7 +338,8 @@ const PurchaseOrderManager: FC<Props> = ({
 											))}
 										</select>
 										<input
-											style={{ ...styles.formInput, flex: 1 }}
+											className={styles.formInput}
+											style={{ flex: 1 }}
 											type="number"
 											min="0.1"
 											step="0.1"
@@ -340,7 +348,8 @@ const PurchaseOrderManager: FC<Props> = ({
 											placeholder={t('orders.fieldQty')}
 										/>
 										<input
-											style={{ ...styles.formInput, flex: 1 }}
+											className={styles.formInput}
+											style={{ flex: 1 }}
 											type="number"
 											min="0"
 											value={item.unitPrice}
@@ -350,7 +359,7 @@ const PurchaseOrderManager: FC<Props> = ({
 										{formItems.length > 1 && (
 											<button
 												type="button"
-												style={styles.removeItemBtn}
+												className={styles.removeItemBtn}
 												onClick={() => removeItem(idx)}
 											>
 												X
@@ -360,9 +369,9 @@ const PurchaseOrderManager: FC<Props> = ({
 								))}
 							</div>
 
-							<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-								<button type="button" style={styles.cancelActionBtn} onClick={() => setShowForm(false)}>{t('orders.cancel')}</button>
-								<button type="submit" style={styles.submitActionBtn}>{t('orders.create')}</button>
+							<div className={styles.formActions}>
+								<button type="button" className={styles.cancelActionBtn} onClick={() => setShowForm(false)}>{t('orders.cancel')}</button>
+								<button type="submit" className={styles.submitActionBtn}>{t('orders.create')}</button>
 							</div>
 						</form>
 					</div>
@@ -370,252 +379,6 @@ const PurchaseOrderManager: FC<Props> = ({
 			)}
 		</div>
 	);
-};
-
-const styles: Record<string, React.CSSProperties> = {
-	container: {
-		padding: 24,
-		maxWidth: 1100,
-		margin: '0 auto',
-	},
-	center: {
-		display: 'flex',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
-		height: '100%',
-		gap: 12,
-	},
-	header: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		marginBottom: 20,
-	},
-	title: {
-		margin: 0,
-		fontSize: 22,
-		fontWeight: 700,
-		color: COLORS.text,
-	},
-	retryBtn: {
-		padding: '8px 20px',
-		border: 'none',
-		borderRadius: 6,
-		backgroundColor: COLORS.primary,
-		color: COLORS.white,
-		fontSize: 14,
-		fontWeight: 600,
-		cursor: 'pointer',
-	},
-	refreshBtn: {
-		padding: '8px 16px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 6,
-		backgroundColor: COLORS.white,
-		fontSize: 13,
-		fontWeight: 600,
-		cursor: 'pointer',
-		color: COLORS.textLight,
-	},
-	filterRow: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		gap: 12,
-		marginBottom: 20,
-	},
-	filterBtn: {
-		padding: '8px 16px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 20,
-		backgroundColor: COLORS.white,
-		fontSize: 13,
-		fontWeight: 500,
-		color: COLORS.textMuted,
-		cursor: 'pointer',
-	},
-	filterActive: {
-		padding: '8px 16px',
-		border: `1px solid ${COLORS.primary}`,
-		borderRadius: 20,
-		backgroundColor: COLORS.primary,
-		fontSize: 13,
-		fontWeight: 700,
-		color: COLORS.white,
-		cursor: 'pointer',
-	},
-	addBtn: {
-		padding: '8px 18px',
-		border: 'none',
-		borderRadius: 8,
-		backgroundColor: COLORS.primary,
-		color: COLORS.white,
-		fontSize: 13,
-		fontWeight: 700,
-		cursor: 'pointer',
-		whiteSpace: 'nowrap',
-	},
-	exportBtn: {
-		padding: '8px 16px',
-		border: `1px solid ${COLORS.success}`,
-		borderRadius: 8,
-		backgroundColor: COLORS.white,
-		color: COLORS.success,
-		fontSize: 13,
-		fontWeight: 600,
-		cursor: 'pointer',
-		whiteSpace: 'nowrap',
-	},
-	dateFilterRow: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: 8,
-		marginBottom: 16,
-	},
-	dateLabel: {
-		fontSize: 13,
-		fontWeight: 600,
-		color: COLORS.textLight,
-		marginRight: 4,
-	},
-	dateInput: {
-		padding: '6px 10px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 6,
-		fontSize: 13,
-		outline: 'none',
-	},
-	dateClearBtn: {
-		padding: '4px 10px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 6,
-		backgroundColor: COLORS.white,
-		fontSize: 12,
-		cursor: 'pointer',
-		color: COLORS.textMuted,
-	},
-	tableWrap: {
-		backgroundColor: COLORS.white,
-		borderRadius: 12,
-		border: `1px solid ${COLORS.border}`,
-		overflow: 'auto',
-	},
-	table: {
-		width: '100%',
-		borderCollapse: 'collapse',
-	},
-	th: {
-		padding: '12px 16px',
-		fontSize: 13,
-		fontWeight: 700,
-		color: COLORS.textMuted,
-		borderBottom: `2px solid ${COLORS.borderDark}`,
-		textAlign: 'left',
-		backgroundColor: COLORS.backgroundLight,
-		whiteSpace: 'nowrap',
-	},
-	td: {
-		padding: '12px 16px',
-		fontSize: 14,
-		color: COLORS.text,
-		borderBottom: `1px solid ${COLORS.border}`,
-	},
-	statusBadge: {
-		padding: '4px 10px',
-		borderRadius: 12,
-		fontSize: 12,
-		fontWeight: 700,
-	},
-	statusBtn: {
-		padding: '6px 12px',
-		border: 'none',
-		borderRadius: 6,
-		fontSize: 12,
-		fontWeight: 700,
-		cursor: 'pointer',
-	},
-	overlay: {
-		position: 'fixed',
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-		backgroundColor: 'rgba(0,0,0,0.5)',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		zIndex: 1000,
-	},
-	modal: {
-		backgroundColor: COLORS.white,
-		borderRadius: 12,
-		padding: 24,
-		width: '90%',
-		maxWidth: 600,
-		maxHeight: '80vh',
-		overflowY: 'auto',
-	},
-	formField: {
-		marginBottom: 14,
-	},
-	formLabel: {
-		display: 'block',
-		fontSize: 13,
-		fontWeight: 600,
-		color: COLORS.textLight,
-		marginBottom: 6,
-	},
-	formInput: {
-		padding: '10px 12px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 8,
-		fontSize: 14,
-		outline: 'none',
-		boxSizing: 'border-box' as const,
-		width: '100%',
-	},
-	addItemBtn: {
-		padding: '4px 12px',
-		border: `1px solid ${COLORS.primary}`,
-		borderRadius: 6,
-		backgroundColor: COLORS.white,
-		fontSize: 12,
-		fontWeight: 600,
-		cursor: 'pointer',
-		color: COLORS.primary,
-	},
-	removeItemBtn: {
-		padding: '8px 12px',
-		border: `1px solid ${COLORS.danger}`,
-		borderRadius: 6,
-		backgroundColor: COLORS.white,
-		fontSize: 12,
-		fontWeight: 700,
-		cursor: 'pointer',
-		color: COLORS.danger,
-		flexShrink: 0,
-	},
-	cancelActionBtn: {
-		padding: '8px 16px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 6,
-		backgroundColor: COLORS.white,
-		fontSize: 13,
-		fontWeight: 600,
-		cursor: 'pointer',
-		color: COLORS.textLight,
-	},
-	submitActionBtn: {
-		padding: '8px 20px',
-		border: 'none',
-		borderRadius: 6,
-		backgroundColor: COLORS.primary,
-		color: COLORS.white,
-		fontSize: 13,
-		fontWeight: 700,
-		cursor: 'pointer',
-	},
 };
 
 export default PurchaseOrderManager;

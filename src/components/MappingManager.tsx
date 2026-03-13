@@ -4,6 +4,7 @@ import { trProduct, trMaterial } from '../utils/dbTranslate';
 import { COLORS } from '../constants/theme';
 import type { Material, ProductMaterialMapping } from '../types';
 import type { SimpleProduct } from '../services/inventoryApi';
+import styles from './MappingManager.module.scss';
 
 interface Props {
 	mappings: ProductMaterialMapping[];
@@ -85,67 +86,68 @@ const MappingManager: FC<Props> = ({
 
 	if (isLoading && mappings.length === 0) {
 		return (
-			<div style={styles.center}>
-				<p style={{ color: COLORS.textMuted }}>{t('mappings.loading')}</p>
+			<div className={styles.center}>
+				<p className={styles.loadingText}>{t('mappings.loading')}</p>
 			</div>
 		);
 	}
 
 	if (error && mappings.length === 0) {
 		return (
-			<div style={styles.center}>
-				<p style={{ color: COLORS.danger }}>{error}</p>
-				<button style={styles.retryBtn} onClick={onLoadMappings}>{t('common.retry')}</button>
+			<div className={styles.center}>
+				<p className={styles.errorText}>{error}</p>
+				<button className={styles.retryBtn} onClick={onLoadMappings}>{t('common.retry')}</button>
 			</div>
 		);
 	}
 
 	return (
-		<div style={styles.container}>
-			<div style={styles.header}>
+		<div className={styles.container}>
+			<div className={styles.header}>
 				<div>
-					<h2 style={styles.title}>{t('mappings.title')}</h2>
-					<p style={styles.subtitle}>{t('mappings.subtitle')}</p>
+					<h2 className={styles.title}>{t('mappings.title')}</h2>
+					<p className={styles.subtitle}>{t('mappings.subtitle')}</p>
 				</div>
-				<div style={styles.headerRight}>
-					<button style={styles.refreshBtn} onClick={onLoadMappings}>{t('mappings.refresh')}</button>
-					<button style={styles.addBtn} onClick={() => setShowForm(true)}>{t('mappings.addBtn')}</button>
+				<div className={styles.headerRight}>
+					<button className={styles.refreshBtn} onClick={onLoadMappings}>{t('mappings.refresh')}</button>
+					<button className={styles.addBtn} onClick={() => setShowForm(true)}>{t('mappings.addBtn')}</button>
 				</div>
 			</div>
 
 			{/* 매핑 테이블 */}
-			<div style={styles.tableWrap}>
-				<table style={styles.table}>
+			<div className={styles.tableWrap}>
+				<table className={styles.table}>
 					<thead>
 						<tr>
-							<th style={styles.th}>{t('mappings.colProduct')}</th>
-							<th style={styles.th}>{t('mappings.colMaterial')}</th>
-							<th style={{ ...styles.th, textAlign: 'center' }}>{t('mappings.colQtyPerUnit')}</th>
-							<th style={{ ...styles.th, textAlign: 'center', width: 140 }}>{t('mappings.colActions')}</th>
+							<th className={styles.th}>{t('mappings.colProduct')}</th>
+							<th className={styles.th}>{t('mappings.colMaterial')}</th>
+							<th className={styles.th} style={{ textAlign: 'center' }}>{t('mappings.colQtyPerUnit')}</th>
+							<th className={styles.th} style={{ textAlign: 'center', width: 140 }}>{t('mappings.colActions')}</th>
 						</tr>
 					</thead>
 					<tbody>
 						{mappings.length === 0 ? (
 							<tr>
-								<td colSpan={4} style={{ ...styles.td, textAlign: 'center', padding: 40, color: COLORS.textMuted }}>
+								<td colSpan={4} className={styles.emptyCell}>
 									{t('mappings.empty')}
 								</td>
 							</tr>
 						) : (
 							mappings.map((m) => (
 								<tr key={m.id}>
-									<td style={styles.td}>
+									<td className={styles.td}>
 										<span style={{ fontWeight: 600 }}>{trProduct(m.productName ?? `상품 #${m.productId}`)}</span>
 									</td>
-									<td style={styles.td}>
+									<td className={styles.td}>
 										{trMaterial(m.materialName ?? `재료 #${m.materialId}`)}
-										{m.materialUnit && <span style={{ color: COLORS.textMuted, fontSize: 12 }}> ({m.materialUnit})</span>}
+										{m.materialUnit && <span className={styles.materialUnit}> ({m.materialUnit})</span>}
 									</td>
-									<td style={{ ...styles.td, textAlign: 'center' }}>
+									<td className={styles.td} style={{ textAlign: 'center' }}>
 										{editingId === m.id ? (
-											<div style={{ display: 'flex', gap: 4, justifyContent: 'center', alignItems: 'center' }}>
+											<div className={styles.inlineEditRow}>
 												<input
-													style={{ ...styles.inlineInput, width: 80 }}
+													className={styles.inlineInput}
+													style={{ width: 80 }}
 													type="number"
 													min="0.001"
 													step="0.001"
@@ -157,20 +159,20 @@ const MappingManager: FC<Props> = ({
 														if (e.key === 'Escape') { setEditingId(null); setEditingQty(''); }
 													}}
 												/>
-												<button style={styles.inlineSaveBtn} onClick={() => handleUpdateSubmit(m.id)}>V</button>
-												<button style={styles.inlineCancelBtn} onClick={() => { setEditingId(null); setEditingQty(''); }}>X</button>
+												<button className={styles.inlineSaveBtn} onClick={() => handleUpdateSubmit(m.id)}>V</button>
+												<button className={styles.inlineCancelBtn} onClick={() => { setEditingId(null); setEditingQty(''); }}>X</button>
 											</div>
 										) : (
 											<span style={{ fontWeight: 700 }}>{m.quantityPerUnit}</span>
 										)}
 									</td>
-									<td style={{ ...styles.td, textAlign: 'center' }}>
-										<div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-											<button style={styles.actionBtn} onClick={() => startEdit(m)}>
+									<td className={styles.td} style={{ textAlign: 'center' }}>
+										<div className={styles.actionsRow}>
+											<button className={styles.actionBtn} onClick={() => startEdit(m)}>
 												{t('mappings.actionEdit')}
 											</button>
 											<button
-												style={{ ...styles.actionBtn, color: COLORS.danger }}
+												className={styles.actionBtnDanger}
 												onClick={() => {
 													if (confirm(t('mappings.deleteConfirm'))) {
 														onDelete(m.id);
@@ -190,16 +192,16 @@ const MappingManager: FC<Props> = ({
 
 			{/* 매핑 추가 모달 */}
 			{showForm && (
-				<div style={styles.overlay} onClick={() => setShowForm(false)}>
-					<div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-						<h3 style={{ margin: '0 0 20px 0', fontSize: 18, fontWeight: 700, color: COLORS.text }}>
+				<div className={styles.overlay} onClick={() => setShowForm(false)}>
+					<div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+						<h3 className={styles.modalTitle}>
 							{t('mappings.modalCreate')}
 						</h3>
 						<form onSubmit={handleCreateSubmit}>
-							<div style={styles.formField}>
-								<label style={styles.formLabel}>{t('mappings.fieldProduct')}</label>
+							<div className={styles.formField}>
+								<label className={styles.formLabel}>{t('mappings.fieldProduct')}</label>
 								<select
-									style={styles.formInput}
+									className={styles.formInput}
 									value={formProductId}
 									onChange={(e) => setFormProductId(parseInt(e.target.value))}
 									required
@@ -210,10 +212,10 @@ const MappingManager: FC<Props> = ({
 									))}
 								</select>
 							</div>
-							<div style={styles.formField}>
-								<label style={styles.formLabel}>{t('mappings.fieldMaterial')}</label>
+							<div className={styles.formField}>
+								<label className={styles.formLabel}>{t('mappings.fieldMaterial')}</label>
 								<select
-									style={styles.formInput}
+									className={styles.formInput}
 									value={formMaterialId}
 									onChange={(e) => setFormMaterialId(parseInt(e.target.value))}
 									required
@@ -224,10 +226,10 @@ const MappingManager: FC<Props> = ({
 									))}
 								</select>
 							</div>
-							<div style={styles.formField}>
-								<label style={styles.formLabel}>{t('mappings.fieldQtyPerUnit')}</label>
+							<div className={styles.formField}>
+								<label className={styles.formLabel}>{t('mappings.fieldQtyPerUnit')}</label>
 								<input
-									style={styles.formInput}
+									className={styles.formInput}
 									type="number"
 									min="0.001"
 									step="0.001"
@@ -237,9 +239,9 @@ const MappingManager: FC<Props> = ({
 									required
 								/>
 							</div>
-							<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 8 }}>
-								<button type="button" style={styles.cancelActionBtn} onClick={() => setShowForm(false)}>{t('mappings.cancel')}</button>
-								<button type="submit" style={styles.submitActionBtn}>{t('mappings.register')}</button>
+							<div className={styles.formActions}>
+								<button type="button" className={styles.cancelActionBtn} onClick={() => setShowForm(false)}>{t('mappings.cancel')}</button>
+								<button type="submit" className={styles.submitActionBtn}>{t('mappings.register')}</button>
 							</div>
 						</form>
 					</div>
@@ -247,199 +249,6 @@ const MappingManager: FC<Props> = ({
 			)}
 		</div>
 	);
-};
-
-const styles: Record<string, React.CSSProperties> = {
-	container: {
-		padding: 24,
-		maxWidth: 900,
-		margin: '0 auto',
-	},
-	center: {
-		display: 'flex',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
-		height: '100%',
-		gap: 12,
-	},
-	header: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'flex-start',
-		marginBottom: 24,
-		gap: 16,
-	},
-	headerRight: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: 10,
-		flexShrink: 0,
-	},
-	title: {
-		margin: 0,
-		fontSize: 22,
-		fontWeight: 700,
-		color: COLORS.text,
-	},
-	subtitle: {
-		fontSize: 13,
-		color: COLORS.textMuted,
-		margin: '4px 0 0',
-	},
-	retryBtn: {
-		padding: '8px 20px',
-		border: 'none',
-		borderRadius: 6,
-		backgroundColor: COLORS.primary,
-		color: COLORS.white,
-		fontSize: 14,
-		fontWeight: 600,
-		cursor: 'pointer',
-	},
-	refreshBtn: {
-		padding: '8px 16px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 6,
-		backgroundColor: COLORS.white,
-		fontSize: 13,
-		fontWeight: 600,
-		cursor: 'pointer',
-		color: COLORS.textLight,
-	},
-	addBtn: {
-		padding: '8px 18px',
-		border: 'none',
-		borderRadius: 8,
-		backgroundColor: COLORS.primary,
-		color: COLORS.white,
-		fontSize: 13,
-		fontWeight: 700,
-		cursor: 'pointer',
-		whiteSpace: 'nowrap',
-	},
-	tableWrap: {
-		backgroundColor: COLORS.white,
-		borderRadius: 12,
-		border: `1px solid ${COLORS.border}`,
-		overflow: 'auto',
-	},
-	table: {
-		width: '100%',
-		borderCollapse: 'collapse',
-	},
-	th: {
-		padding: '12px 16px',
-		fontSize: 13,
-		fontWeight: 700,
-		color: COLORS.textMuted,
-		borderBottom: `2px solid ${COLORS.borderDark}`,
-		textAlign: 'left',
-		backgroundColor: COLORS.backgroundLight,
-		whiteSpace: 'nowrap',
-	},
-	td: {
-		padding: '12px 16px',
-		fontSize: 14,
-		color: COLORS.text,
-		borderBottom: `1px solid ${COLORS.border}`,
-	},
-	actionBtn: {
-		padding: '4px 10px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 6,
-		backgroundColor: COLORS.white,
-		fontSize: 12,
-		fontWeight: 600,
-		cursor: 'pointer',
-		color: COLORS.textLight,
-	},
-	inlineInput: {
-		padding: '4px 8px',
-		border: `1px solid ${COLORS.primary}`,
-		borderRadius: 4,
-		fontSize: 14,
-		outline: 'none',
-		textAlign: 'center' as const,
-	},
-	inlineSaveBtn: {
-		padding: '4px 8px',
-		border: 'none',
-		borderRadius: 4,
-		backgroundColor: COLORS.success,
-		color: COLORS.white,
-		fontSize: 12,
-		fontWeight: 700,
-		cursor: 'pointer',
-	},
-	inlineCancelBtn: {
-		padding: '4px 8px',
-		border: 'none',
-		borderRadius: 4,
-		backgroundColor: COLORS.danger,
-		color: COLORS.white,
-		fontSize: 12,
-		fontWeight: 700,
-		cursor: 'pointer',
-	},
-	overlay: {
-		position: 'fixed',
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-		backgroundColor: 'rgba(0,0,0,0.5)',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		zIndex: 1000,
-	},
-	modal: {
-		backgroundColor: COLORS.white,
-		borderRadius: 12,
-		padding: 24,
-		width: '90%',
-		maxWidth: 460,
-	},
-	formField: {
-		marginBottom: 14,
-	},
-	formLabel: {
-		display: 'block',
-		fontSize: 13,
-		fontWeight: 600,
-		color: COLORS.textLight,
-		marginBottom: 6,
-	},
-	formInput: {
-		padding: '10px 12px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 8,
-		fontSize: 14,
-		outline: 'none',
-		boxSizing: 'border-box' as const,
-		width: '100%',
-	},
-	cancelActionBtn: {
-		padding: '8px 16px',
-		border: `1px solid ${COLORS.borderInput}`,
-		borderRadius: 6,
-		backgroundColor: COLORS.white,
-		fontSize: 13,
-		fontWeight: 600,
-		cursor: 'pointer',
-		color: COLORS.textLight,
-	},
-	submitActionBtn: {
-		padding: '8px 20px',
-		border: 'none',
-		borderRadius: 6,
-		backgroundColor: COLORS.primary,
-		color: COLORS.white,
-		fontSize: 13,
-		fontWeight: 700,
-		cursor: 'pointer',
-	},
 };
 
 export default MappingManager;

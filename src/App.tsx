@@ -15,7 +15,7 @@ import ForecastPage from './components/ForecastPage';
 import MaterialManager from './components/MaterialManager';
 import PurchaseOrderManager from './components/PurchaseOrderManager';
 import MappingManager from './components/MappingManager';
-import { COLORS } from './constants/theme';
+import styles from './App.module.scss';
 
 type AppTab = 'dashboard' | 'chat' | 'trends' | 'forecast' | 'materials' | 'orders' | 'mappings';
 
@@ -43,9 +43,9 @@ const App: FC = () => {
 	// 로딩 중 (토큰 검증)
 	if (auth.isLoading) {
 		return (
-			<div style={styles.loadingScreen}>
-				<div style={styles.loadingIcon}>AI</div>
-				<p style={{ color: COLORS.textMuted, marginTop: 12 }}>{t('app.loading')}</p>
+			<div className={styles.loadingScreen}>
+				<div className={styles.loadingIcon}>AI</div>
+				<p className={styles.loadingText}>{t('app.loading')}</p>
 			</div>
 		);
 	}
@@ -60,32 +60,32 @@ const App: FC = () => {
 	};
 
 	return (
-		<div style={styles.layout}>
+		<div className={styles.layout}>
 			{/* 헤더 */}
-			<header style={styles.header}>
-				<div style={styles.headerLeft}>
-					<div style={styles.logoIcon}>AI</div>
-					<h1 style={styles.headerTitle}>{t('app.title')}</h1>
+			<header className={styles.header}>
+				<div className={styles.headerLeft}>
+					<div className={styles.logoIcon}>AI</div>
+					<h1 className={styles.headerTitle}>{t('app.title')}</h1>
 				</div>
-				<div style={styles.headerRight}>
-					<button style={styles.langBtn} onClick={toggleLang}>
+				<div className={styles.headerRight}>
+					<button className={styles.langBtn} onClick={toggleLang}>
 						{LANG_LABELS[i18n.language] ?? '한국어'}
 					</button>
 					{auth.user && (
-						<span style={styles.userName}>{auth.user.name}</span>
+						<span className={styles.userName}>{auth.user.name}</span>
 					)}
-					<button style={styles.logoutBtn} onClick={auth.logout}>
+					<button className={styles.logoutBtn} onClick={auth.logout}>
 						{t('app.logout')}
 					</button>
 				</div>
 			</header>
 
 			{/* 탭 네비게이션 */}
-			<nav style={styles.tabNav}>
+			<nav className={styles.tabNav}>
 				{TAB_KEYS.map((tab) => (
 					<button
 						key={tab}
-						style={activeTab === tab ? styles.tabActive : styles.tab}
+						className={activeTab === tab ? styles.tabActive : styles.tab}
 						onClick={() => setActiveTab(tab)}
 					>
 						{t(`tabs.${tab}`)}
@@ -94,7 +94,7 @@ const App: FC = () => {
 			</nav>
 
 			{/* 메인 콘텐츠 */}
-			<div style={activeTab === 'chat' ? styles.chatContent : styles.mainContent}>
+			<div className={activeTab === 'chat' ? styles.chatContent : styles.mainContent}>
 				{activeTab === 'dashboard' && (
 					<Dashboard
 						stats={dashboardHook.stats}
@@ -185,139 +185,6 @@ const App: FC = () => {
 			</div>
 		</div>
 	);
-};
-
-const styles: Record<string, React.CSSProperties> = {
-	loadingScreen: {
-		display: 'flex',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
-		height: '100vh',
-		backgroundColor: COLORS.background,
-	},
-	loadingIcon: {
-		display: 'inline-flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-		width: 56,
-		height: 56,
-		borderRadius: 14,
-		backgroundColor: COLORS.primary,
-		color: COLORS.white,
-		fontSize: 20,
-		fontWeight: 900,
-	},
-	layout: {
-		display: 'flex',
-		flexDirection: 'column',
-		height: '100vh',
-		backgroundColor: COLORS.background,
-	},
-	header: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		backgroundColor: COLORS.primary,
-		color: COLORS.white,
-		height: 56,
-		padding: '0 24px',
-		flexShrink: 0,
-	},
-	headerLeft: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: 10,
-	},
-	logoIcon: {
-		display: 'inline-flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-		width: 32,
-		height: 32,
-		borderRadius: 8,
-		backgroundColor: 'rgba(255,255,255,0.2)',
-		fontSize: 12,
-		fontWeight: 900,
-	},
-	headerTitle: {
-		fontSize: 18,
-		fontWeight: 800,
-		margin: 0,
-	},
-	headerRight: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: 12,
-	},
-	userName: {
-		fontSize: 13,
-		backgroundColor: 'rgba(255,255,255,0.15)',
-		padding: '4px 12px',
-		borderRadius: 20,
-		fontWeight: 500,
-	},
-	langBtn: {
-		backgroundColor: 'rgba(255,255,255,0.15)',
-		color: COLORS.white,
-		border: '1px solid rgba(255,255,255,0.3)',
-		padding: '4px 12px',
-		borderRadius: 20,
-		fontSize: 11,
-		fontWeight: 700,
-		cursor: 'pointer',
-	},
-	logoutBtn: {
-		backgroundColor: 'rgba(255,255,255,0.15)',
-		color: COLORS.white,
-		border: '1px solid rgba(255,255,255,0.3)',
-		padding: '6px 14px',
-		borderRadius: 20,
-		fontSize: 12,
-		fontWeight: 600,
-		cursor: 'pointer',
-	},
-	tabNav: {
-		display: 'flex',
-		backgroundColor: COLORS.white,
-		borderBottom: `1px solid ${COLORS.borderDark}`,
-		flexShrink: 0,
-		overflowX: 'auto',
-	},
-	tab: {
-		flex: 1,
-		padding: '12px 4px',
-		border: 'none',
-		borderBottom: '3px solid transparent',
-		backgroundColor: 'transparent',
-		fontSize: 13,
-		fontWeight: 500,
-		color: COLORS.textMuted,
-		cursor: 'pointer',
-		whiteSpace: 'nowrap',
-	},
-	tabActive: {
-		flex: 1,
-		padding: '12px 4px',
-		border: 'none',
-		borderBottom: `3px solid ${COLORS.primary}`,
-		backgroundColor: 'transparent',
-		fontSize: 13,
-		fontWeight: 700,
-		color: COLORS.primary,
-		cursor: 'pointer',
-		whiteSpace: 'nowrap',
-	},
-	mainContent: {
-		flex: 1,
-		overflow: 'auto',
-	},
-	chatContent: {
-		flex: 1,
-		overflow: 'hidden',
-		display: 'flex',
-		flexDirection: 'column',
-	},
 };
 
 export default App;

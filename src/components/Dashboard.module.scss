@@ -1,0 +1,145 @@
+.container {
+	padding: 24px;
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+.center {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	gap: 12px;
+}
+
+.title {
+	margin: 0 0 24px 0;
+	font-size: 22px;
+	font-weight: 700;
+	color: #222;
+}
+
+.retryBtn {
+	padding: 8px 20px;
+	border: none;
+	border-radius: 6px;
+	background-color: #1565C0;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.cardGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 16px;
+	margin-bottom: 32px;
+}
+
+.card {
+	background-color: #fff;
+	border-radius: 12px;
+	padding: 20px 24px;
+	border-left: 4px solid #1565C0;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.cardLabel {
+	font-size: 13px;
+	color: #999;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.cardValue {
+	font-size: 32px;
+	font-weight: 800;
+	color: #222;
+	line-height: 1;
+}
+
+.cardUnit {
+	font-size: 13px;
+	color: #999;
+	margin-top: 4px;
+}
+
+.section {
+	margin-bottom: 32px;
+}
+
+.sectionTitle {
+	font-size: 16px;
+	font-weight: 700;
+	color: #222;
+	margin-bottom: 16px;
+}
+
+.actionRow {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.actionBtn {
+	padding: 10px 20px;
+	border: 1px solid #1565C0;
+	border-radius: 8px;
+	background-color: #fff;
+	color: #1565C0;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.insightList {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.insightItem {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	background-color: #fff;
+	border-radius: 10px;
+	padding: 14px 18px;
+	border: 1px solid #eee;
+}
+
+.insightBullet {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 32px;
+	height: 24px;
+	border-radius: 6px;
+	background-color: #00897B;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 800;
+	flex-shrink: 0;
+}
+
+.insightText {
+	font-size: 14px;
+	color: #333;
+	line-height: 1.5;
+}
+
+// 동적 스타일용 클래스
+.loadingText {
+	color: #999;
+}
+
+.errorText {
+	color: #F44336;
+}
+
+.noInsights {
+	color: #999;
+	font-size: 14px;
+}
