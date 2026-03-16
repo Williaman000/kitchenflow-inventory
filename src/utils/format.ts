@@ -8,15 +8,21 @@ function getCurrencySymbol(): string {
 	return i18n.language === 'ja' ? '円' : '원';
 }
 
+// KRW→JPY 簡易変換（デモ用）
+function convertPrice(amount: number): number {
+	return i18n.language === 'ja' ? Math.round(amount / 10) : amount;
+}
+
 export function formatCurrency(amount: number): string {
-	return `${amount.toLocaleString(getLocale())}${getCurrencySymbol()}`;
+	return `${convertPrice(amount).toLocaleString(getLocale())}${getCurrencySymbol()}`;
 }
 
 export function formatShortCurrency(amount: number): string {
+	const converted = convertPrice(amount);
 	if (i18n.language === 'ja') {
-		return `${(amount / 10000).toFixed(0)}万`;
+		return `${(converted / 10000).toFixed(0)}万`;
 	}
-	return `${(amount / 10000).toFixed(0)}만`;
+	return `${(converted / 10000).toFixed(0)}만`;
 }
 
 export function formatDate(dateStr: string): string {
