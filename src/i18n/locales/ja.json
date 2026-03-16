@@ -140,7 +140,16 @@
 		"fieldQtyPerUnit": "単位消費量",
 		"fieldQtyPlaceholder": "商品1つあたりの使用量",
 		"cancel": "キャンセル",
-		"register": "登録"
+		"register": "登録",
+		"aiSuggest": "AI自動マッピング",
+		"aiLoading": "AI分析中...",
+		"aiTitle": "AIマッピング提案",
+		"aiCount": "{{count}}件提案",
+		"aiHint": "数量を修正するか、不要な項目を削除してから一括登録してください。",
+		"aiApply": "{{count}}件一括登録",
+		"aiSaving": "登録中...",
+		"aiError": "AIマッピング提案に失敗しました。",
+		"aiBulkError": "一括登録中にエラーが発生しました。"
 	},
 	"chat": {
 		"title": "AIチャット",

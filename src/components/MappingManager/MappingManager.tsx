@@ -1,8 +1,10 @@
 import { useState, useEffect, type FC, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n';
 import { trProduct, trMaterial } from '../../utils/dbTranslate';
 import type { Material, ProductMaterialMapping } from '../../types';
 import type { SimpleProduct } from '../../services/inventoryApi';
+import { suggestMappings, type MappingSuggestion } from '../../services/inventoryAiApi';
 import styles from './MappingManager.module.scss';
 
 interface Props {
@@ -42,6 +44,12 @@ const MappingManager: FC<Props> = ({
 	// Inline editing
 	const [editingId, setEditingId] = useState<number | null>(null);
 	const [editingQty, setEditingQty] = useState('');
+
+	// AI suggestion
+	const [suggestions, setSuggestions] = useState<MappingSuggestion[]>([]);
+	const [showSuggestions, setShowSuggestions] = useState(false);
+	const [aiLoading, setAiLoading] = useState(false);
+	const [aiSaving, setAiSaving] = useState(false);
 
 	useEffect(() => {
 		onLoadMappings();
@@ -83,6 +91,43 @@ const MappingManager: FC<Props> = ({
 		setEditingQty(String(mapping.quantityPerUnit));
 	};
 
+	const handleAiSuggest = async () => {
+		setAiLoading(true);
+		try {
+			const lang = import.meta.env.VITE_FIXED_LANG || i18n.language || 'ko';
+			const result = await suggestMappings(lang);
+			setSuggestions(result);
+			setShowSuggestions(true);
+		} catch {
+			alert(t('mappings.aiError'));
+		} finally {
+			setAiLoading(false);
+		}
+	};
+
+	const handleSuggestionQtyChange = (idx: number, value: string) => {
+		setSuggestions((prev) => prev.map((s, i) => i === idx ? { ...s, quantity_per_unit: parseFloat(value) || 0 } : s));
+	};
+
+	const handleRemoveSuggestion = (idx: number) => {
+		setSuggestions((prev) => prev.filter((_, i) => i !== idx));
+	};
+
+	const handleApplySuggestions = async () => {
+		setAiSaving(true);
+		try {
+			for (const s of suggestions) {
+				await onCreate({ productId: s.product_id, materialId: s.material_id, quantityPerUnit: s.quantity_per_unit });
+			}
+			setShowSuggestions(false);
+			setSuggestions([]);
+		} catch {
+			alert(t('mappings.aiBulkError'));
+		} finally {
+			setAiSaving(false);
+		}
+	};
+
 	if (isLoading && mappings.length === 0) {
 		return (
 			<div className={styles.center}>
@@ -108,6 +153,9 @@ const MappingManager: FC<Props> = ({
 					<p className={styles.subtitle}>{t('mappings.subtitle')}</p>
 				</div>
 				<div className={styles.headerRight}>
+					<button className={styles.aiBtn} onClick={handleAiSuggest} disabled={aiLoading}>
+						{aiLoading ? t('mappings.aiLoading') : t('mappings.aiSuggest')}
+					</button>
 					<button className={styles.refreshBtn} onClick={onLoadMappings}>{t('mappings.refresh')}</button>
 					<button className={styles.addBtn} onClick={() => setShowForm(true)}>{t('mappings.addBtn')}</button>
 				</div>
@@ -188,6 +236,64 @@ const MappingManager: FC<Props> = ({
 					</tbody>
 				</table>
 			</div>
+
+			{/* AI suggestion modal */}
+			{showSuggestions && (
+				<div className={styles.overlay} onClick={() => setShowSuggestions(false)}>
+					<div className={styles.aiModal} onClick={(e) => e.stopPropagation()}>
+						<div className={styles.aiModalHeader}>
+							<h3 className={styles.modalTitle}>{t('mappings.aiTitle')}</h3>
+							<span className={styles.aiCount}>{t('mappings.aiCount', { count: suggestions.length })}</span>
+						</div>
+						<p className={styles.aiHint}>{t('mappings.aiHint')}</p>
+						<div className={styles.aiTableWrap}>
+							<table className={styles.table}>
+								<thead>
+									<tr>
+										<th className={styles.th}>{t('mappings.colProduct')}</th>
+										<th className={styles.th}>{t('mappings.colMaterial')}</th>
+										<th className={styles.th} style={{ textAlign: 'center', width: 120 }}>{t('mappings.colQtyPerUnit')}</th>
+										<th className={styles.th} style={{ textAlign: 'center', width: 60 }}></th>
+									</tr>
+								</thead>
+								<tbody>
+									{suggestions.map((s, idx) => (
+										<tr key={`${s.product_id}-${s.material_id}`}>
+											<td className={styles.td}><span style={{ fontWeight: 600 }}>{trProduct(s.product_name)}</span></td>
+											<td className={styles.td}>{trMaterial(s.material_name)} <span className={styles.materialUnit}>({s.material_unit})</span></td>
+											<td className={styles.td} style={{ textAlign: 'center' }}>
+												<input
+													className={styles.inlineInput}
+													type="number"
+													min="0.001"
+													step="0.001"
+													style={{ width: 80 }}
+													value={s.quantity_per_unit}
+													onChange={(e) => handleSuggestionQtyChange(idx, e.target.value)}
+												/>
+											</td>
+											<td className={styles.td} style={{ textAlign: 'center' }}>
+												<button className={styles.actionBtnDanger} onClick={() => handleRemoveSuggestion(idx)}>X</button>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+						<div className={styles.formActions}>
+							<button type="button" className={styles.cancelActionBtn} onClick={() => setShowSuggestions(false)}>{t('mappings.cancel')}</button>
+							<button
+								type="button"
+								className={styles.submitActionBtn}
+								onClick={handleApplySuggestions}
+								disabled={aiSaving || suggestions.length === 0}
+							>
+								{aiSaving ? t('mappings.aiSaving') : t('mappings.aiApply', { count: suggestions.length })}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 
 			{/* Add mapping modal */}
 			{showForm && (

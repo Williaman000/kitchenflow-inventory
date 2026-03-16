@@ -140,7 +140,16 @@
 		"fieldQtyPerUnit": "단위소비량",
 		"fieldQtyPlaceholder": "상품 1개당 사용량",
 		"cancel": "취소",
-		"register": "등록"
+		"register": "등록",
+		"aiSuggest": "AI 자동 매핑",
+		"aiLoading": "AI 분석 중...",
+		"aiTitle": "AI 매핑 제안",
+		"aiCount": "{{count}}건 제안",
+		"aiHint": "수량을 수정하거나 불필요한 항목을 제거한 후 일괄 등록하세요.",
+		"aiApply": "{{count}}건 일괄 등록",
+		"aiSaving": "등록 중...",
+		"aiError": "AI 매핑 제안에 실패했습니다.",
+		"aiBulkError": "일괄 등록 중 오류가 발생했습니다."
 	},
 	"chat": {
 		"title": "AI 챗봇",

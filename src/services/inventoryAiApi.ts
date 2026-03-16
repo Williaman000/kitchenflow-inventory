@@ -210,6 +210,21 @@ export async function deleteMapping(mappingId: number): Promise<void> {
 	await request<void>(`/api/v1/inventory-ai/mappings/${mappingId}`, { method: 'DELETE' });
 }
 
+export interface MappingSuggestion {
+	product_id: number;
+	material_id: number;
+	quantity_per_unit: number;
+	product_name: string;
+	material_name: string;
+	material_unit: string;
+}
+
+export async function suggestMappings(language: string = 'ko'): Promise<MappingSuggestion[]> {
+	return await request<MappingSuggestion[]>(`/api/v1/inventory-ai/mappings/suggest?language=${language}`, {
+		method: 'POST',
+	});
+}
+
 // ── Sales Upload ──
 
 interface SalesUploadResultDto {
