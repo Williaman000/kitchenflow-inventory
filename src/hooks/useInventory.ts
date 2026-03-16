@@ -18,19 +18,19 @@ import {
 } from '../services/inventoryApi';
 
 export function useInventory() {
-	// 재료 상태
+	// Material state
 	const [materials, setMaterials] = useState<Material[]>([]);
 	const [materialCategoryFilter, setMaterialCategoryFilter] = useState<string | null>(null);
 
-	// 발주 상태
+	// Purchase order state
 	const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
 	const [poStatusFilter, setPoStatusFilter] = useState<PurchaseOrderStatus | null>(null);
 
-	// 공통 상태
+	// Common state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	// ── 재료 관리 ──
+	// ── Material management ──
 
 	const loadMaterials = useCallback(async () => {
 		try {
@@ -100,7 +100,7 @@ export function useInventory() {
 		}
 	}, []);
 
-	// ── 발주 관리 ──
+	// ── Purchase order management ──
 
 	const loadPurchaseOrders = useCallback(async () => {
 		try {
@@ -139,7 +139,7 @@ export function useInventory() {
 		}
 	}, []);
 
-	// ── 파생 데이터 ──
+	// ── Derived data ──
 
 	const filteredMaterials = materialCategoryFilter
 		? materials.filter((m) => m.category === materialCategoryFilter)

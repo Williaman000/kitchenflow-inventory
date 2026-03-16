@@ -8,7 +8,7 @@ function getCurrencySymbol(): string {
 	return i18n.language === 'ja' ? '円' : '원';
 }
 
-// KRW→JPY 簡易変換（デモ用）
+// KRW to JPY simple conversion (for demo)
 function convertPrice(amount: number): number {
 	return i18n.language === 'ja' ? Math.round(amount / 10) : amount;
 }

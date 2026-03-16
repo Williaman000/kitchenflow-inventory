@@ -23,7 +23,7 @@ interface ParsedRow {
 	error?: string;
 }
 
-// CSV/XLSX 헤더 매핑 (한글 + 영어)
+// CSV/XLSX header mapping (Korean + English)
 const HEADER_MAP: Record<string, keyof ParsedRow> = {
 	'재료명': 'name',
 	'name': 'name',

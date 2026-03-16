@@ -117,7 +117,7 @@ const PurchaseOrderManager: FC<Props> = ({
 		}
 	};
 
-	// 날짜 필터 적용
+	// Apply date filter
 	const filteredPOs = purchaseOrders.filter((po) => {
 		const poDate = po.orderedAt || po.createdAt;
 		if (!poDate) return true;
@@ -169,7 +169,7 @@ const PurchaseOrderManager: FC<Props> = ({
 				<button className={styles.refreshBtn} onClick={onLoad}>{t('orders.refresh')}</button>
 			</div>
 
-			{/* 상태 필터 + 생성 버튼 */}
+			{/* Status filter + create button */}
 			<div className={styles.filterRow}>
 				<div className={styles.filterGroup}>
 					<button
@@ -198,7 +198,7 @@ const PurchaseOrderManager: FC<Props> = ({
 				</div>
 			</div>
 
-			{/* 날짜 필터 */}
+			{/* Date filter */}
 			<div className={styles.dateFilterRow}>
 				<label className={styles.dateLabel}>{t('orders.dateRange')}</label>
 				<input type="date" className={styles.dateInput} value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
@@ -214,7 +214,7 @@ const PurchaseOrderManager: FC<Props> = ({
 				</span>
 			</div>
 
-			{/* 발주 테이블 */}
+			{/* Purchase order table */}
 			<div className={styles.tableWrap}>
 				<table className={styles.table}>
 					<thead>
@@ -301,7 +301,7 @@ const PurchaseOrderManager: FC<Props> = ({
 				</table>
 			</div>
 
-			{/* 발주 생성 모달 */}
+			{/* Create purchase order modal */}
 			{showForm && (
 				<div className={styles.overlay} onClick={() => setShowForm(false)}>
 					<div className={styles.modal} onClick={(e) => e.stopPropagation()}>

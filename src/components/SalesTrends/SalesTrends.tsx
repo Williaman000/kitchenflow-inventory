@@ -51,21 +51,21 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 	const handleDownloadCsv = () => {
 		if (!data) return;
 		const rows: string[] = [];
-		// 일별 매출
+		// Daily sales
 		rows.push(`[${t('trends.chartDaily')}]`);
 		rows.push([t('salesUpload.colDate'), t('trends.totalRevenue'), t('trends.totalQuantity'), t('trends.totalOrders')].join(','));
 		for (const d of data.dailyBreakdown) {
 			rows.push([d.date, d.totalRevenue, d.totalQuantity, d.orderCount].join(','));
 		}
 		rows.push('');
-		// 상품별 매출
+		// Sales by product
 		rows.push(`[${t('trends.chartProduct')}]`);
 		rows.push([t('salesUpload.colProduct'), t('trends.totalRevenue'), t('trends.totalQuantity')].join(','));
 		for (const p of data.productRanking) {
 			rows.push([`"${p.productName}"`, p.totalRevenue, p.totalQuantity].join(','));
 		}
 		rows.push('');
-		// 요일별 평균
+		// Average by day of week
 		rows.push(`[${t('trends.chartDayOfWeek')}]`);
 		rows.push([t('trends.chartDayOfWeek'), t('trends.totalRevenue'), t('trends.totalQuantity')].join(','));
 		for (const d of data.dayOfWeekPattern) {
@@ -133,7 +133,7 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 
 			{data && (
 				<>
-					{/* 요약 카드 */}
+					{/* Summary cards */}
 					<div className={styles.summaryRow}>
 						<div className={styles.summaryCard}>
 							<div className={styles.summaryLabel}>{t('trends.totalRevenue')}</div>
@@ -149,7 +149,7 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 						</div>
 					</div>
 
-					{/* 일별 매출 추이 */}
+					{/* Daily sales trend */}
 					{data.dailyBreakdown.length > 0 && (
 						<div className={styles.chartSection}>
 							<h3 className={styles.chartTitle}>{t('trends.chartDaily')}</h3>
@@ -173,7 +173,7 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 						</div>
 					)}
 
-					{/* 상품별 매출 순위 */}
+					{/* Sales ranking by product */}
 					{data.productRanking.length > 0 && (
 						<div className={styles.chartSection}>
 							<h3 className={styles.chartTitle}>{t('trends.chartProduct')}</h3>
@@ -191,7 +191,7 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 						</div>
 					)}
 
-					{/* 요일별 평균 */}
+					{/* Average by day of week */}
 					{data.dayOfWeekPattern.length > 0 && (
 						<div className={styles.chartSection}>
 							<h3 className={styles.chartTitle}>{t('trends.chartDayOfWeek')}</h3>
@@ -211,7 +211,7 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 				</>
 			)}
 
-			{/* 업로드 이력 */}
+			{/* Upload history */}
 			<div className={styles.chartSection}>
 				<h3 className={styles.chartTitle}>{t('salesUpload.uploadHistory')}</h3>
 				{uploadsLoading && <p className={styles.loadingText}>{t('app.loading')}</p>}

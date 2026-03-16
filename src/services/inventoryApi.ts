@@ -50,7 +50,7 @@ interface InventoryLogDto {
 	material_name: string | null;
 }
 
-// ── DTO → Model 변환 ──
+// ── DTO to Model conversion ──
 
 function toMaterial(dto: MaterialDto): Material {
 	return {

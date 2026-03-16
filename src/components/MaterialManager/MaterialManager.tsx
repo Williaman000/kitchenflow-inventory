@@ -48,10 +48,10 @@ const MaterialManager: FC<Props> = ({
 	const [formCurrentStock, setFormCurrentStock] = useState('');
 	const [formMinimumStock, setFormMinimumStock] = useState('');
 
-	// 일괄 등록 모달
+	// Bulk import modal
 	const [showBulkImport, setShowBulkImport] = useState(false);
 
-	// 재고 조정 모달
+	// Inventory adjustment modal
 	const [adjustModal, setAdjustModal] = useState<Material | null>(null);
 	const [adjustQty, setAdjustQty] = useState('');
 	const [adjustType, setAdjustType] = useState<'USE_OUT' | 'WASTE'>('USE_OUT');
@@ -145,7 +145,7 @@ const MaterialManager: FC<Props> = ({
 				</div>
 			</div>
 
-			{/* 카테고리 필터 + 추가 버튼 */}
+			{/* Category filter + add button */}
 			<div className={styles.filterRow}>
 				<div className={styles.filterGroup}>
 					<button
@@ -174,7 +174,7 @@ const MaterialManager: FC<Props> = ({
 				</div>
 			</div>
 
-			{/* 재료 테이블 */}
+			{/* Material table */}
 			<div className={styles.tableWrap}>
 				<table className={styles.table}>
 					<thead>
@@ -249,7 +249,7 @@ const MaterialManager: FC<Props> = ({
 				</table>
 			</div>
 
-			{/* 재료 추가/수정 모달 */}
+			{/* Add/edit material modal */}
 			{showForm && (
 				<div className={styles.overlay} onClick={() => setShowForm(false)}>
 					<div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -322,7 +322,7 @@ const MaterialManager: FC<Props> = ({
 				</div>
 			)}
 
-			{/* 사용/폐기 모달 */}
+			{/* Use/waste modal */}
 			{adjustModal && (
 				<div className={styles.overlay} onClick={() => setAdjustModal(null)}>
 					<div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -378,7 +378,7 @@ const MaterialManager: FC<Props> = ({
 					</div>
 				</div>
 			)}
-			{/* 일괄 등록 모달 */}
+			{/* Bulk import modal */}
 			{showBulkImport && (
 				<BulkImportModal
 					onClose={() => setShowBulkImport(false)}

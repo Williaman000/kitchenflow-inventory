@@ -1,4 +1,4 @@
-// 재고/발주 관리 타입
+// Inventory/purchase order management types
 export type PurchaseOrderStatus = 'DRAFT' | 'ORDERED' | 'RECEIVED' | 'CANCELLED';
 export type InventoryChangeType = 'PURCHASE_IN' | 'USE_OUT' | 'ADJUSTMENT' | 'WASTE';
 
@@ -59,7 +59,7 @@ export interface ChatMessage {
 	timestamp: Date;
 }
 
-// 매출 분석
+// Sales analysis
 export interface DailySalesPoint {
 	date: string;
 	totalQuantity: number;
@@ -92,7 +92,7 @@ export interface SalesTrendData {
 	dayOfWeekPattern: DayOfWeekPoint[];
 }
 
-// 수요 예측
+// Demand forecast
 export interface RecommendedOrder {
 	materialId: number;
 	materialName: string;
@@ -114,7 +114,7 @@ export interface ForecastData {
 	needsOrdering: number;
 }
 
-// AI 인사이트
+// AI insights
 export interface InsightData {
 	generatedAt: string;
 	insights: string[];
@@ -122,7 +122,7 @@ export interface InsightData {
 	topSeller: string | null;
 }
 
-// 상품-재료 매핑
+// Product-material mapping
 export interface ProductMaterialMapping {
 	id: number;
 	productId: number;
@@ -133,7 +133,7 @@ export interface ProductMaterialMapping {
 	materialUnit?: string;
 }
 
-// 벌크 임포트
+// Bulk import
 export interface BulkImportError {
 	row: number;
 	message: string;
@@ -145,7 +145,7 @@ export interface BulkImportResult {
 	errors: BulkImportError[];
 }
 
-// 매출 업로드
+// Sales upload
 export interface SalesUploadRecord {
 	id: number;
 	fileName: string;
@@ -162,7 +162,7 @@ export interface SalesUploadResult {
 	errors: { row: number; message: string }[];
 }
 
-// 인증
+// Authentication
 export interface AuthUser {
 	id: number;
 	email: string;

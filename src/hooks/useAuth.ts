@@ -16,7 +16,7 @@ export const useAuth = () => {
 		isLoading: true,
 	});
 
-	// 앱 시작 시 저장된 토큰 검증
+	// Verify saved token on app start
 	useEffect(() => {
 		const savedToken = localStorage.getItem(TOKEN_KEY);
 		if (!savedToken) {

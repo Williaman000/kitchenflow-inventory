@@ -40,7 +40,7 @@ const Dashboard: FC<Props> = ({ stats, isLoading, error, onLoad, onNavigate }) =
 		<div className={styles.container}>
 			<h2 className={styles.title}>{t('dashboard.title')}</h2>
 
-			{/* 요약 카드 */}
+			{/* Summary cards */}
 			<div className={styles.cardGrid}>
 				<div className={styles.card}>
 					<div className={styles.cardLabel}>{t('dashboard.totalMaterials')}</div>
@@ -66,7 +66,7 @@ const Dashboard: FC<Props> = ({ stats, isLoading, error, onLoad, onNavigate }) =
 				</div>
 			</div>
 
-			{/* 빠른 액션 */}
+			{/* Quick actions */}
 			<div className={styles.section}>
 				<h3 className={styles.sectionTitle}>{t('dashboard.quickActions')}</h3>
 				<div className={styles.actionRow}>
@@ -85,7 +85,7 @@ const Dashboard: FC<Props> = ({ stats, isLoading, error, onLoad, onNavigate }) =
 				</div>
 			</div>
 
-			{/* AI 인사이트 */}
+			{/* AI insights */}
 			<div className={styles.section}>
 				<h3 className={styles.sectionTitle}>{t('dashboard.aiInsights')}</h3>
 				{stats.insights.length === 0 ? (

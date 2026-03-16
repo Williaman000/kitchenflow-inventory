@@ -1,4 +1,4 @@
-// KitchenFlow AI 재고관리 테마 색상
+// KitchenFlow AI inventory management theme colors
 export const COLORS = {
 	primary: '#1565C0',
 	primaryDark: '#0D47A1',

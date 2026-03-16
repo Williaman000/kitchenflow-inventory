@@ -12,7 +12,7 @@ export function useSalesTrends(enabled = false) {
 	const [error, setError] = useState<string | null>(null);
 	const loaded = useRef(false);
 
-	// 업로드 이력
+	// Upload history
 	const [uploads, setUploads] = useState<SalesUploadRecord[]>([]);
 	const [uploadsLoading, setUploadsLoading] = useState(false);
 

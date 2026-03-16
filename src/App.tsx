@@ -40,7 +40,7 @@ const App: FC = () => {
 	const mappingsHook = useMappings();
 	const dashboardHook = useDashboard();
 
-	// 로딩 중 (토큰 검증)
+	// Loading (token verification)
 	if (auth.isLoading) {
 		return (
 			<div className={styles.loadingScreen}>
@@ -50,7 +50,7 @@ const App: FC = () => {
 		);
 	}
 
-	// 미인증 → 로그인 화면
+	// Not authenticated -> login screen
 	if (!auth.isAuthenticated) {
 		return <LoginScreen onLogin={auth.login} />;
 	}
@@ -61,7 +61,7 @@ const App: FC = () => {
 
 	return (
 		<div className={styles.layout}>
-			{/* 헤더 */}
+			{/* Header */}
 			<header className={styles.header}>
 				<div className={styles.headerLeft}>
 					<div className={styles.logoIcon}>AI</div>
@@ -82,7 +82,7 @@ const App: FC = () => {
 				</div>
 			</header>
 
-			{/* 탭 네비게이션 */}
+			{/* Tab navigation */}
 			<nav className={styles.tabNav}>
 				{TAB_KEYS.map((tab) => (
 					<button
@@ -95,7 +95,7 @@ const App: FC = () => {
 				))}
 			</nav>
 
-			{/* 메인 콘텐츠 */}
+			{/* Main content */}
 			<div className={activeTab === 'chat' ? styles.chatContent : styles.mainContent}>
 				{activeTab === 'dashboard' && (
 					<Dashboard

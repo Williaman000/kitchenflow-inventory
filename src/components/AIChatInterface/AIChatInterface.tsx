@@ -99,7 +99,7 @@ const AIChatInterface: FC<Props> = ({ messages, isLoading, onSendMessage, onClea
 
 	return (
 		<div className={styles.container}>
-			{/* 헤더 */}
+			{/* Header */}
 			<div className={styles.header}>
 				<h2 className={styles.title}>{t('chat.title')}</h2>
 				{messages.length > 0 && (
@@ -107,7 +107,7 @@ const AIChatInterface: FC<Props> = ({ messages, isLoading, onSendMessage, onClea
 				)}
 			</div>
 
-			{/* 메시지 영역 */}
+			{/* Messages area */}
 			<div className={styles.messagesArea}>
 				{messages.length === 0 ? (
 					<div className={styles.emptyState}>
@@ -157,7 +157,7 @@ const AIChatInterface: FC<Props> = ({ messages, isLoading, onSendMessage, onClea
 				)}
 			</div>
 
-			{/* 입력 바 */}
+			{/* Input bar */}
 			<form className={styles.inputBar} onSubmit={handleSubmit}>
 				<input
 					className={styles.input}

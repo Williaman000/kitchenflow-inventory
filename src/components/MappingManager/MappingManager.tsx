@@ -39,7 +39,7 @@ const MappingManager: FC<Props> = ({
 	const [formMaterialId, setFormMaterialId] = useState(0);
 	const [formQuantity, setFormQuantity] = useState('');
 
-	// 인라인 편집
+	// Inline editing
 	const [editingId, setEditingId] = useState<number | null>(null);
 	const [editingQty, setEditingQty] = useState('');
 
@@ -113,7 +113,7 @@ const MappingManager: FC<Props> = ({
 				</div>
 			</div>
 
-			{/* 매핑 테이블 */}
+			{/* Mapping table */}
 			<div className={styles.tableWrap}>
 				<table className={styles.table}>
 					<thead>
@@ -189,7 +189,7 @@ const MappingManager: FC<Props> = ({
 				</table>
 			</div>
 
-			{/* 매핑 추가 모달 */}
+			{/* Add mapping modal */}
 			{showForm && (
 				<div className={styles.overlay} onClick={() => setShowForm(false)}>
 					<div className={styles.modal} onClick={(e) => e.stopPropagation()}>
