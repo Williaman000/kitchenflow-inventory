@@ -61,6 +61,30 @@ const MaterialManager: FC<Props> = ({
 		onLoad();
 	}, [onLoad]);
 
+	const handleExportCsv = () => {
+		const bom = '\uFEFF';
+		const headers = [
+			t('materials.colName'), t('materials.colCategory'), t('materials.colUnit'),
+			t('materials.colCurrentStock'), t('materials.colMinStock'), t('materials.colStatus'),
+		];
+		const rows = materials.map((mat) => [
+			mat.name,
+			mat.category,
+			mat.unit,
+			String(mat.currentStock),
+			String(mat.minimumStock),
+			mat.currentStock <= mat.minimumStock ? t('materials.statusLow') : t('materials.statusNormal'),
+		]);
+		const csv = bom + [headers.join(','), ...rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(','))].join('\n');
+		const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `materials_${new Date().toISOString().slice(0, 10)}.csv`;
+		a.click();
+		URL.revokeObjectURL(url);
+	};
+
 	const openCreateForm = () => {
 		setEditingMaterial(null);
 		setFormName('');
@@ -165,6 +189,9 @@ const MaterialManager: FC<Props> = ({
 					))}
 				</div>
 				<div className={styles.buttonGroup}>
+					<button className={styles.exportBtn} onClick={handleExportCsv} disabled={materials.length === 0}>
+						{t('materials.exportCsv')}
+					</button>
 					<button className={styles.uploadBtn} onClick={() => setShowBulkImport(true)}>
 						{t('materials.uploadBtn')}
 					</button>

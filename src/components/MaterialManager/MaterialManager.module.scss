@@ -112,6 +112,23 @@
 	gap: 8px;
 }
 
+.exportBtn {
+	padding: 8px 18px;
+	border: 1px solid #1976D2;
+	border-radius: 8px;
+	background-color: #fff;
+	color: #1976D2;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+	white-space: nowrap;
+
+	&:disabled {
+		opacity: 0.4;
+		cursor: default;
+	}
+}
+
 .uploadBtn {
 	padding: 8px 18px;
 	border: 1px solid #00897B;

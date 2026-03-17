@@ -45,6 +45,7 @@
 		"refresh": "새로고침",
 		"lowStockBadge": "재고 부족 {{count}}건",
 		"all": "전체",
+		"exportCsv": "CSV 다운로드",
 		"uploadBtn": "CSV/엑셀 업로드",
 		"addBtn": "+ 재료 추가",
 		"colName": "재료명",
@@ -115,6 +116,8 @@
 		"cancel": "취소",
 		"create": "발주 생성",
 		"exportCsv": "CSV 다운로드",
+		"importCsv": "CSV 업로드",
+		"importNoMatch": "CSV에서 일치하는 재료를 찾지 못했습니다",
 		"dateRange": "기간",
 		"clearDate": "초기화"
 	},

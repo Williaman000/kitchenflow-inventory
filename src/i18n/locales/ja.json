@@ -45,6 +45,7 @@
 		"refresh": "更新",
 		"lowStockBadge": "在庫不足 {{count}}件",
 		"all": "全て",
+		"exportCsv": "CSVダウンロード",
 		"uploadBtn": "CSV/エクセル アップロード",
 		"addBtn": "+ 材料追加",
 		"colName": "材料名",
@@ -115,6 +116,8 @@
 		"cancel": "キャンセル",
 		"create": "発注作成",
 		"exportCsv": "CSV ダウンロード",
+		"importCsv": "CSV アップロード",
+		"importNoMatch": "CSVに一致する材料が見つかりませんでした",
 		"dateRange": "期間",
 		"clearDate": "リセット"
 	},

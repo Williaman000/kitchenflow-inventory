@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FC, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { COLORS } from '../../constants/theme';
 import type { Material, PurchaseOrder, PurchaseOrderStatus } from '../../types';
@@ -75,6 +75,7 @@ const PurchaseOrderManager: FC<Props> = ({
 	const [formItems, setFormItems] = useState<POFormItem[]>([{ materialId: 0, quantity: '', unitPrice: '' }]);
 	const [dateFrom, setDateFrom] = useState('');
 	const [dateTo, setDateTo] = useState('');
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		onLoad();
@@ -145,6 +146,39 @@ const PurchaseOrderManager: FC<Props> = ({
 		downloadCsv(`purchase_orders_${dateStr}.csv`, headers, rows);
 	};
 
+	const handleImportCsv = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+		const reader = new FileReader();
+		reader.onload = async (ev) => {
+			const text = ev.target?.result as string;
+			const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+			if (lines.length < 2) return;
+			// Parse CSV: material_name, quantity, unit_price
+			const items: POFormItem[] = [];
+			for (let i = 1; i < lines.length; i++) {
+				const cols = lines[i].split(',').map((c) => c.replace(/^"|"$/g, '').trim());
+				if (cols.length < 2) continue;
+				const matName = cols[0];
+				const qty = cols[1];
+				const price = cols[2] || '0';
+				const mat = materials.find((m) => m.name === matName || m.name.includes(matName) || matName.includes(m.name));
+				if (mat) {
+					items.push({ materialId: mat.id, quantity: qty, unitPrice: price });
+				}
+			}
+			if (items.length > 0) {
+				setFormItems(items);
+				setFormNotes(`CSV import (${file.name})`);
+				setShowForm(true);
+			} else {
+				alert(t('orders.importNoMatch'));
+			}
+		};
+		reader.readAsText(file, 'UTF-8');
+		if (fileInputRef.current) fileInputRef.current.value = '';
+	};
+
 	if (isLoading && purchaseOrders.length === 0) {
 		return (
 			<div className={styles.center}>
@@ -192,6 +226,16 @@ const PurchaseOrderManager: FC<Props> = ({
 					<button className={styles.exportBtn} onClick={handleExportCsv} disabled={filteredPOs.length === 0}>
 						{t('orders.exportCsv')}
 					</button>
+					<button className={styles.importBtn} onClick={() => fileInputRef.current?.click()}>
+						{t('orders.importCsv')}
+					</button>
+					<input
+						ref={fileInputRef}
+						type="file"
+						accept=".csv,.xlsx,.xls"
+						style={{ display: 'none' }}
+						onChange={handleImportCsv}
+					/>
 					<button className={styles.addBtn} onClick={() => setShowForm(true)}>
 						{t('orders.addBtn')}
 					</button>

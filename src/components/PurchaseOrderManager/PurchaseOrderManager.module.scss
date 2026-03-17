@@ -110,6 +110,18 @@
 	white-space: nowrap;
 }
 
+.importBtn {
+	padding: 8px 16px;
+	border: 1px solid #00897B;
+	border-radius: 8px;
+	background-color: #fff;
+	color: #00897B;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
 .dateFilterRow {
 	display: flex;
 	align-items: center;
