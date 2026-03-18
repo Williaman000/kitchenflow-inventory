@@ -5,6 +5,7 @@ import { COLORS } from '../../constants/theme';
 import type { Material, BulkImportResult } from '../../types';
 import type { CreateMaterialPayload, AdjustInventoryPayload, BulkMaterialItem } from '../../services/inventoryApi';
 import BulkImportModal from '../BulkImportModal/BulkImportModal';
+import { downloadExcel } from '../../utils/exportExcel';
 import styles from './MaterialManager.module.scss';
 
 interface Props {
@@ -83,6 +84,22 @@ const MaterialManager: FC<Props> = ({
 		a.download = `materials_${new Date().toISOString().slice(0, 10)}.csv`;
 		a.click();
 		URL.revokeObjectURL(url);
+	};
+
+	const handleExportExcel = () => {
+		const headers = [
+			t('materials.colName'), t('materials.colCategory'), t('materials.colUnit'),
+			t('materials.colCurrentStock'), t('materials.colMinStock'), t('materials.colStatus'),
+		];
+		const rows = materials.map((mat) => [
+			mat.name,
+			mat.category,
+			mat.unit,
+			mat.currentStock,
+			mat.minimumStock,
+			mat.currentStock <= mat.minimumStock ? t('materials.statusLow') : t('materials.statusNormal'),
+		]);
+		downloadExcel(`materials_${new Date().toISOString().slice(0, 10)}.xlsx`, t('materials.title'), headers, rows);
 	};
 
 	const openCreateForm = () => {
@@ -191,6 +208,9 @@ const MaterialManager: FC<Props> = ({
 				<div className={styles.buttonGroup}>
 					<button className={styles.exportBtn} onClick={handleExportCsv} disabled={materials.length === 0}>
 						{t('materials.exportCsv')}
+					</button>
+					<button className={styles.exportBtn} onClick={handleExportExcel} disabled={materials.length === 0}>
+						{t('materials.exportExcel')}
 					</button>
 					<button className={styles.uploadBtn} onClick={() => setShowBulkImport(true)}>
 						{t('materials.uploadBtn')}

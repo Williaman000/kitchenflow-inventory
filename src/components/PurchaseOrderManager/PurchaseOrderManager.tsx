@@ -4,6 +4,7 @@ import { COLORS } from '../../constants/theme';
 import type { Material, PurchaseOrder, PurchaseOrderStatus } from '../../types';
 import type { CreatePurchaseOrderPayload } from '../../services/inventoryApi';
 import { formatCurrency } from '../../utils/format';
+import { downloadExcel } from '../../utils/exportExcel';
 import styles from './PurchaseOrderManager.module.scss';
 
 interface Props {
@@ -146,6 +147,24 @@ const PurchaseOrderManager: FC<Props> = ({
 		downloadCsv(`purchase_orders_${dateStr}.csv`, headers, rows);
 	};
 
+	const handleExportExcel = () => {
+		const headers = [
+			t('orders.colNumber'), t('orders.colStatus'), t('orders.colItemCount'),
+			t('orders.colTotal'), t('orders.colOrderDate'), t('orders.colReceivedDate'), t('orders.colNotes'),
+		];
+		const rows = filteredPOs.map((po) => [
+			`#${po.id}`,
+			PO_STATUS_LABELS[po.status],
+			po.itemCount ?? '-',
+			po.totalAmount,
+			formatDate(po.orderedAt),
+			formatDate(po.receivedAt),
+			po.notes || '',
+		]);
+		const dateStr = new Date().toISOString().slice(0, 10);
+		downloadExcel(`purchase_orders_${dateStr}.xlsx`, t('orders.title'), headers, rows);
+	};
+
 	const handleImportCsv = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (!file) return;
@@ -225,6 +244,9 @@ const PurchaseOrderManager: FC<Props> = ({
 				<div className={styles.buttonGroup}>
 					<button className={styles.exportBtn} onClick={handleExportCsv} disabled={filteredPOs.length === 0}>
 						{t('orders.exportCsv')}
+					</button>
+					<button className={styles.exportBtn} onClick={handleExportExcel} disabled={filteredPOs.length === 0}>
+						{t('orders.exportExcel')}
 					</button>
 					<button className={styles.importBtn} onClick={() => fileInputRef.current?.click()}>
 						{t('orders.importCsv')}

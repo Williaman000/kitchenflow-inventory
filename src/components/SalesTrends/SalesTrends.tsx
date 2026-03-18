@@ -11,6 +11,7 @@ import { formatCurrency } from '../../utils/format';
 import type { SalesTrendData, SalesUploadRecord } from '../../types';
 import type { TrendPeriod } from '../../hooks/useSalesTrends';
 import SalesUploadModal from '../SalesUploadModal/SalesUploadModal';
+import { downloadExcelMultiSheet } from '../../utils/exportExcel';
 import styles from './SalesTrends.module.scss';
 
 function downloadCsv(filename: string, csvContent: string) {
@@ -75,6 +76,31 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 		downloadCsv(filename, rows.join('\n'));
 	};
 
+	const handleDownloadExcel = () => {
+		if (!data) return;
+		const sheets: { name: string; headers: string[]; rows: (string | number)[][] }[] = [];
+		// Daily sales
+		sheets.push({
+			name: t('trends.chartDaily'),
+			headers: [t('salesUpload.colDate'), t('trends.totalRevenue'), t('trends.totalQuantity'), t('trends.totalOrders')],
+			rows: data.dailyBreakdown.map((d) => [d.date, d.totalRevenue, d.totalQuantity, d.orderCount]),
+		});
+		// Sales by product
+		sheets.push({
+			name: t('trends.chartProduct'),
+			headers: [t('salesUpload.colProduct'), t('trends.totalRevenue'), t('trends.totalQuantity')],
+			rows: data.productRanking.map((p) => [p.productName, p.totalRevenue, p.totalQuantity]),
+		});
+		// Average by day of week
+		sheets.push({
+			name: t('trends.chartDayOfWeek'),
+			headers: [t('trends.chartDayOfWeek'), t('trends.totalRevenue'), t('trends.totalQuantity')],
+			rows: data.dayOfWeekPattern.map((d) => [d.day, Math.round(d.avgRevenue), Math.round(d.avgQuantity)]),
+		});
+		const filename = `sales_${data.period}_${data.startDate}_${data.endDate}.xlsx`;
+		downloadExcelMultiSheet(filename, sheets);
+	};
+
 	const PERIOD_LABELS: Record<TrendPeriod, string> = {
 		today: t('trends.periodToday'),
 		week: t('trends.periodWeek'),
@@ -103,9 +129,14 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 				<h2 className={styles.title}>{t('trends.title')}</h2>
 				<div className={styles.headerRight}>
 					{data && (
-						<button className={styles.downloadBtn} onClick={handleDownloadCsv}>
-							CSV {t('trends.download')}
-						</button>
+						<>
+							<button className={styles.downloadBtn} onClick={handleDownloadCsv}>
+								CSV {t('trends.download')}
+							</button>
+							<button className={styles.downloadBtn} onClick={handleDownloadExcel}>
+								Excel {t('trends.download')}
+							</button>
+						</>
 					)}
 					<button className={styles.uploadTriggerBtn} onClick={() => setShowUpload(true)}>
 						CSV/Excel {t('trends.upload')}
