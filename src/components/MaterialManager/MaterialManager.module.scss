@@ -1,3 +1,5 @@
+@use '../../styles/breakpoints' as *;
+
 .container {
 	padding: 24px;
 	max-width: 1100px;
@@ -333,4 +335,59 @@
 	display: flex;
 	justify-content: flex-end;
 	gap: 10px;
+}
+
+@include tablet {
+	.container { padding: 16px; }
+	.th, .td { padding: 10px 12px; }
+	.modal { padding: 20px; }
+}
+
+@include mobile {
+	.container { padding: 12px; }
+	.header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+		margin-bottom: 14px;
+	}
+	.title { font-size: 18px; }
+	.headerRight {
+		width: 100%;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.filterRow {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 8px;
+	}
+	.filterGroup {
+		gap: 6px;
+	}
+	.filterBtn, .filterActive {
+		padding: 6px 12px;
+		font-size: 12px;
+	}
+	.buttonGroup {
+		width: 100%;
+		flex-wrap: wrap;
+	}
+	.buttonGroup {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		width: 100%;
+	}
+	.addBtn, .exportBtn, .uploadBtn {
+		text-align: center;
+		padding: 8px 6px;
+		font-size: 11px;
+	}
+	.table { min-width: 600px; }
+	.th, .td { padding: 8px 6px; font-size: 11px; white-space: nowrap; }
+	.statusBadge { white-space: nowrap; }
+	.actionsRow { flex-wrap: nowrap; }
+	.modal { padding: 16px; max-width: 100%; }
+	.modalTitle { font-size: 16px; margin-bottom: 14px; }
+	.formRow { flex-direction: column; gap: 0; }
 }

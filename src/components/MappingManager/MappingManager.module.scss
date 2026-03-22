@@ -1,3 +1,5 @@
+@use '../../styles/breakpoints' as *;
+
 .container {
 	padding: 24px;
 	max-width: 900px;
@@ -317,4 +319,39 @@
 	justify-content: flex-end;
 	gap: 10px;
 	margin-top: 8px;
+}
+
+@include tablet {
+	.container { padding: 16px; }
+	.th, .td { padding: 10px 12px; }
+	.aiModal { padding: 20px; max-width: 700px; }
+}
+
+@include mobile {
+	.container { padding: 12px; }
+	.header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+		margin-bottom: 16px;
+	}
+	.title { font-size: 18px; }
+	.headerRight {
+		width: 100%;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.refreshBtn, .aiBtn, .addBtn {
+		flex: 1;
+		min-width: 0;
+		text-align: center;
+		font-size: 12px;
+	}
+	.table { min-width: 500px; }
+	.th, .td { padding: 8px 6px; font-size: 11px; white-space: nowrap; }
+	.actionsRow { flex-wrap: nowrap; }
+	.modal { padding: 16px; max-width: 100%; }
+	.modalTitle { font-size: 16px; }
+	.aiModal { padding: 16px; max-width: 100%; }
+	.aiModalHeader { gap: 8px; }
 }

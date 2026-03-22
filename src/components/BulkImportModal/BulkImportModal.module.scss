@@ -1,3 +1,5 @@
+@use '../../styles/breakpoints' as *;
+
 .overlay {
 	position: fixed;
 	top: 0;
@@ -339,4 +341,20 @@
 	display: flex;
 	justify-content: flex-end;
 	margin-top: 20px;
+}
+
+@include mobile {
+	.modal { width: 95%; }
+	.modalHeader { padding: 14px 16px 12px; }
+	.modalTitle { font-size: 16px; }
+	.dropZone { margin: 12px 16px 0; padding: 24px 16px; }
+	.templateSection { margin: 12px 16px 0; }
+	.helpSection { margin: 12px 16px 16px; }
+	.previewInfo { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+	.previewTableWrap { margin: 0 16px; }
+	.previewActions { padding: 12px 16px 16px; }
+	.resultSummary { gap: 12px; padding: 16px; }
+	.resultCard { padding: 14px 20px; }
+	.resultValue { font-size: 22px; }
+	.errorList { margin: 0 16px; }
 }

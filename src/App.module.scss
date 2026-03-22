@@ -1,3 +1,5 @@
+@use './styles/breakpoints' as *;
+
 .loadingScreen {
 	display: flex;
 	flex-direction: column;
@@ -147,4 +149,70 @@
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+}
+
+// --- Responsive ---
+
+@include tablet {
+	.header {
+		padding: 0 16px;
+	}
+	.headerTitle {
+		font-size: 15px;
+	}
+	.tab, .tabActive {
+		flex: none;
+		padding: 10px 14px;
+		font-size: 12px;
+	}
+}
+
+@include mobile {
+	.header {
+		padding: 0 10px;
+		height: 48px;
+	}
+	.headerLeft {
+		gap: 6px;
+		min-width: 0;
+		overflow: hidden;
+	}
+	.logoIcon {
+		width: 28px;
+		height: 28px;
+		font-size: 10px;
+		border-radius: 6px;
+		flex-shrink: 0;
+	}
+	.headerTitle {
+		font-size: 13px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.headerRight {
+		gap: 4px;
+		flex-shrink: 0;
+	}
+	.userName {
+		display: none;
+	}
+	.langBtn {
+		padding: 3px 6px;
+		font-size: 10px;
+		white-space: nowrap;
+	}
+	.logoutBtn {
+		padding: 3px 8px;
+		font-size: 10px;
+		white-space: nowrap;
+	}
+	.tabNav {
+		gap: 0;
+	}
+	.tab, .tabActive {
+		flex: none;
+		padding: 10px 12px;
+		font-size: 11px;
+	}
 }

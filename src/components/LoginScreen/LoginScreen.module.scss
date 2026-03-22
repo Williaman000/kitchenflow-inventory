@@ -1,3 +1,5 @@
+@use '../../styles/breakpoints' as *;
+
 .container {
 	display: flex;
 	justify-content: center;
@@ -94,4 +96,15 @@
 .buttonDisabled {
 	background-color: #999;
 	cursor: not-allowed;
+}
+
+@include mobile {
+	.card {
+		width: calc(100% - 32px);
+		max-width: 400px;
+		padding: 28px 20px;
+	}
+	.title {
+		font-size: 20px;
+	}
 }

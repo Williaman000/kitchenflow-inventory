@@ -1,3 +1,5 @@
+@use '../../styles/breakpoints' as *;
+
 .container {
 	padding: 24px;
 	max-width: 1000px;
@@ -142,4 +144,27 @@
 .noInsights {
 	color: #999;
 	font-size: 14px;
+}
+
+@include tablet {
+	.container { padding: 16px; }
+	.cardGrid { gap: 12px; }
+	.card { padding: 16px 20px; }
+	.cardValue { font-size: 26px; }
+}
+
+@include mobile {
+	.container { padding: 12px; }
+	.title { font-size: 18px; margin-bottom: 16px; }
+	.cardGrid {
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+	}
+	.card { padding: 14px 16px; }
+	.cardValue { font-size: 22px; }
+	.cardLabel { font-size: 11px; }
+	.section { margin-bottom: 20px; }
+	.sectionTitle { font-size: 14px; }
+	.insightItem { padding: 12px 14px; }
+	.actionBtn { padding: 8px 14px; font-size: 13px; }
 }
