@@ -11,18 +11,18 @@ export const useForecast = (enabled = false) => {
 
 	const loadForecast = useCallback(async (days?: number) => {
 		const d = days ?? forecastDays;
+		if (days !== undefined) setForecastDays(days);
 		try {
 			setIsLoading(true);
 			setError(null);
 			const result = await fetchForecast(d);
 			setForecast(result);
-			if (days !== undefined) setForecastDays(days);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'AI 발주 추천 로딩 실패');
 		} finally {
 			setIsLoading(false);
 		}
-	}, [forecastDays]);
+	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	useEffect(() => {
 		if (enabled && !loaded.current) {

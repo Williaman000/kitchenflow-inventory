@@ -16,8 +16,8 @@ interface Props {
 	onCreatePO: (payload: CreatePurchaseOrderPayload) => Promise<void>;
 }
 
-// Day-of-week index (0=Mon ... 6=Sun) to i18n key mapping
-const DAY_KEYS = ['dayMon', 'dayTue', 'dayWed', 'dayThu', 'dayFri', 'daySat', 'daySun'] as const;
+// Day-of-week index (PostgreSQL: 0=Sun, 1=Mon, 2=Tue, ..., 6=Sat) to i18n key mapping
+const DAY_KEYS = ['daySun', 'dayMon', 'dayTue', 'dayWed', 'dayThu', 'dayFri', 'daySat'] as const;
 
 function UrgentBadge() {
 	const { t } = useTranslation();
