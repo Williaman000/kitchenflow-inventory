@@ -42,24 +42,24 @@ const Dashboard: FC<Props> = ({ stats, isLoading, error, onLoad, onNavigate }) =
 
 			{/* Summary cards */}
 			<div className={styles.cardGrid}>
-				<div className={styles.card}>
+				<div className={`${styles.card} ${styles.clickable}`} onClick={() => onNavigate('materials')}>
 					<div className={styles.cardLabel}>{t('dashboard.totalMaterials')}</div>
 					<div className={styles.cardValue}>{stats.totalMaterials}</div>
 					<div className={styles.cardUnit}>{t('dashboard.unitKinds')}</div>
 				</div>
-				<div className={styles.card} style={{ borderLeft: `4px solid ${stats.lowStockCount > 0 ? COLORS.danger : COLORS.success}` }}>
+				<div className={`${styles.card} ${styles.clickable}`} style={{ borderLeft: `4px solid ${stats.lowStockCount > 0 ? COLORS.danger : COLORS.success}` }} onClick={() => onNavigate('materials')}>
 					<div className={styles.cardLabel}>{t('dashboard.lowStock')}</div>
 					<div className={styles.cardValue} style={{ color: stats.lowStockCount > 0 ? COLORS.danger : COLORS.success }}>
 						{stats.lowStockCount}
 					</div>
 					<div className={styles.cardUnit}>{t('dashboard.unitItems')}</div>
 				</div>
-				<div className={styles.card}>
+				<div className={`${styles.card} ${styles.clickable}`} onClick={() => onNavigate('forecast')}>
 					<div className={styles.cardLabel}>{t('dashboard.aiShortage')}</div>
 					<div className={styles.cardValue}>{stats.pendingOrders}</div>
 					<div className={styles.cardUnit}>{t('dashboard.unitItems')}</div>
 				</div>
-				<div className={styles.card} style={{ borderLeft: `4px solid ${COLORS.accent}` }}>
+				<div className={`${styles.card} ${styles.clickable}`} style={{ borderLeft: `4px solid ${COLORS.accent}` }} onClick={() => onNavigate('chat')}>
 					<div className={styles.cardLabel}>{t('dashboard.aiInsights')}</div>
 					<div className={styles.cardValue} style={{ color: COLORS.accent }}>{stats.insights.length}</div>
 					<div className={styles.cardUnit}>{t('dashboard.unitItems')}</div>

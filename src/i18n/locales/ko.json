@@ -154,7 +154,8 @@
 		"aiApply": "{{count}}건 일괄 등록",
 		"aiSaving": "등록 중...",
 		"aiError": "AI 매핑 제안에 실패했습니다.",
-		"aiBulkError": "일괄 등록 중 오류가 발생했습니다."
+		"aiBulkError": "일괄 등록 중 오류가 발생했습니다.",
+		"unitMaterials": "개 재료"
 	},
 	"chat": {
 		"title": "AI 챗봇",

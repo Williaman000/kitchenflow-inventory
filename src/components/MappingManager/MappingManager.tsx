@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC, type FormEvent } from 'react';
+import { useState, useEffect, useMemo, type FC, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n';
 import { trProduct, trMaterial } from '../../utils/dbTranslate';
@@ -45,6 +45,9 @@ const MappingManager: FC<Props> = ({
 	const [editingId, setEditingId] = useState<number | null>(null);
 	const [editingQty, setEditingQty] = useState('');
 
+	// Expanded product cards
+	const [expandedProduct, setExpandedProduct] = useState<number | null>(null);
+
 	// AI suggestion
 	const [suggestions, setSuggestions] = useState<MappingSuggestion[]>([]);
 	const [showSuggestions, setShowSuggestions] = useState(false);
@@ -56,6 +59,23 @@ const MappingManager: FC<Props> = ({
 		onLoadProducts();
 		onLoadMaterials();
 	}, [onLoadMappings, onLoadProducts, onLoadMaterials]);
+
+	// Group mappings by product
+	const groupedMappings = useMemo(() => {
+		const groups: Record<number, { productId: number; productName: string; mappings: ProductMaterialMapping[] }> = {};
+		for (const m of mappings) {
+			const pid = m.productId;
+			if (!groups[pid]) {
+				groups[pid] = {
+					productId: pid,
+					productName: m.productName ?? `상품 #${pid}`,
+					mappings: [],
+				};
+			}
+			groups[pid].mappings.push(m);
+		}
+		return Object.values(groups);
+	}, [mappings]);
 
 	const handleCreateSubmit = async (e: FormEvent) => {
 		e.preventDefault();
@@ -128,6 +148,12 @@ const MappingManager: FC<Props> = ({
 		}
 	};
 
+	const toggleProduct = (productId: number) => {
+		setExpandedProduct((prev) => prev === productId ? null : productId);
+		setEditingId(null);
+		setEditingQty('');
+	};
+
 	if (isLoading && mappings.length === 0) {
 		return (
 			<div className={styles.center}>
@@ -161,80 +187,90 @@ const MappingManager: FC<Props> = ({
 				</div>
 			</div>
 
-			{/* Mapping table */}
-			<div className={styles.tableWrap}>
-				<table className={styles.table}>
-					<thead>
-						<tr>
-							<th className={styles.th}>{t('mappings.colProduct')}</th>
-							<th className={styles.th}>{t('mappings.colMaterial')}</th>
-							<th className={styles.th} style={{ textAlign: 'center' }}>{t('mappings.colQtyPerUnit')}</th>
-							<th className={styles.th} style={{ textAlign: 'center', width: 140 }}>{t('mappings.colActions')}</th>
-						</tr>
-					</thead>
-					<tbody>
-						{mappings.length === 0 ? (
-							<tr>
-								<td colSpan={4} className={styles.emptyCell}>
-									{t('mappings.empty')}
-								</td>
-							</tr>
-						) : (
-							mappings.map((m) => (
-								<tr key={m.id}>
-									<td className={styles.td}>
-										<span style={{ fontWeight: 600 }}>{trProduct(m.productName ?? `상품 #${m.productId}`)}</span>
-									</td>
-									<td className={styles.td}>
-										{trMaterial(m.materialName ?? `재료 #${m.materialId}`)}
-										{m.materialUnit && <span className={styles.materialUnit}> ({m.materialUnit})</span>}
-									</td>
-									<td className={styles.td} style={{ textAlign: 'center' }}>
-										{editingId === m.id ? (
-											<div className={styles.inlineEditRow}>
-												<input
-													className={styles.inlineInput}
-													style={{ width: 80 }}
-													type="number"
-													min="0.001"
-													step="0.001"
-													value={editingQty}
-													onChange={(e) => setEditingQty(e.target.value)}
-													autoFocus
-													onKeyDown={(e) => {
-														if (e.key === 'Enter') handleUpdateSubmit(m.id);
-														if (e.key === 'Escape') { setEditingId(null); setEditingQty(''); }
-													}}
-												/>
-												<button className={styles.inlineSaveBtn} onClick={() => handleUpdateSubmit(m.id)}>V</button>
-												<button className={styles.inlineCancelBtn} onClick={() => { setEditingId(null); setEditingQty(''); }}>X</button>
-											</div>
-										) : (
-											<span style={{ fontWeight: 700 }}>{m.quantityPerUnit}</span>
-										)}
-									</td>
-									<td className={styles.td} style={{ textAlign: 'center' }}>
-										<div className={styles.actionsRow}>
-											<button className={styles.actionBtn} onClick={() => startEdit(m)}>
-												{t('mappings.actionEdit')}
-											</button>
-											<button
-												className={styles.actionBtnDanger}
-												onClick={() => {
-													if (confirm(t('mappings.deleteConfirm'))) {
-														onDelete(m.id);
-													}
-												}}
-											>
-												{t('mappings.actionDelete')}
-											</button>
-										</div>
-									</td>
-								</tr>
-							))
-						)}
-					</tbody>
-				</table>
+			{/* Product cards */}
+			<div className={styles.cardGrid}>
+				{groupedMappings.length === 0 ? (
+					<p className={styles.emptyText}>{t('mappings.empty')}</p>
+				) : (
+					groupedMappings.map((group) => {
+						const isExpanded = expandedProduct === group.productId;
+						return (
+							<div key={group.productId} className={`${styles.productCard} ${isExpanded ? styles.expanded : ''}`}>
+								<div className={styles.productCardHeader} onClick={() => toggleProduct(group.productId)}>
+									<div className={styles.productInfo}>
+										<span className={styles.productName}>{trProduct(group.productName)}</span>
+										<span className={styles.materialCount}>{group.mappings.length}{t('mappings.unitMaterials')}</span>
+									</div>
+									<span className={styles.chevron}>{isExpanded ? '▲' : '▼'}</span>
+								</div>
+								{isExpanded && (
+									<div className={styles.productCardBody}>
+										<table className={styles.table}>
+											<thead>
+												<tr>
+													<th className={styles.th}>{t('mappings.colMaterial')}</th>
+													<th className={styles.th} style={{ textAlign: 'center', width: 120 }}>{t('mappings.colQtyPerUnit')}</th>
+													<th className={styles.th} style={{ textAlign: 'center', width: 120 }}>{t('mappings.colActions')}</th>
+												</tr>
+											</thead>
+											<tbody>
+												{group.mappings.map((m) => (
+													<tr key={m.id}>
+														<td className={styles.td}>
+															{trMaterial(m.materialName ?? `재료 #${m.materialId}`)}
+															{m.materialUnit && <span className={styles.materialUnit}> ({m.materialUnit})</span>}
+														</td>
+														<td className={styles.td} style={{ textAlign: 'center' }}>
+															{editingId === m.id ? (
+																<div className={styles.inlineEditRow}>
+																	<input
+																		className={styles.inlineInput}
+																		style={{ width: 70 }}
+																		type="number"
+																		min="0.001"
+																		step="0.001"
+																		value={editingQty}
+																		onChange={(e) => setEditingQty(e.target.value)}
+																		autoFocus
+																		onKeyDown={(e) => {
+																			if (e.key === 'Enter') handleUpdateSubmit(m.id);
+																			if (e.key === 'Escape') { setEditingId(null); setEditingQty(''); }
+																		}}
+																	/>
+																	<button className={styles.inlineSaveBtn} onClick={() => handleUpdateSubmit(m.id)}>✓</button>
+																	<button className={styles.inlineCancelBtn} onClick={() => { setEditingId(null); setEditingQty(''); }}>✕</button>
+																</div>
+															) : (
+																<span style={{ fontWeight: 700 }}>{m.quantityPerUnit}</span>
+															)}
+														</td>
+														<td className={styles.td} style={{ textAlign: 'center' }}>
+															<div className={styles.actionsRow}>
+																<button className={styles.actionBtn} onClick={() => startEdit(m)}>
+																	{t('mappings.actionEdit')}
+																</button>
+																<button
+																	className={styles.actionBtnDanger}
+																	onClick={() => {
+																		if (confirm(t('mappings.deleteConfirm'))) {
+																			onDelete(m.id);
+																		}
+																	}}
+																>
+																	{t('mappings.actionDelete')}
+																</button>
+															</div>
+														</td>
+													</tr>
+												))}
+											</tbody>
+										</table>
+									</div>
+								)}
+							</div>
+						);
+					})
+				)}
 			</div>
 
 			{/* AI suggestion modal */}
@@ -273,7 +309,7 @@ const MappingManager: FC<Props> = ({
 												/>
 											</td>
 											<td className={styles.td} style={{ textAlign: 'center' }}>
-												<button className={styles.actionBtnDanger} onClick={() => handleRemoveSuggestion(idx)}>X</button>
+												<button className={styles.actionBtnDanger} onClick={() => handleRemoveSuggestion(idx)}>✕</button>
 											</td>
 										</tr>
 									))}

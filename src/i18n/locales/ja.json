@@ -154,7 +154,8 @@
 		"aiApply": "{{count}}件一括登録",
 		"aiSaving": "登録中...",
 		"aiError": "AIマッピング提案に失敗しました。",
-		"aiBulkError": "一括登録中にエラーが発生しました。"
+		"aiBulkError": "一括登録中にエラーが発生しました。",
+		"unitMaterials": "個の材料"
 	},
 	"chat": {
 		"title": "AIチャット",
