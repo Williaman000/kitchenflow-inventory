@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, useCallback, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './hooks/useAuth';
 import { useChat } from './hooks/useChat';
@@ -33,11 +33,17 @@ const App: FC = () => {
 		i18n.changeLanguage(next);
 	};
 
-	const chatHook = useChat();
-	const trendsHook = useSalesTrends(auth.isAuthenticated);
-	const forecastHook = useForecast(auth.isAuthenticated);
 	const inventoryHook = useInventory();
 	const mappingsHook = useMappings();
+
+	const handleDataChanged = useCallback(() => {
+		inventoryHook.loadMaterials?.();
+		mappingsHook.loadMappings?.();
+	}, []);
+
+	const chatHook = useChat(handleDataChanged);
+	const trendsHook = useSalesTrends(auth.isAuthenticated);
+	const forecastHook = useForecast(auth.isAuthenticated);
 	const dashboardHook = useDashboard();
 
 	// Loading (token verification)

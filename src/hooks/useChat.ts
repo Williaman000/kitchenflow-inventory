@@ -1,7 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ChatMessage } from '../types';
 import { sendChat, sendChatWithFile, type ChatHistoryItem } from '../services/inventoryAiApi';
+
+const STORAGE_KEY = 'kf-chat-messages';
+const MAX_STORED = 50;
+
+// Data change detection keywords
+const DATA_CHANGE_KEYWORDS = ['업데이트 완료', '등록 완료', '매핑 완료', 'アップデート完了', '登録完了'];
 
 const FILE_LABELS: Record<string, string> = {
 	'image/jpeg': '📷',
@@ -12,10 +18,40 @@ const FILE_LABELS: Record<string, string> = {
 	'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',
 };
 
-export const useChat = () => {
+function loadMessages(): ChatMessage[] {
+	try {
+		const raw = localStorage.getItem(STORAGE_KEY);
+		if (!raw) return [];
+		const parsed = JSON.parse(raw) as ChatMessage[];
+		return parsed.map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
+	} catch {
+		return [];
+	}
+}
+
+function saveMessages(messages: ChatMessage[]) {
+	try {
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-MAX_STORED)));
+	} catch {
+		// localStorage full — ignore
+	}
+}
+
+function hasDataChange(answer: string): boolean {
+	return DATA_CHANGE_KEYWORDS.some((kw) => answer.includes(kw));
+}
+
+export const useChat = (onDataChanged?: () => void) => {
 	const { i18n, t } = useTranslation();
-	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const [messages, setMessages] = useState<ChatMessage[]>(loadMessages);
 	const [isLoading, setIsLoading] = useState(false);
+	const onDataChangedRef = useRef(onDataChanged);
+	onDataChangedRef.current = onDataChanged;
+
+	// Persist messages to localStorage
+	useEffect(() => {
+		saveMessages(messages);
+	}, [messages]);
 
 	const sendMessage = useCallback(async (text: string) => {
 		const userMsg: ChatMessage = {
@@ -42,6 +78,11 @@ export const useChat = () => {
 				timestamp: new Date(),
 			};
 			setMessages((prev) => [...prev, assistantMsg]);
+
+			// Notify data change for real-time UI refresh
+			if (hasDataChange(result.answer)) {
+				onDataChangedRef.current?.();
+			}
 		} catch (err) {
 			const errorMsg: ChatMessage = {
 				id: `error-${Date.now()}`,
@@ -53,7 +94,7 @@ export const useChat = () => {
 		} finally {
 			setIsLoading(false);
 		}
-	}, [i18n.language, t]);
+	}, [i18n.language, t, messages]);
 
 	const sendFile = useCallback(async (file: File, message: string) => {
 		const label = FILE_LABELS[file.type] ?? '📎';
@@ -77,6 +118,10 @@ export const useChat = () => {
 				timestamp: new Date(),
 			};
 			setMessages((prev) => [...prev, assistantMsg]);
+
+			if (hasDataChange(result.answer)) {
+				onDataChangedRef.current?.();
+			}
 		} catch (err) {
 			const errorMsg: ChatMessage = {
 				id: `error-${Date.now()}`,
@@ -92,6 +137,7 @@ export const useChat = () => {
 
 	const clearMessages = useCallback(() => {
 		setMessages([]);
+		localStorage.removeItem(STORAGE_KEY);
 	}, []);
 
 	return { messages, isLoading, sendMessage, sendFile, clearMessages };
