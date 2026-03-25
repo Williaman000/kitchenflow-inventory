@@ -86,10 +86,15 @@ interface MappingDto {
 
 // ── AI Chat ──
 
-export async function sendChat(message: string, language: string = 'ko'): Promise<{ answer: string; data: Record<string, unknown> | null; dataType: string | null }> {
+export interface ChatHistoryItem {
+	role: 'user' | 'assistant';
+	content: string;
+}
+
+export async function sendChat(message: string, language: string = 'ko', history: ChatHistoryItem[] = []): Promise<{ answer: string; data: Record<string, unknown> | null; dataType: string | null }> {
 	const dto = await request<ChatResponseDto>('/api/v1/inventory-ai/chat', {
 		method: 'POST',
-		body: JSON.stringify({ message, language }),
+		body: JSON.stringify({ message, language, history: history.slice(-5) }),
 	});
 	return {
 		answer: dto.answer,

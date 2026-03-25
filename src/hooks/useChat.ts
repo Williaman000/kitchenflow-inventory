@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ChatMessage } from '../types';
-import { sendChat, sendChatWithFile } from '../services/inventoryAiApi';
+import { sendChat, sendChatWithFile, type ChatHistoryItem } from '../services/inventoryAiApi';
 
 const FILE_LABELS: Record<string, string> = {
 	'image/jpeg': '📷',
@@ -28,7 +28,11 @@ export const useChat = () => {
 		setIsLoading(true);
 
 		try {
-			const result = await sendChat(text, i18n.language);
+			const history: ChatHistoryItem[] = messages
+				.filter((m) => m.role === 'user' || m.role === 'assistant')
+				.slice(-5)
+				.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }));
+			const result = await sendChat(text, i18n.language, history);
 			const assistantMsg: ChatMessage = {
 				id: `assistant-${Date.now()}`,
 				role: 'assistant',
