@@ -105,7 +105,7 @@ const ProfitDashboard: FC<Props> = ({ data, period, isLoading, error, onPeriodCh
 								<CartesianGrid strokeDasharray="3 3" />
 								<XAxis dataKey="date" fontSize={11} tickFormatter={(v) => v.slice(5)} />
 								<YAxis fontSize={11} tickFormatter={(v) => formatShortCurrency(v)} />
-								<Tooltip formatter={(v: number, name: string) => [formatCurrency(v), name === 'revenue' ? t('profit.totalRevenue') : name === 'materialCost' ? t('profit.totalCost') : t('profit.netProfit')]} />
+								<Tooltip formatter={(v: number | undefined, name: string | undefined) => [formatCurrency(v ?? 0), name === 'revenue' ? t('profit.totalRevenue') : name === 'materialCost' ? t('profit.totalCost') : t('profit.netProfit')]} />
 								<Legend formatter={(v) => v === 'revenue' ? t('profit.totalRevenue') : v === 'materialCost' ? t('profit.totalCost') : t('profit.netProfit')} />
 								<Line type="monotone" dataKey="revenue" stroke={COLORS.primary} strokeWidth={2} dot={false} />
 								<Line type="monotone" dataKey="materialCost" stroke={COLORS.warning} strokeWidth={2} dot={false} />
@@ -133,7 +133,7 @@ const ProfitDashboard: FC<Props> = ({ data, period, isLoading, error, onPeriodCh
 								<CartesianGrid strokeDasharray="3 3" />
 								<XAxis type="number" fontSize={11} tickFormatter={(v) => formatShortCurrency(v)} />
 								<YAxis type="category" dataKey="name" fontSize={11} width={120} />
-								<Tooltip formatter={(v: number) => [formatCurrency(v), t('profit.netProfit')]} />
+								<Tooltip formatter={(v: number | undefined) => [formatCurrency(v ?? 0), t('profit.netProfit')]} />
 								<Bar dataKey="profit" fill={COLORS.success} radius={[0, 4, 4, 0]} />
 							</BarChart>
 						</ResponsiveContainer>
@@ -197,7 +197,7 @@ const ProfitDashboard: FC<Props> = ({ data, period, isLoading, error, onPeriodCh
 										<CartesianGrid strokeDasharray="3 3" />
 										<XAxis dataKey="name" fontSize={11} angle={-30} textAnchor="end" height={60} />
 										<YAxis fontSize={11} tickFormatter={(v) => formatShortCurrency(v)} />
-										<Tooltip formatter={(v: number) => [formatCurrency(v), t('profit.totalRevenue')]} />
+										<Tooltip formatter={(v: number | undefined) => [formatCurrency(v ?? 0), t('profit.totalRevenue')]} />
 										<Bar dataKey="revenue" fill={COLORS.primary} radius={[4, 4, 0, 0]} />
 									</BarChart>
 								</ResponsiveContainer>
@@ -232,7 +232,7 @@ const ProfitDashboard: FC<Props> = ({ data, period, isLoading, error, onPeriodCh
 										<CartesianGrid strokeDasharray="3 3" />
 										<XAxis type="number" fontSize={11} tickFormatter={(v) => formatShortCurrency(v)} />
 										<YAxis type="category" dataKey="name" fontSize={11} width={120} />
-										<Tooltip formatter={(v: number) => [formatCurrency(v), t('profit.totalCost')]} />
+										<Tooltip formatter={(v: number | undefined) => [formatCurrency(v ?? 0), t('profit.totalCost')]} />
 										<Bar dataKey="cost" fill={COLORS.warning} radius={[0, 4, 4, 0]} />
 									</BarChart>
 								</ResponsiveContainer>
@@ -267,7 +267,7 @@ const ProfitDashboard: FC<Props> = ({ data, period, isLoading, error, onPeriodCh
 										<CartesianGrid strokeDasharray="3 3" />
 										<XAxis dataKey="date" fontSize={11} tickFormatter={(v) => v.slice(5)} />
 										<YAxis fontSize={11} tickFormatter={(v) => formatShortCurrency(v)} />
-										<Tooltip formatter={(v: number) => [formatCurrency(v), t('profit.netProfit')]} />
+										<Tooltip formatter={(v: number | undefined) => [formatCurrency(v ?? 0), t('profit.netProfit')]} />
 										<Line type="monotone" dataKey="profit" stroke={COLORS.success} strokeWidth={2} dot={{ r: 3 }} />
 									</LineChart>
 								</ResponsiveContainer>
@@ -308,7 +308,7 @@ const ProfitDashboard: FC<Props> = ({ data, period, isLoading, error, onPeriodCh
 										<CartesianGrid strokeDasharray="3 3" />
 										<XAxis type="number" domain={[0, 100]} fontSize={11} tickFormatter={(v) => `${v}%`} />
 										<YAxis type="category" dataKey="name" fontSize={11} width={120} />
-										<Tooltip formatter={(v: number) => [`${v}%`, t('profit.marginRate')]} />
+										<Tooltip formatter={(v: number | undefined) => [`${v ?? 0}%`, t('profit.marginRate')]} />
 										<Bar dataKey="marginRate" fill={COLORS.accent} radius={[0, 4, 4, 0]} />
 									</BarChart>
 								</ResponsiveContainer>
