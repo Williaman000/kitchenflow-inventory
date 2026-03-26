@@ -7,6 +7,7 @@ import { useForecast } from './hooks/useForecast';
 import { useInventory } from './hooks/useInventory';
 import { useMappings } from './hooks/useMappings';
 import { useDashboard } from './hooks/useDashboard';
+import { useProfitAnalysis } from './hooks/useProfitAnalysis';
 import LoginScreen from './components/LoginScreen/LoginScreen';
 import Dashboard from './components/Dashboard/Dashboard';
 import AIChatInterface from './components/AIChatInterface/AIChatInterface';
@@ -16,12 +17,13 @@ import MaterialManager from './components/MaterialManager/MaterialManager';
 import PurchaseOrderManager from './components/PurchaseOrderManager/PurchaseOrderManager';
 import MappingManager from './components/MappingManager/MappingManager';
 import CostWasteAnalysis from './components/CostWasteAnalysis/CostWasteAnalysis';
+import ProfitDashboard from './components/ProfitDashboard/ProfitDashboard';
 import ScrollButtons from './components/ScrollButtons/ScrollButtons';
 import styles from './App.module.scss';
 
-type AppTab = 'dashboard' | 'chat' | 'trends' | 'forecast' | 'costWaste' | 'materials' | 'orders' | 'mappings';
+type AppTab = 'dashboard' | 'chat' | 'trends' | 'forecast' | 'profit' | 'costWaste' | 'materials' | 'orders' | 'mappings';
 
-const TAB_KEYS: AppTab[] = ['dashboard', 'chat', 'trends', 'forecast', 'costWaste', 'materials', 'orders', 'mappings'];
+const TAB_KEYS: AppTab[] = ['dashboard', 'chat', 'trends', 'forecast', 'profit', 'costWaste', 'materials', 'orders', 'mappings'];
 
 const LANG_LABELS: Record<string, string> = { ko: '한국어', ja: '日本語' };
 
@@ -55,6 +57,7 @@ const App: FC = () => {
 	const trendsHook = useSalesTrends(auth.isAuthenticated);
 	const forecastHook = useForecast(auth.isAuthenticated);
 	const dashboardHook = useDashboard();
+	const profitHook = useProfitAnalysis(auth.isAuthenticated);
 
 	// Loading (token verification)
 	if (auth.isLoading) {
@@ -152,6 +155,16 @@ const App: FC = () => {
 						error={forecastHook.error}
 						onLoadForecast={forecastHook.loadForecast}
 						onCreatePO={inventoryHook.handleCreatePO}
+					/>
+				)}
+				{activeTab === 'profit' && (
+					<ProfitDashboard
+						data={profitHook.data}
+						period={profitHook.period}
+						isLoading={profitHook.isLoading}
+						error={profitHook.error}
+						onPeriodChange={profitHook.changePeriod}
+						onRefresh={profitHook.refresh}
 					/>
 				)}
 				{activeTab === 'costWaste' && <CostWasteAnalysis />}

@@ -235,6 +235,39 @@ export interface SalesUploadResult {
 	errors: { row: number; message: string }[];
 }
 
+// Profit analysis
+export interface ProductProfitItem {
+	productId: number;
+	productName: string;
+	revenue: number;
+	quantity: number;
+	materialCost: number;
+	profit: number;
+	marginRate: number;
+}
+
+export interface DailyProfitPoint {
+	date: string;
+	revenue: number;
+	materialCost: number;
+	profit: number;
+	marginRate: number;
+}
+
+export interface ProfitAnalysisData {
+	period: string;
+	startDate: string;
+	endDate: string;
+	totalRevenue: number;
+	totalMaterialCost: number;
+	totalProfit: number;
+	overallMarginRate: number;
+	dailyBreakdown: DailyProfitPoint[];
+	productBreakdown: ProductProfitItem[];
+	unmappedRevenue: number;
+	costCoverageRate: number;
+}
+
 // Authentication
 export interface AuthUser {
 	id: number;

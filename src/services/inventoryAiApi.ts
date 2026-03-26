@@ -1,4 +1,4 @@
-import type { SalesTrendData, ForecastData, InsightData, ProductMaterialMapping, SalesUploadRecord, SalesUploadResult, CostAnalysisData, PeriodComparisonData, WasteStatsData } from '../types';
+import type { SalesTrendData, ForecastData, InsightData, ProductMaterialMapping, SalesUploadRecord, SalesUploadResult, CostAnalysisData, PeriodComparisonData, WasteStatsData, ProfitAnalysisData } from '../types';
 import { API_BASE_URL, getApiToken, request } from './api';
 
 // ── Backend DTOs (snake_case) ──
@@ -323,6 +323,53 @@ export async function fetchSalesUploads(): Promise<SalesUploadRecord[]> {
 
 export async function deleteSalesUpload(uploadId: number): Promise<void> {
 	await request<void>(`/api/v1/inventory-ai/sales-uploads/${uploadId}`, { method: 'DELETE' });
+}
+
+// ── Profit Analysis ──
+
+interface ProfitAnalysisDto {
+	period: string;
+	start_date: string;
+	end_date: string;
+	total_revenue: number;
+	total_material_cost: number;
+	total_profit: number;
+	overall_margin_rate: number;
+	daily_breakdown: { date: string; revenue: number; material_cost: number; profit: number; margin_rate: number }[];
+	product_breakdown: { product_id: number; product_name: string; revenue: number; quantity: number; material_cost: number; profit: number; margin_rate: number }[];
+	unmapped_revenue: number;
+	cost_coverage_rate: number;
+}
+
+export async function fetchProfitAnalysis(period: string): Promise<ProfitAnalysisData> {
+	const dto = await request<ProfitAnalysisDto>(`/api/v1/inventory-ai/profit-analysis?period=${period}`);
+	return {
+		period: dto.period,
+		startDate: dto.start_date,
+		endDate: dto.end_date,
+		totalRevenue: dto.total_revenue,
+		totalMaterialCost: dto.total_material_cost,
+		totalProfit: dto.total_profit,
+		overallMarginRate: dto.overall_margin_rate,
+		dailyBreakdown: dto.daily_breakdown.map((d) => ({
+			date: d.date,
+			revenue: d.revenue,
+			materialCost: d.material_cost,
+			profit: d.profit,
+			marginRate: d.margin_rate,
+		})),
+		productBreakdown: dto.product_breakdown.map((p) => ({
+			productId: p.product_id,
+			productName: p.product_name,
+			revenue: p.revenue,
+			quantity: p.quantity,
+			materialCost: p.material_cost,
+			profit: p.profit,
+			marginRate: p.margin_rate,
+		})),
+		unmappedRevenue: dto.unmapped_revenue,
+		costCoverageRate: dto.cost_coverage_rate,
+	};
 }
 
 // ── Cost Analysis ──
