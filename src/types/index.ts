@@ -68,6 +68,7 @@ export interface DailySalesPoint {
 	totalQuantity: number;
 	totalRevenue: number;
 	orderCount: number;
+	chickenCount: number;
 }
 
 export interface ProductSalesItem {
@@ -90,6 +91,7 @@ export interface SalesTrendData {
 	totalRevenue: number;
 	totalQuantity: number;
 	totalOrders: number;
+	totalChickenCount: number;
 	dailyBreakdown: DailySalesPoint[];
 	productRanking: ProductSalesItem[];
 	dayOfWeekPattern: DayOfWeekPoint[];

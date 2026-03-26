@@ -41,6 +41,7 @@ interface Props {
 const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange, onRefresh, uploads, uploadsLoading, onDeleteUpload }) => {
 	const { t } = useTranslation();
 	const [showUpload, setShowUpload] = useState(false);
+	const [activeModal, setActiveModal] = useState<'revenue' | 'chicken' | 'orders' | null>(null);
 	const { sorted: sortedUploads, toggleSort, getSortIcon } = useTableSort(uploads);
 
 	const translatedProductRanking = useMemo(() =>
@@ -168,23 +169,31 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 				<>
 					{/* Summary cards */}
 					<div className={styles.summaryRow}>
-						<div className={styles.summaryCard}>
+						<div className={`${styles.summaryCard} ${styles.clickable}`} onClick={() => setActiveModal('revenue')}>
 							<div className={styles.summaryLabel}>{t('trends.totalRevenue')}</div>
 							<div className={styles.summaryValue}>{formatCurrency(data.totalRevenue)}</div>
 						</div>
-						<div className={styles.summaryCard}>
-							<div className={styles.summaryLabel}>{t('trends.totalQuantity')}</div>
-							<div className={styles.summaryValue}>{data.totalQuantity.toLocaleString()}{t('trends.unitPcs')}</div>
+						<div className={`${styles.summaryCard} ${styles.clickable}`} onClick={() => setActiveModal('chicken')}>
+							<div className={styles.summaryLabel}>{t('trends.totalChicken')}</div>
+							<div className={styles.summaryValue}>{data.totalChickenCount.toLocaleString()}{t('trends.unitChicken')}</div>
 						</div>
-						<div className={styles.summaryCard}>
+						<div className={`${styles.summaryCard} ${styles.clickable}`} onClick={() => setActiveModal('orders')}>
 							<div className={styles.summaryLabel}>{t('trends.totalOrders')}</div>
 							<div className={styles.summaryValue}>{data.totalOrders.toLocaleString()}{t('trends.unitOrders')}</div>
 						</div>
 					</div>
 
+					{/* Section navigation */}
+					<div className={styles.sectionNav}>
+						<button className={styles.navBtn} onClick={() => document.getElementById('section-daily')?.scrollIntoView({ behavior: 'smooth' })}>{t('trends.chartDaily')}</button>
+						<button className={styles.navBtn} onClick={() => document.getElementById('section-product')?.scrollIntoView({ behavior: 'smooth' })}>{t('trends.chartProduct')}</button>
+						<button className={styles.navBtn} onClick={() => document.getElementById('section-dow')?.scrollIntoView({ behavior: 'smooth' })}>{t('trends.chartDayOfWeek')}</button>
+						<button className={styles.navBtn} onClick={() => document.getElementById('section-uploads')?.scrollIntoView({ behavior: 'smooth' })}>{t('trends.uploadHistory')}</button>
+					</div>
+
 					{/* Daily sales trend */}
 					{data.dailyBreakdown.length > 0 && (
-						<div className={styles.chartSection}>
+						<div id="section-daily" className={styles.chartSection}>
 							<h3 className={styles.chartTitle}>{t('trends.chartDaily')}</h3>
 							<div className={styles.chartWrap}>
 								<ResponsiveContainer width="100%" height="100%">
@@ -208,7 +217,7 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 
 					{/* Sales ranking by product */}
 					{data.productRanking.length > 0 && (
-						<div className={styles.chartSection}>
+						<div id="section-product" className={styles.chartSection}>
 							<h3 className={styles.chartTitle}>{t('trends.chartProduct')}</h3>
 							<div className={styles.chartWrap}>
 								<ResponsiveContainer width="100%" height="100%">
@@ -226,7 +235,7 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 
 					{/* Average by day of week */}
 					{data.dayOfWeekPattern.length > 0 && (
-						<div className={styles.chartSection}>
+						<div id="section-dow" className={styles.chartSection}>
 							<h3 className={styles.chartTitle}>{t('trends.chartDayOfWeek')}</h3>
 							<div className={styles.chartWrapSmall}>
 								<ResponsiveContainer width="100%" height="100%">
@@ -245,7 +254,7 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 			)}
 
 			{/* Upload history */}
-			<div className={styles.chartSection}>
+			<div id="section-uploads" className={styles.chartSection}>
 				<h3 className={styles.chartTitle}>{t('salesUpload.uploadHistory')}</h3>
 				{uploadsLoading && <p className={styles.loadingText}>{t('app.loading')}</p>}
 				{!uploadsLoading && uploads.length === 0 && (
@@ -289,6 +298,143 @@ const SalesTrends: FC<Props> = ({ data, period, isLoading, error, onPeriodChange
 					</table>
 				)}
 			</div>
+
+			{/* Revenue detail modal */}
+			{activeModal === 'revenue' && data && (
+				<div className={styles.modalOverlay} onClick={() => setActiveModal(null)}>
+					<div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+						<div className={styles.modalHeader}>
+							<h3>{t('trends.modalRevenue')}</h3>
+							<button className={styles.modalClose} onClick={() => setActiveModal(null)}>✕</button>
+						</div>
+						<div className={styles.modalBody}>
+							<div className={styles.modalChartWrap}>
+								<ResponsiveContainer width="100%" height="100%">
+									<LineChart data={data.dailyBreakdown}>
+										<CartesianGrid strokeDasharray="3 3" />
+										<XAxis dataKey="date" fontSize={11} />
+										<YAxis fontSize={11} tickFormatter={(v: number) => formatShortCurrency(v)} />
+										<Tooltip formatter={(value) => [formatCurrency(Number(value ?? 0)), t('trends.revenue')]} />
+										<Line type="monotone" dataKey="totalRevenue" stroke={COLORS.primary} strokeWidth={2} dot={{ r: 3 }} />
+									</LineChart>
+								</ResponsiveContainer>
+							</div>
+							<div className={styles.modalTableWrap}>
+								<table className={styles.historyTable}>
+									<thead>
+										<tr>
+											<th className={styles.historyTh}>{t('salesUpload.colDate')}</th>
+											<th className={styles.historyTh}>{t('trends.totalRevenue')}</th>
+											<th className={styles.historyTh}>{t('trends.totalChicken')}</th>
+											<th className={styles.historyTh}>{t('trends.totalOrders')}</th>
+										</tr>
+									</thead>
+									<tbody>
+										{data.dailyBreakdown.map((d) => (
+											<tr key={d.date}>
+												<td className={styles.historyTd}>{d.date}</td>
+												<td className={styles.historyTd}>{formatCurrency(d.totalRevenue)}</td>
+												<td className={styles.historyTd}>{d.chickenCount}{t('trends.unitChicken')}</td>
+												<td className={styles.historyTd}>{d.orderCount}{t('trends.unitOrders')}</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Chicken count detail modal */}
+			{activeModal === 'chicken' && data && (
+				<div className={styles.modalOverlay} onClick={() => setActiveModal(null)}>
+					<div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+						<div className={styles.modalHeader}>
+							<h3>{t('trends.modalChicken')}</h3>
+							<button className={styles.modalClose} onClick={() => setActiveModal(null)}>✕</button>
+						</div>
+						<div className={styles.modalBody}>
+							<div className={styles.modalChartWrap}>
+								<ResponsiveContainer width="100%" height="100%">
+									<BarChart data={data.dailyBreakdown}>
+										<CartesianGrid strokeDasharray="3 3" />
+										<XAxis dataKey="date" fontSize={11} />
+										<YAxis fontSize={11} />
+										<Tooltip formatter={(value) => [`${Number(value ?? 0)}${t('trends.unitChicken')}`, t('trends.totalChicken')]} />
+										<Bar dataKey="chickenCount" fill="#FF6F00" radius={[4, 4, 0, 0]} />
+									</BarChart>
+								</ResponsiveContainer>
+							</div>
+							<div className={styles.modalTableWrap}>
+								<table className={styles.historyTable}>
+									<thead>
+										<tr>
+											<th className={styles.historyTh}>{t('salesUpload.colDate')}</th>
+											<th className={styles.historyTh}>{t('trends.totalChicken')}</th>
+											<th className={styles.historyTh}>{t('trends.totalRevenue')}</th>
+										</tr>
+									</thead>
+									<tbody>
+										{data.dailyBreakdown.map((d) => (
+											<tr key={d.date}>
+												<td className={styles.historyTd}>{d.date}</td>
+												<td className={styles.historyTd}><strong>{d.chickenCount}{t('trends.unitChicken')}</strong></td>
+												<td className={styles.historyTd}>{formatCurrency(d.totalRevenue)}</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Orders detail modal */}
+			{activeModal === 'orders' && data && (
+				<div className={styles.modalOverlay} onClick={() => setActiveModal(null)}>
+					<div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+						<div className={styles.modalHeader}>
+							<h3>{t('trends.modalOrders')}</h3>
+							<button className={styles.modalClose} onClick={() => setActiveModal(null)}>✕</button>
+						</div>
+						<div className={styles.modalBody}>
+							<div className={styles.modalChartWrap}>
+								<ResponsiveContainer width="100%" height="100%">
+									<BarChart data={translatedProductRanking}>
+										<CartesianGrid strokeDasharray="3 3" />
+										<XAxis dataKey="productName" fontSize={11} angle={-30} textAnchor="end" height={60} />
+										<YAxis fontSize={11} />
+										<Tooltip formatter={(value) => [`${Number(value ?? 0)}${t('trends.unitPcs')}`, t('trends.totalQuantity')]} />
+										<Bar dataKey="totalQuantity" fill={COLORS.accent} radius={[4, 4, 0, 0]} />
+									</BarChart>
+								</ResponsiveContainer>
+							</div>
+							<div className={styles.modalTableWrap}>
+								<table className={styles.historyTable}>
+									<thead>
+										<tr>
+											<th className={styles.historyTh}>{t('salesUpload.colProduct')}</th>
+											<th className={styles.historyTh}>{t('trends.totalQuantity')}</th>
+											<th className={styles.historyTh}>{t('trends.totalRevenue')}</th>
+										</tr>
+									</thead>
+									<tbody>
+										{data.productRanking.map((p) => (
+											<tr key={p.productId}>
+												<td className={styles.historyTd}>{trProduct(p.productName)}</td>
+												<td className={styles.historyTd}>{p.totalQuantity.toLocaleString()}{t('trends.unitPcs')}</td>
+												<td className={styles.historyTd}>{formatCurrency(p.totalRevenue)}</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };

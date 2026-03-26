@@ -14,6 +14,7 @@ interface DailySalesPointDto {
 	total_quantity: number;
 	total_revenue: number;
 	order_count: number;
+	chicken_count: number;
 }
 
 interface ProductSalesItemDto {
@@ -36,6 +37,7 @@ interface SalesTrendDto {
 	total_revenue: number;
 	total_quantity: number;
 	total_orders: number;
+	total_chicken_count: number;
 	daily_breakdown: DailySalesPointDto[];
 	product_ranking: ProductSalesItemDto[];
 	day_of_week_pattern: DayOfWeekPointDto[];
@@ -138,11 +140,13 @@ export async function fetchSalesTrends(period: string): Promise<SalesTrendData> 
 		totalRevenue: dto.total_revenue,
 		totalQuantity: dto.total_quantity,
 		totalOrders: dto.total_orders,
+		totalChickenCount: dto.total_chicken_count ?? 0,
 		dailyBreakdown: dto.daily_breakdown.map((d) => ({
 			date: d.date,
 			totalQuantity: d.total_quantity,
 			totalRevenue: d.total_revenue,
 			orderCount: d.order_count,
+			chickenCount: d.chicken_count ?? 0,
 		})),
 		productRanking: dto.product_ranking.map((r) => ({
 			productId: r.product_id,
