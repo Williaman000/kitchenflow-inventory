@@ -301,9 +301,9 @@ const MaterialManager: FC<Props> = ({
 												</button>
 												<button
 													className={styles.actionBtnDanger}
-													onClick={() => {
+													onClick={async () => {
 														if (confirm(t('materials.deleteConfirm', { name: mat.name }))) {
-															onDeleteMaterial(mat.id);
+															await onDeleteMaterial(mat.id);
 														}
 													}}
 												>

@@ -28,7 +28,15 @@ const LANG_LABELS: Record<string, string> = { ko: '한국어', ja: '日本語' }
 const App: FC = () => {
 	const { t, i18n } = useTranslation();
 	const auth = useAuth();
-	const [activeTab, setActiveTab] = useState<AppTab>('dashboard');
+	const [activeTab, setActiveTab] = useState<AppTab>(() => {
+		const saved = sessionStorage.getItem('kf-active-tab');
+		return (saved && TAB_KEYS.includes(saved as AppTab)) ? saved as AppTab : 'dashboard';
+	});
+
+	const handleTabChange = useCallback((tab: AppTab) => {
+		setActiveTab(tab);
+		sessionStorage.setItem('kf-active-tab', tab);
+	}, []);
 
 	const toggleLang = () => {
 		const next = i18n.language === 'ja' ? 'ko' : 'ja';
@@ -64,7 +72,7 @@ const App: FC = () => {
 	}
 
 	const navigateTab = (tab: string) => {
-		setActiveTab(tab as AppTab);
+		handleTabChange(tab as AppTab);
 	};
 
 	return (
@@ -96,7 +104,7 @@ const App: FC = () => {
 					<button
 						key={tab}
 						className={activeTab === tab ? styles.tabActive : styles.tab}
-						onClick={() => setActiveTab(tab)}
+						onClick={() => handleTabChange(tab)}
 					>
 						{t(`tabs.${tab}`)}
 					</button>

@@ -69,6 +69,9 @@ export function useInventory() {
 		try {
 			await deleteMaterial(id);
 			setMaterials((prev) => prev.filter((m) => m.id !== id));
+			// Reload to ensure sync
+			const fresh = await fetchMaterials();
+			setMaterials(fresh);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : '재료 삭제 실패');
 			throw err;
