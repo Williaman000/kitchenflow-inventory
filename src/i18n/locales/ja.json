@@ -383,7 +383,12 @@
 		"productName": "商品名",
 		"quantity": "販売数",
 		"noCost": "単価未入力",
-		"coverageNotice": "原価データカバー率 {{rate}}% — 材料単価を入力すると精度が向上します。"
+		"coverageNotice": "原価データカバー率 {{rate}}% — 材料単価を入力すると精度が向上します。",
+		"date": "日付",
+		"modalRevenue": "商品別売上詳細",
+		"modalCost": "商品別原価詳細",
+		"modalProfit": "日別純利益詳細",
+		"modalMargin": "商品別マージン率詳細"
 	},
 	"common": {
 		"retry": "再試行",

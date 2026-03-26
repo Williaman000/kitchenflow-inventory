@@ -17,6 +17,7 @@ const CostWasteAnalysis: FC = () => {
 	const [wasteDays, setWasteDays] = useState(30);
 	const [expandedProduct, setExpandedProduct] = useState<number | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const [showWasteModal, setShowWasteModal] = useState(false);
 
 	const loadData = useCallback(async () => {
 		setIsLoading(true);
@@ -50,7 +51,7 @@ const CostWasteAnalysis: FC = () => {
 		<div className={styles.container}>
 			{/* Period Comparison */}
 			{compData && (
-				<section className={styles.section}>
+				<section id="section-comparison" className={styles.section}>
 					<div className={styles.sectionHeader}>
 						<h2 className={styles.sectionTitle}>{t('comparison.title')}</h2>
 						<div className={styles.periodBtns}>
@@ -82,8 +83,11 @@ const CostWasteAnalysis: FC = () => {
 
 			{/* Cost Analysis */}
 			{costData && (
-				<section className={styles.section}>
-					<h2 className={styles.sectionTitle}>{t('costAnalysis.title')}</h2>
+				<section id="section-cost" className={styles.section}>
+					<div className={styles.sectionHeader}>
+						<h2 className={styles.sectionTitle}>{t('costAnalysis.title')}</h2>
+						<button className={styles.navBtn} onClick={() => setShowWasteModal(true)}>{t('wasteStats.title')}</button>
+					</div>
 					<div className={styles.summaryRow}>
 						<div className={styles.summaryCard}>
 							<div className={styles.summaryLabel}>{t('costAnalysis.avgMarginRate')}</div>
@@ -164,54 +168,61 @@ const CostWasteAnalysis: FC = () => {
 				</section>
 			)}
 
-			{/* Waste Statistics */}
-			{wasteData && (
-				<section className={styles.section}>
-					<div className={styles.sectionHeader}>
-						<h2 className={styles.sectionTitle}>{t('wasteStats.title')}</h2>
-						<div className={styles.periodBtns}>
-							{[7, 14, 30, 90].map((d) => (
-								<button key={d} className={`${styles.periodBtn} ${wasteDays === d ? styles.active : ''}`} onClick={() => setWasteDays(d)}>{d}{t('wasteStats.days')}</button>
-							))}
-						</div>
-					</div>
-					<div className={styles.summaryRow}>
-						<div className={styles.summaryCard}>
-							<div className={styles.summaryLabel}>{t('wasteStats.totalCount')}</div>
-							<div className={styles.summaryValue}>{wasteData.totalWasteCount}{t('wasteStats.unitCount')}</div>
-						</div>
-						<div className={styles.summaryCard}>
-							<div className={styles.summaryLabel}>{t('wasteStats.totalCost')}</div>
-							<div className={styles.summaryValue}>{formatCurrency(wasteData.totalWasteCost)}</div>
-						</div>
-					</div>
-					{wasteData.byMaterial.length > 0 ? (
-						<div className={styles.tableWrap}>
-							<table className={styles.table}>
-								<thead>
-									<tr>
-										<th className={styles.th}>{t('wasteStats.materialName')}</th>
-										<th className={styles.th}>{t('wasteStats.totalWaste')}</th>
-										<th className={styles.th}>{t('wasteStats.wasteCost')}</th>
-										<th className={styles.th}>{t('wasteStats.count')}</th>
-									</tr>
-								</thead>
-								<tbody>
-									{wasteData.byMaterial.map((m) => (
-										<tr key={m.materialId}>
-											<td className={styles.td}>{m.materialName} ({m.unit})</td>
-											<td className={styles.td}>{m.totalWaste}</td>
-											<td className={styles.td}>{formatCurrency(m.wasteCost)}</td>
-											<td className={styles.td}>{m.count}{t('wasteStats.unitCount')}</td>
-										</tr>
+			{/* Waste Statistics Modal */}
+			{showWasteModal && wasteData && (
+				<div className={styles.modalOverlay} onClick={() => setShowWasteModal(false)}>
+					<div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+						<div className={styles.modalHeader}>
+							<h3>{t('wasteStats.title')}</h3>
+							<div className={styles.modalHeaderRight}>
+								<div className={styles.periodBtns}>
+									{[7, 14, 30, 90].map((d) => (
+										<button key={d} className={`${styles.periodBtn} ${wasteDays === d ? styles.active : ''}`} onClick={() => setWasteDays(d)}>{d}{t('wasteStats.days')}</button>
 									))}
-								</tbody>
-							</table>
+								</div>
+								<button className={styles.modalClose} onClick={() => setShowWasteModal(false)}>✕</button>
+							</div>
 						</div>
-					) : (
-						<p className={styles.noData}>{t('wasteStats.noData')}</p>
-					)}
-				</section>
+						<div className={styles.modalBody}>
+							<div className={styles.summaryRow}>
+								<div className={styles.summaryCard}>
+									<div className={styles.summaryLabel}>{t('wasteStats.totalCount')}</div>
+									<div className={styles.summaryValue}>{wasteData.totalWasteCount}{t('wasteStats.unitCount')}</div>
+								</div>
+								<div className={styles.summaryCard}>
+									<div className={styles.summaryLabel}>{t('wasteStats.totalCost')}</div>
+									<div className={styles.summaryValue}>{formatCurrency(wasteData.totalWasteCost)}</div>
+								</div>
+							</div>
+							{wasteData.byMaterial.length > 0 ? (
+								<div className={styles.tableWrap}>
+									<table className={styles.table}>
+										<thead>
+											<tr>
+												<th className={styles.th}>{t('wasteStats.materialName')}</th>
+												<th className={styles.th}>{t('wasteStats.totalWaste')}</th>
+												<th className={styles.th}>{t('wasteStats.wasteCost')}</th>
+												<th className={styles.th}>{t('wasteStats.count')}</th>
+											</tr>
+										</thead>
+										<tbody>
+											{wasteData.byMaterial.map((m) => (
+												<tr key={m.materialId}>
+													<td className={styles.td}>{m.materialName} ({m.unit})</td>
+													<td className={styles.td}>{m.totalWaste}</td>
+													<td className={styles.td}>{formatCurrency(m.wasteCost)}</td>
+													<td className={styles.td}>{m.count}{t('wasteStats.unitCount')}</td>
+												</tr>
+											))}
+										</tbody>
+									</table>
+								</div>
+							) : (
+								<p className={styles.noData}>{t('wasteStats.noData')}</p>
+							)}
+						</div>
+					</div>
+				</div>
 			)}
 		</div>
 	);

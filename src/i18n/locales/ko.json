@@ -383,7 +383,12 @@
 		"productName": "상품명",
 		"quantity": "판매량",
 		"noCost": "단가 미입력",
-		"coverageNotice": "원가 데이터 커버율 {{rate}}% — 재료 단가를 입력하면 정확도가 올라갑니다."
+		"coverageNotice": "원가 데이터 커버율 {{rate}}% — 재료 단가를 입력하면 정확도가 올라갑니다.",
+		"date": "날짜",
+		"modalRevenue": "상품별 매출 상세",
+		"modalCost": "상품별 원가 상세",
+		"modalProfit": "일별 순이익 상세",
+		"modalMargin": "상품별 마진율 상세"
 	},
 	"common": {
 		"retry": "재시도",
