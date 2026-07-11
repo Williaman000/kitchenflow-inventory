@@ -23,20 +23,25 @@ interface ParsedRow {
 	error?: string;
 }
 
-// CSV/XLSX header mapping (Korean + English)
+// CSV/XLSX header mapping (Korean + English + Japanese)
 const HEADER_MAP: Record<string, keyof ParsedRow> = {
 	'재료명': 'name',
 	'name': 'name',
+	'材料名': 'name',
 	'단위': 'unit',
 	'unit': 'unit',
+	'単位': 'unit',
 	'카테고리': 'category',
 	'category': 'category',
+	'カテゴリ': 'category',
 	'현재재고': 'currentStock',
 	'current_stock': 'currentStock',
 	'currentstock': 'currentStock',
+	'現在在庫': 'currentStock',
 	'최소재고': 'minimumStock',
 	'minimum_stock': 'minimumStock',
 	'minimumstock': 'minimumStock',
+	'最小在庫': 'minimumStock',
 };
 
 function parseRawRows(rawRows: Record<string, string>[]): ParsedRow[] {
@@ -44,7 +49,7 @@ function parseRawRows(rawRows: Record<string, string>[]): ParsedRow[] {
 		const mapped: Partial<ParsedRow> = {};
 
 		for (const [key, value] of Object.entries(raw)) {
-			const normalizedKey = key.trim().toLowerCase();
+			const normalizedKey = key.replace(/^﻿/, '').trim().toLowerCase();
 			const field = HEADER_MAP[normalizedKey];
 			if (field) {
 				if (field === 'currentStock' || field === 'minimumStock') {

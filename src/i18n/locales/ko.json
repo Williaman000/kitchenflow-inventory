@@ -53,6 +53,7 @@
 		"addBtn": "+ 재료 추가",
 		"colName": "재료명",
 		"colCategory": "카테고리",
+		"colUnit": "단위",
 		"colCurrentStock": "현재 재고",
 		"colMinStock": "최소 재고",
 		"colStatus": "상태",

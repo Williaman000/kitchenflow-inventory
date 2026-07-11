@@ -53,6 +53,7 @@
 		"addBtn": "+ 材料追加",
 		"colName": "材料名",
 		"colCategory": "カテゴリ",
+		"colUnit": "単位",
 		"colCurrentStock": "現在在庫",
 		"colMinStock": "最小在庫",
 		"colStatus": "状態",
