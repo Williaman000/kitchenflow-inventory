@@ -333,6 +333,8 @@ interface ProfitAnalysisDto {
 	end_date: string;
 	total_revenue: number;
 	total_material_cost: number;
+	total_operating_cost: number;
+	operating_cost_rate: number;
 	total_profit: number;
 	overall_margin_rate: number;
 	daily_breakdown: { date: string; revenue: number; material_cost: number; profit: number; margin_rate: number }[];
@@ -349,6 +351,8 @@ export async function fetchProfitAnalysis(period: string): Promise<ProfitAnalysi
 		endDate: dto.end_date,
 		totalRevenue: dto.total_revenue,
 		totalMaterialCost: dto.total_material_cost,
+		totalOperatingCost: dto.total_operating_cost,
+		operatingCostRate: dto.operating_cost_rate,
 		totalProfit: dto.total_profit,
 		overallMarginRate: dto.overall_margin_rate,
 		dailyBreakdown: dto.daily_breakdown.map((d) => ({

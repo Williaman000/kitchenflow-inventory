@@ -290,6 +290,19 @@
 		"daySat": "土曜日",
 		"daySun": "日曜日"
 	},
+	"alerts": {
+		"bellTitle": "発注アラート",
+		"empty": "新しいアラートはありません",
+		"newCount": "新着 {{count}}件",
+		"urgentTitle": "発注締切が近づいています",
+		"urgentBody": "{{count}}件の材料が発注締切間近です。",
+		"pushSent": "📱 店長のスマートフォンに発注アラートを送信しました（シミュレーション）",
+		"pushAppName": "KitchenFlow 発注",
+		"pushNowLabel": "今",
+		"pushNow": "今すぐ発注する",
+		"later": "後で",
+		"markRead": "既読にする"
+	},
 	"bulkImport": {
 		"titleUpload": "CSV / エクセル 一括登録",
 		"titlePreview": "データプレビュー",
@@ -375,6 +388,7 @@
 		"periodMonth": "今月",
 		"totalRevenue": "総売上",
 		"totalCost": "材料原価",
+		"operatingCost": "運営費（ロイヤリティ・人件費等）",
 		"netProfit": "純利益",
 		"marginRate": "マージン率",
 		"chartDaily": "日別 売上/原価/純利益推移",

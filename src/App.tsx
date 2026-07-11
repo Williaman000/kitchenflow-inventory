@@ -1,4 +1,4 @@
-import { useState, useCallback, type FC } from 'react';
+import { useState, useCallback, useEffect, useRef, type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './hooks/useAuth';
 import { useChat } from './hooks/useChat';
@@ -19,6 +19,8 @@ import MappingManager from './components/MappingManager/MappingManager';
 import CostWasteAnalysis from './components/CostWasteAnalysis/CostWasteAnalysis';
 import ProfitDashboard from './components/ProfitDashboard/ProfitDashboard';
 import ScrollButtons from './components/ScrollButtons/ScrollButtons';
+import OrderAlertCenter from './components/OrderAlertCenter/OrderAlertCenter';
+import PushSimToast from './components/PushSimToast/PushSimToast';
 import styles from './App.module.scss';
 
 type AppTab = 'dashboard' | 'chat' | 'trends' | 'forecast' | 'profit' | 'costWaste' | 'materials' | 'orders' | 'mappings';
@@ -59,6 +61,32 @@ const App: FC = () => {
 	const dashboardHook = useDashboard();
 	const profitHook = useProfitAnalysis(auth.isAuthenticated);
 
+	// --- Order-deadline alerts (badge + simulated phone push) ---
+	const urgentRecs = (forecastHook.forecast?.recommendations ?? []).filter(
+		(r) => r.isOrderUrgent && r.recommendedOrder > 0,
+	);
+	const urgentCount = urgentRecs.length;
+	const urgentDeadline = urgentRecs[0]?.orderDeadlineDisplay ?? '';
+
+	const [alertRead, setAlertRead] = useState(false);
+	const [showPush, setShowPush] = useState(false);
+	const pushShownRef = useRef(false);
+
+	// Once the forecast reveals imminent deadlines, pop the phone-push mock once
+	// per app load (a page reload replays it — intentional for demos).
+	useEffect(() => {
+		if (!auth.isAuthenticated || urgentCount === 0 || pushShownRef.current) return;
+		pushShownRef.current = true;
+		const timer = setTimeout(() => setShowPush(true), 1200);
+		return () => clearTimeout(timer);
+	}, [auth.isAuthenticated, urgentCount]);
+
+	const goToForecast = useCallback(() => {
+		setShowPush(false);
+		setActiveTab('forecast');
+		sessionStorage.setItem('kf-active-tab', 'forecast');
+	}, []);
+
 	// Loading (token verification)
 	if (auth.isLoading) {
 		return (
@@ -80,6 +108,11 @@ const App: FC = () => {
 
 	return (
 		<div className={styles.layout}>
+			{auth.isDemo && (
+				<div style={{ background: '#C0904E', color: '#17120E', textAlign: 'center', padding: '6px 12px', fontSize: 13, fontWeight: 600, letterSpacing: '0.02em', flexShrink: 0 }}>
+					🎬 デモ表示ページ — 実際の運用データではありません · Demo (sample data)
+				</div>
+			)}
 			{/* Header */}
 			<header className={styles.header}>
 				<div className={styles.headerLeft}>
@@ -87,6 +120,13 @@ const App: FC = () => {
 					<h1 className={styles.headerTitle}>{t('app.title')}</h1>
 				</div>
 				<div className={styles.headerRight}>
+					<OrderAlertCenter
+						urgentCount={urgentCount}
+						deadlineDisplay={urgentDeadline}
+						isRead={alertRead}
+						onGoToForecast={goToForecast}
+						onMarkRead={() => setAlertRead(true)}
+					/>
 					{!import.meta.env.VITE_FIXED_LANG && (
 						<button className={styles.langBtn} onClick={toggleLang}>
 							{LANG_LABELS[i18n.language] ?? '한국어'}
@@ -103,15 +143,19 @@ const App: FC = () => {
 
 			{/* Tab navigation */}
 			<nav className={styles.tabNav}>
-				{TAB_KEYS.map((tab) => (
-					<button
-						key={tab}
-						className={activeTab === tab ? styles.tabActive : styles.tab}
-						onClick={() => handleTabChange(tab)}
-					>
-						{t(`tabs.${tab}`)}
-					</button>
-				))}
+				{TAB_KEYS.map((tab) => {
+					const badge = tab === 'forecast' && !alertRead ? urgentCount : 0;
+					return (
+						<button
+							key={tab}
+							className={activeTab === tab ? styles.tabActive : styles.tab}
+							onClick={() => handleTabChange(tab)}
+						>
+							{t(`tabs.${tab}`)}
+							{badge > 0 && <span className={styles.tabBadge}>{badge}</span>}
+						</button>
+					);
+				})}
 			</nav>
 
 			{/* Main content */}
@@ -216,6 +260,15 @@ const App: FC = () => {
 					/>
 				)}
 			</div>
+
+			{showPush && urgentCount > 0 && (
+				<PushSimToast
+					urgentCount={urgentCount}
+					deadlineDisplay={urgentDeadline}
+					onAction={goToForecast}
+					onClose={() => setShowPush(false)}
+				/>
+			)}
 
 			<ScrollButtons />
 		</div>

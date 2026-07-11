@@ -1,0 +1,205 @@
+.overlay {
+	position: fixed;
+	right: 24px;
+	bottom: 24px;
+	z-index: 2000;
+	animation: slideUp 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+	from { opacity: 0; transform: translateY(40px) scale(0.96); }
+	to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Phone frame */
+.phone {
+	width: 300px;
+	border-radius: 40px;
+	background: linear-gradient(160deg, #1c1c1e 0%, #000 100%);
+	padding: 12px;
+	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 0 2px rgba(255, 255, 255, 0.06) inset;
+	position: relative;
+}
+
+.screen {
+	position: relative;
+	border-radius: 30px;
+	overflow: hidden;
+	background: linear-gradient(180deg, #2b5876 0%, #4e4376 100%);
+	min-height: 300px;
+	padding: 14px 12px 18px;
+}
+
+/* Notch */
+.notch {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 110px;
+	height: 22px;
+	background: #000;
+	border-radius: 0 0 16px 16px;
+	z-index: 2;
+}
+
+.statusBar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: #fff;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 2px 6px 0;
+	opacity: 0.92;
+}
+
+.lockClock {
+	text-align: center;
+	color: #fff;
+	margin: 14px 0 20px;
+}
+
+.lockTime {
+	font-size: 46px;
+	font-weight: 300;
+	line-height: 1;
+	letter-spacing: 0.01em;
+}
+
+.lockDate {
+	font-size: 13px;
+	font-weight: 500;
+	opacity: 0.9;
+	margin-top: 4px;
+}
+
+/* Notification card (glass) */
+.notif {
+	display: flex;
+	gap: 10px;
+	background: rgba(255, 255, 255, 0.82);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-radius: 16px;
+	padding: 11px 12px;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+	animation: notifPop 0.5s 0.3s both cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes notifPop {
+	from { opacity: 0; transform: translateY(-10px) scale(0.94); }
+	to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.appIcon {
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	background: linear-gradient(145deg, #1976D2, #0D47A1);
+	color: #fff;
+	font-size: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.notifBody {
+	flex: 1;
+	min-width: 0;
+}
+
+.notifMeta {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 2px;
+}
+
+.notifApp {
+	font-size: 11px;
+	font-weight: 700;
+	color: #333;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.notifTime {
+	font-size: 11px;
+	color: #888;
+}
+
+.notifTitle {
+	font-size: 13px;
+	font-weight: 800;
+	color: #111;
+	margin: 0 0 2px;
+}
+
+.notifText {
+	font-size: 12px;
+	color: #333;
+	line-height: 1.4;
+	margin: 0;
+}
+
+.notifDeadline {
+	color: #C62828;
+	font-weight: 700;
+}
+
+/* CTA under the notification */
+.cta {
+	display: flex;
+	gap: 8px;
+	margin-top: 14px;
+}
+
+.ctaOrder {
+	flex: 1;
+	background: #fff;
+	color: #1565C0;
+	border: none;
+	border-radius: 12px;
+	padding: 11px;
+	font-size: 13px;
+	font-weight: 800;
+	cursor: pointer;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+	&:hover { background: #f0f6ff; }
+}
+
+.ctaClose {
+	background: rgba(255, 255, 255, 0.18);
+	color: #fff;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	border-radius: 12px;
+	padding: 11px 14px;
+	font-size: 13px;
+	font-weight: 700;
+	cursor: pointer;
+
+	&:hover { background: rgba(255, 255, 255, 0.28); }
+}
+
+/* Caption clarifying this is a simulation */
+.simCaption {
+	margin-top: 10px;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.85);
+	font-size: 11px;
+	font-weight: 600;
+}
+
+@media (max-width: 640px) {
+	.overlay {
+		right: 12px;
+		bottom: 12px;
+	}
+	.phone {
+		width: 240px;
+	}
+}

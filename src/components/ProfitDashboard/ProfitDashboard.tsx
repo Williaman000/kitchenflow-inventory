@@ -78,7 +78,11 @@ const ProfitDashboard: FC<Props> = ({ data, period, isLoading, error, onPeriodCh
 					<div className={styles.summaryLabel}>{t('profit.totalCost')}</div>
 					<div className={styles.summaryValue}>{formatCurrency(data.totalMaterialCost)}</div>
 				</div>
-				<div className={`${styles.summaryCard} ${styles.clickable}`} onClick={() => setActiveModal('profit')}>
+				<div className={styles.summaryCard}>
+						<div className={styles.summaryLabel}>{t('profit.operatingCost')}</div>
+						<div className={styles.summaryValue}>{formatCurrency(data.totalOperatingCost)}</div>
+					</div>
+					<div className={`${styles.summaryCard} ${styles.clickable}`} onClick={() => setActiveModal('profit')}>
 					<div className={styles.summaryLabel}>{t('profit.netProfit')}</div>
 					<div className={`${styles.summaryValue} ${profitClass}`}>{formatCurrency(data.totalProfit)}</div>
 				</div>

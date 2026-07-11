@@ -260,6 +260,8 @@ export interface ProfitAnalysisData {
 	endDate: string;
 	totalRevenue: number;
 	totalMaterialCost: number;
+	totalOperatingCost: number;
+	operatingCostRate: number;
 	totalProfit: number;
 	overallMarginRate: number;
 	dailyBreakdown: DailyProfitPoint[];

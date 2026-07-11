@@ -290,6 +290,19 @@
 		"daySat": "토요일",
 		"daySun": "일요일"
 	},
+	"alerts": {
+		"bellTitle": "발주 알림",
+		"empty": "새 알림이 없습니다",
+		"newCount": "신규 {{count}}건",
+		"urgentTitle": "발주 마감이 임박했습니다",
+		"urgentBody": "{{count}}개 재료의 발주 마감이 임박했습니다.",
+		"pushSent": "📱 점장님 스마트폰으로 발주 알림을 전송했습니다 (시뮬레이션)",
+		"pushAppName": "KitchenFlow 발주",
+		"pushNowLabel": "지금",
+		"pushNow": "지금 발주하기",
+		"later": "나중에",
+		"markRead": "읽음 처리"
+	},
 	"bulkImport": {
 		"titleUpload": "CSV / 엑셀 일괄 등록",
 		"titlePreview": "데이터 미리보기",
@@ -375,6 +388,7 @@
 		"periodMonth": "이번달",
 		"totalRevenue": "총 매출",
 		"totalCost": "재료 원가",
+		"operatingCost": "운영비(로열티·인건비 등)",
 		"netProfit": "순이익",
 		"marginRate": "마진율",
 		"chartDaily": "일별 매출/원가/순익 추이",
