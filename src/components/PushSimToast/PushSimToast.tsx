@@ -1,4 +1,4 @@
-import { type FC } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { useTranslation, getI18n } from 'react-i18next';
 import styles from './PushSimToast.module.scss';
 
@@ -13,7 +13,12 @@ interface Props {
 }
 
 function useNow() {
-	const now = new Date();
+	// 라이브 시계: 1초마다 갱신해 실제 시간이 흐르게(데모 현실성). 정지 목업 아님.
+	const [now, setNow] = useState(() => new Date());
+	useEffect(() => {
+		const id = setInterval(() => setNow(new Date()), 1000);
+		return () => clearInterval(id);
+	}, []);
 	const lang = getI18n().language === 'ja' ? 'ja-JP' : 'ko-KR';
 	const time = now.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit', hour12: false });
 	const date = now.toLocaleDateString(lang, { month: 'long', day: 'numeric', weekday: 'long' });

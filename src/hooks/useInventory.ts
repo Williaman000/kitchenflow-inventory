@@ -122,6 +122,21 @@ export function useInventory() {
 		try {
 			const created = await createPurchaseOrder(payload);
 			setPurchaseOrders((prev) => [created, ...prev]);
+			// 데모 연출: 발주 직후 재고를 리페치하면 데모 자동입고로 재고가 채워져(빨강 해제),
+			// 백엔드가 ~30초 뒤 자동 소비로 원복하므로 그 시점에 다시 리페치해 빨강을 복귀시킨다.
+			// (프로덕션 비데모 발주는 DRAFT라 재고 무변동 → 리페치해도 동일값이라 무해)
+			const refreshMaterials = async () => {
+				try {
+					const data = await fetchMaterials();
+					setMaterials(data);
+				} catch {
+					/* 데모 연출 리페치 실패는 무시 */
+				}
+			};
+			await refreshMaterials();
+			// 원복(빨강 복귀) 반영: 백엔드 원복 30초 + 여유. 지연/누락 대비 2회.
+			setTimeout(refreshMaterials, 31000);
+			setTimeout(refreshMaterials, 34000);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : '발주 생성 실패');
 			throw err;
