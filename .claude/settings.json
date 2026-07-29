@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "claude-config": {
+      "source": {
+        "source": "github",
+        "repo": "Williaman000/claude-config"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "global-rules@claude-config": true
+  }
+}
